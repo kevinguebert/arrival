@@ -3,6 +3,7 @@ import ServiceManagement
 
 struct PreferencesView: View {
     @ObservedObject var settings: SettingsStore
+    @Environment(\.openDevWindow) private var openDevWindow
     @State private var homeGeocodingError: String?
     @State private var workGeocodingError: String?
     @State private var isGeocodingHome = false
@@ -183,6 +184,18 @@ struct PreferencesView: View {
                 }
                 .disabled(true)
                 Text("More providers coming soon.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Section("Developer") {
+                Toggle("Developer Mode", isOn: $settings.developerModeEnabled)
+                if settings.developerModeEnabled {
+                    Button("Open Developer Settings") {
+                        openDevWindow()
+                    }
+                }
+                Text("Enables mock data controls for testing UI states.")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
