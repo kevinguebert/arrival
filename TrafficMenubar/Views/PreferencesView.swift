@@ -53,19 +53,7 @@ struct PreferencesView: View {
             }
             .padding(20)
         }
-        .background(
-            isDark
-                ? AnyView(LinearGradient(
-                    colors: [Design.darkBgTop, Design.darkBgBottom],
-                    startPoint: .top,
-                    endPoint: .bottom
-                ))
-                : AnyView(LinearGradient(
-                    colors: [Design.lightBgTop, Design.lightBgBottom],
-                    startPoint: .top,
-                    endPoint: .bottom
-                ))
-        )
+        .background(backgroundGradient)
         .frame(width: 420, height: 420)
     }
 
@@ -409,6 +397,18 @@ struct PreferencesView: View {
 
             Spacer()
         }
+    }
+
+    // MARK: - Helpers
+
+    private var backgroundGradient: some View {
+        LinearGradient(
+            colors: isDark
+                ? [Design.darkBgTop, Design.darkBgBottom]
+                : [Design.lightBgTop, Design.lightBgBottom],
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 
     // MARK: - Geocoding

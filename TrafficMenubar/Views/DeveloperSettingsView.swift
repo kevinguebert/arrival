@@ -4,10 +4,18 @@ struct DeveloperSettingsView: View {
     @ObservedObject var viewModel: CommuteViewModel
     @ObservedObject var mockProvider: MockTrafficProvider
     @ObservedObject var designOverrides: DevDesignOverrides
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var forcedState: ForcedAppState = .normal
     @State private var forcedDirection: CommuteDirection = .toWork
     @State private var forcedFailures: Int = 0
+
+    private var isDark: Bool { colorScheme == .dark }
+    private var primaryText: Color { isDark ? .white.opacity(0.7) : .primary }
+    private var secondaryText: Color { isDark ? .white.opacity(0.4) : .secondary }
+    private var subtleBg: Color { isDark ? Color.white.opacity(0.04) : Color.black.opacity(0.03) }
+    private var subtleBorder: Color { isDark ? Color.white.opacity(0.08) : Color.black.opacity(0.08) }
+    private var presetBg: Color { isDark ? Color.white.opacity(0.06) : Color.black.opacity(0.04) }
 
     enum ForcedAppState: String, CaseIterable {
         case normal = "Normal"
@@ -30,13 +38,8 @@ struct DeveloperSettingsView: View {
             }
             .padding(16)
         }
-        .background(
-            LinearGradient(
-                colors: [Design.darkBgTop, Design.darkBgBottom],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
+        .background(backgroundGradient)
+        .colorScheme(colorScheme)
         .frame(width: 400)
         .frame(minHeight: 500)
         .onChange(of: forcedState) { _ in applyState() }
@@ -60,12 +63,12 @@ struct DeveloperSettingsView: View {
                         .foregroundColor(.orange)
                     Text(viewModel.isDevMode ? "Dev Mode Active" : "Dev Mode Off")
                         .font(.system(size: 13, weight: .semibold, design: .rounded))
-                        .foregroundColor(.white.opacity(0.9))
+                        .foregroundColor(isDark ? Color.white.opacity(0.9) : Color.primary)
                 }
                 if viewModel.isDevMode {
                     Text("Polling paused · Mock data in use")
                         .font(.system(size: 11, design: .rounded))
-                        .foregroundColor(.white.opacity(0.4))
+                        .foregroundColor(secondaryText)
                 }
             }
             Spacer()
@@ -84,10 +87,10 @@ struct DeveloperSettingsView: View {
             .tint(.orange)
         }
         .padding(12)
-        .background(viewModel.isDevMode ? Color.orange.opacity(0.08) : Color.white.opacity(0.04))
+        .background(viewModel.isDevMode ? Color.orange.opacity(0.08) : subtleBg)
         .overlay(
             RoundedRectangle(cornerRadius: 6)
-                .stroke(viewModel.isDevMode ? Color.orange.opacity(0.2) : Color.white.opacity(0.08), lineWidth: 1)
+                .stroke(viewModel.isDevMode ? Color.orange.opacity(0.2) : subtleBorder, lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }
@@ -101,7 +104,7 @@ struct DeveloperSettingsView: View {
                 HStack {
                     Text("Force state")
                         .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(primaryText)
                     Spacer()
                     Picker("", selection: $forcedState) {
                         ForEach(ForcedAppState.allCases, id: \.self) { state in
@@ -115,7 +118,7 @@ struct DeveloperSettingsView: View {
                 HStack {
                     Text("Direction")
                         .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(primaryText)
                     Spacer()
                     Picker("", selection: $forcedDirection) {
                         Text("To Work").tag(CommuteDirection.toWork)
@@ -128,7 +131,7 @@ struct DeveloperSettingsView: View {
                 HStack {
                     Text("Consecutive failures")
                         .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(primaryText)
                     Spacer()
                     Stepper("\(forcedFailures)", value: $forcedFailures, in: 0...10)
                         .frame(width: 100)
@@ -147,7 +150,7 @@ struct DeveloperSettingsView: View {
                     HStack {
                         Text("Travel time")
                             .font(.system(size: 12))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(primaryText)
                         Spacer()
                         Text("\(Int(mockProvider.travelTimeMinutes)) min")
                             .font(.system(size: 12, weight: .semibold))
@@ -161,7 +164,7 @@ struct DeveloperSettingsView: View {
                     HStack {
                         Text("Normal time (baseline)")
                             .font(.system(size: 12))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(primaryText)
                         Spacer()
                         Text("\(Int(mockProvider.normalTimeMinutes)) min")
                             .font(.system(size: 12, weight: .semibold))
@@ -176,12 +179,12 @@ struct DeveloperSettingsView: View {
                 HStack {
                     Text("Delay: +\(delay) min")
                         .font(.system(size: 11))
-                        .foregroundColor(.white.opacity(0.4))
+                        .foregroundColor(secondaryText)
                     Text("·")
-                        .foregroundColor(.white.opacity(0.4))
+                        .foregroundColor(secondaryText)
                     Text(computedMood.randomPhrase())
                         .font(.system(size: 11))
-                        .foregroundColor(.white.opacity(0.4))
+                        .foregroundColor(secondaryText)
                 }
                 .padding(.top, 4)
             }
@@ -196,14 +199,14 @@ struct DeveloperSettingsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Toggle("Include incidents", isOn: $mockProvider.includeIncidents)
                     .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(primaryText)
                     .tint(.orange)
 
                 if mockProvider.includeIncidents {
                     HStack {
                         Text("Number of incidents")
                             .font(.system(size: 12))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(primaryText)
                         Spacer()
                         Stepper("\(mockProvider.incidentCount)", value: $mockProvider.incidentCount, in: 1...3)
                             .frame(width: 100)
@@ -212,7 +215,7 @@ struct DeveloperSettingsView: View {
                     HStack {
                         Text("Max severity")
                             .font(.system(size: 12))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(primaryText)
                         Spacer()
                         Picker("", selection: $mockProvider.maxSeverity) {
                             Text("Minor").tag(IncidentSeverity.minor)
@@ -236,7 +239,7 @@ struct DeveloperSettingsView: View {
                 HStack {
                     Text("Force mood")
                         .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(primaryText)
                     Spacer()
                     Picker("", selection: Binding(
                         get: { designOverrides.moodOverride },
@@ -255,7 +258,7 @@ struct DeveloperSettingsView: View {
                     HStack {
                         Text("Font scale")
                             .font(.system(size: 12))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(primaryText)
                         Spacer()
                         Text(String(format: "%.1f×", designOverrides.fontScale))
                             .font(.system(size: 12, weight: .semibold))
@@ -316,15 +319,15 @@ struct DeveloperSettingsView: View {
                     Button(action: action) {
                         Text(label)
                             .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(primaryText)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
                     }
                     .buttonStyle(.plain)
-                    .background(Color.white.opacity(0.06))
+                    .background(presetBg)
                     .overlay(
                         RoundedRectangle(cornerRadius: 4)
-                            .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
+                            .strokeBorder(subtleBorder, lineWidth: 1)
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 4))
                 }
@@ -346,13 +349,23 @@ struct DeveloperSettingsView: View {
             }
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.white.opacity(0.04))
+            .background(subtleBg)
             .overlay(
                 RoundedRectangle(cornerRadius: 6)
-                    .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
+                    .strokeBorder(subtleBorder, lineWidth: 1)
             )
             .clipShape(RoundedRectangle(cornerRadius: 6))
         }
+    }
+
+    private var backgroundGradient: some View {
+        LinearGradient(
+            colors: isDark
+                ? [Design.darkBgTop, Design.darkBgBottom]
+                : [Design.lightBgTop, Design.lightBgBottom],
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 
     private func applyState() {
