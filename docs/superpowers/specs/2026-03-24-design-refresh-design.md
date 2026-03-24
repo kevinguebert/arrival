@@ -172,26 +172,32 @@ The app requests multiple routes from MapKit (`MKDirections` with `requestingAlt
 
 ### Stylized Traffic Lines
 
-Each route gets a horizontal line from origin dot to destination dot. The line's gradient represents traffic conditions along that specific path:
+Each route gets a horizontal line from origin dot to destination dot. The line's gradient is **decorative/heuristic**, not data-driven — MapKit's `MKRoute` does not expose per-segment congestion data. The gradient is derived from the route's overall mood:
 
-- Green segments = clear flow
-- Amber segments = slowdowns
-- Red segments = heavy congestion/stoppage
+- **Clear route** (fastest, low travel time): solid green line
+- **Moderate route** (some delay): green-to-amber-to-green gradient, suggesting mid-route slowdowns
+- **Heavy route** (significant delay): gradient incorporating red segments, suggesting congestion
+- **Route with incidents**: gradient biased toward red/amber near the incident badge position
 
-Example gradient for a route with a middle bottleneck:
-`linear-gradient(90deg, #4ade80 0%, #fbbf24 30%, #f87171 50%, #fbbf24 70%, #4ade80 100%)`
+The heuristic: compare each route's `expectedTravelTime` against the fastest route's time. The delta drives how much amber/red appears in the gradient. This is an approximation for visual personality — not a literal map of congestion.
 
-### Incident Markers
+Example gradient for a moderately delayed route:
+`linear-gradient(90deg, #4ade80 0%, #fbbf24 40%, #fbbf24 60%, #4ade80 100%)`
 
-When a route has incidents:
-- Orange diamond marker (`#f59e0b`) positioned on the line where the incident is
-- Diamond is rotated 45deg, ~8px, with a subtle glow
-- INCIDENT badge next to the route name: small pill with diamond icon + "INCIDENT" text in orange
-- Incident description text below the route name in muted small text
+### Incident Display
+
+**Data source limitation:** MapKit's `MKRoute.advisoryNotices` provides incident descriptions as `[String]` but does not include structured incident data with locations. The current `TrafficIncident` model exists but `MapKitProvider` returns empty arrays.
+
+**Approach:**
+- Display `advisoryNotices` strings from MapKit as incident descriptions when available
+- Show an INCIDENT badge next to the route name: small pill with diamond icon + "INCIDENT" text in orange
+- Incident description text (from `advisoryNotices`) below the route name in muted small text
+- The incident diamond marker on the stylized line is positioned at a **fixed heuristic position** (e.g., 40-50% along the line) — it indicates "this route has an incident" without claiming to show the exact location
+- If a future data source provides real incident coordinates, the marker position can be upgraded to use them
 
 ### Smart Collapse
 
-When MapKit returns only one route, or all routes are within ~2 minutes of each other:
+When MapKit returns only one route, or all routes are within 2 minutes of each other:
 - Fall back to a single stylized route view (no list)
 - Shows: origin dot → gradient line → destination dot
 - Below the line: "Home" / "via [road] · [distance]" / "Work"
@@ -300,9 +306,9 @@ All empty/error states use the adaptive theme (dark/light) with the slate mood c
 - Popover padding: 20pt
 - Corner radius: 12pt (popover), 10pt (route cards), 20pt (mood badge pill), 8pt (secondary elements)
 
-### Typography (unchanged)
+### Typography (preserving existing values from DesignSystem.swift)
 All fonts use `.rounded` design:
-- Hero time: 44pt bold
+- Hero time: 48pt bold
 - Hero unit ("min"): 18pt medium
 - ETA value: 20pt semibold
 - Route name: 12pt (semibold for fastest, medium for alternatives)
@@ -349,9 +355,47 @@ All fonts use `.rounded` design:
 - Sort by `expectedTravelTime`, take top 3
 
 ### Data Model Changes
-- `RouteResult` needs to support multiple routes (e.g., `routes: [Route]` instead of a single route)
-- Each `Route` contains: name, travel time, distance, polyline, incidents
-- Traffic mood is determined by the fastest route's travel time
+
+**New `Route` struct:**
+```swift
+struct Route {
+    let name: String                    // e.g., "via I-285 S" (from MKRoute.name)
+    let travelTime: TimeInterval        // from MKRoute.expectedTravelTime
+    let normalTravelTime: TimeInterval  // heuristic estimate from distance (existing logic)
+    let distance: CLLocationDistance     // from MKRoute.distance
+    let polylineCoordinates: [Coordinate]  // extracted from MKRoute.polyline for storage/equality
+    let mkPolyline: MKPolyline?         // retained for MKMapView overlay rendering only
+    let advisoryNotices: [String]       // from MKRoute.advisoryNotices
+
+    // Computed properties (same logic as existing RouteResult)
+    var travelTimeMinutes: Int { Int(travelTime / 60) }
+    var delayMinutes: Int { max(0, Int((travelTime - normalTravelTime) / 60)) }
+    var eta: Date { Date().addingTimeInterval(travelTime) }
+    var hasIncidents: Bool { !advisoryNotices.isEmpty }
+}
+```
+
+**Updated `RouteResult`:**
+```swift
+struct RouteResult {
+    let routes: [Route]                 // sorted by travelTime, fastest first
+    let incidents: [TrafficIncident]    // kept for future use, currently empty
+    let fetchedAt: Date
+}
+```
+
+**`TrafficProvider` protocol change:**
+```swift
+protocol TrafficProvider {
+    func fetchRoutes(from: Coordinate, to: Coordinate) async throws -> RouteResult
+}
+```
+
+**Mood determination:** `TrafficMood` is computed from the fastest route (first in array): `TrafficMood(delayMinutes: routes.first!.delayMinutes, hasIncidents: routes.first!.hasIncidents)`. Same initialization logic as today, just sourced from the fastest `Route` instead of a single `RouteResult`.
+
+**ETA display:** `route.eta` is computed as `Date() + travelTime`, same as existing behavior. The popover's "ARRIVE BY" section uses `routes.first!.eta`.
+
+This is a breaking change — `MapKitProvider`, `MockTrafficProvider`, `CommuteViewModel.fetchRoute()` all need updating.
 
 ### Design System Changes
 - Remove `moodEmoji` from `TrafficMood` enum
