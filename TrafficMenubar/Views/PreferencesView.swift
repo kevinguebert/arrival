@@ -263,7 +263,7 @@ struct PreferencesView: View {
     @ViewBuilder
     private func darkTimePicker(selection: Binding<Int>) -> some View {
         Picker("", selection: selection) {
-            ForEach(timeSlots(), id: \.hour) { slot in
+            ForEach(timeSlots(), id: \.label) { slot in
                 Text(slot.label).tag(timeTag(hour: slot.hour, minute: slot.minute))
             }
         }
