@@ -2,54 +2,54 @@ import SwiftUI
 
 @main
 struct TrafficMenubarApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @StateObject private var viewModel = CommuteViewModel()
+    @Environment(\.openWindow) private var openWindow
+    @State private var hasCheckedFirstLaunch = false
 
     var body: some Scene {
         MenuBarExtra {
-            PopoverView(viewModel: appDelegate.viewModel)
+            PopoverView(viewModel: viewModel)
+                .environment(\.openPreferencesWindow, OpenPreferencesAction { [self] in
+                    openWindow(id: "preferences")
+                    NSApp.activate(ignoringOtherApps: true)
+                })
+                .onAppear {
+                    if !hasCheckedFirstLaunch {
+                        hasCheckedFirstLaunch = true
+                        viewModel.startPolling()
+
+                        if !viewModel.settings.isConfigured {
+                            openWindow(id: "preferences")
+                            NSApp.activate(ignoringOtherApps: true)
+                        }
+                    }
+                }
         } label: {
-            Text(appDelegate.viewModel.menuBarText)
+            Text(viewModel.menuBarText)
         }
         .menuBarExtraStyle(.window)
 
         Window("Preferences", id: "preferences") {
-            PreferencesView(settings: appDelegate.viewModel.settings)
+            PreferencesView(settings: viewModel.settings)
         }
         .defaultSize(width: 420, height: 320)
         .windowResizability(.contentSize)
     }
 }
 
-@MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
-    let viewModel = CommuteViewModel()
+// Environment key for passing openPreferences action down the view hierarchy
+struct OpenPreferencesAction {
+    let action: () -> Void
+    func callAsFunction() { action() }
+}
 
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        if !viewModel.settings.isConfigured {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                NSApp.activate(ignoringOtherApps: true)
-                if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == "preferences" }) {
-                    window.makeKeyAndOrderFront(nil)
-                }
-            }
-        }
+struct OpenPreferencesKey: EnvironmentKey {
+    static let defaultValue = OpenPreferencesAction { }
+}
 
-        viewModel.startPolling()
-
-        NotificationCenter.default.addObserver(
-            forName: .openPreferences,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            guard self != nil else { return }
-            NSApp.activate(ignoringOtherApps: true)
-            if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == "preferences" }) {
-                window.makeKeyAndOrderFront(nil)
-            }
-        }
-    }
-
-    func applicationWillTerminate(_ notification: Notification) {
-        viewModel.stopPolling()
+extension EnvironmentValues {
+    var openPreferencesWindow: OpenPreferencesAction {
+        get { self[OpenPreferencesKey.self] }
+        set { self[OpenPreferencesKey.self] = newValue }
     }
 }
