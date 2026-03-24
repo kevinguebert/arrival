@@ -3,47 +3,106 @@ import SwiftUI
 struct PopoverView: View {
     @ObservedObject var viewModel: CommuteViewModel
     @State private var showQuickSettings = false
-    @State private var refreshPulse = false
+    @State private var moodPhrase: String = ""
+    @State private var expandedRoute: Route?
+    @State private var showMap = false
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.devDesignOverrides) private var designOverrides
 
-    private var fontScale: CGFloat {
-        designOverrides?.fontScale ?? 1.0
-    }
+    private var fontScale: CGFloat { designOverrides?.fontScale ?? 1.0 }
 
     private var mood: TrafficMood {
         if let override = designOverrides?.moodOverride {
             return override
         }
-        guard let route = viewModel.currentRoute else { return .unknown }
-        return TrafficMood(delayMinutes: route.delayMinutes, hasIncidents: route.hasIncidents)
+        return viewModel.mood
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Top mood bar — thin accent stripe
-            mood.accentColor
-                .frame(height: 3)
-                .animation(.easeInOut(duration: 0.6), value: mood.accentColor)
+            // Accent stripe
+            LinearGradient(
+                colors: [mood.darkAccentColor, mood.accentGradientEnd],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(height: 3)
+            .animation(.easeInOut(duration: 0.4), value: mood)
 
-            VStack(alignment: .leading, spacing: 16) {
-                headerSection
-                moodBadge
+            ZStack(alignment: .topTrailing) {
+                // Atmospheric glow
+                atmosphericGlow
 
-                if let route = viewModel.currentRoute, route.hasIncidents {
-                    IncidentBannerView(
-                        incidents: route.incidents,
-                        delayMinutes: route.delayMinutes
-                    )
+                VStack(alignment: .leading, spacing: 16) {
+                    headerSection
+                    moodBadge
+
+                    if let result = viewModel.currentResult {
+                        if result.shouldCollapse {
+                            singleRouteView(result: result)
+                        } else {
+                            RouteListView(result: result) { route in
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                    if expandedRoute?.id == route.id {
+                                        showMap = false
+                                        expandedRoute = nil
+                                    } else {
+                                        expandedRoute = route
+                                        showMap = true
+                                    }
+                                }
+                            }
+                        }
+
+                        if showMap {
+                            ExpandableMapView(
+                                routes: result.routes,
+                                selectedRoute: expandedRoute,
+                                originCoordinate: originCoordinate,
+                                destinationCoordinate: destinationCoordinate,
+                                isExpanded: $showMap
+                            )
+                        }
+                    }
+
+                    footerSection
                 }
-
-                mapSection
-                footerSection
+                .padding(Design.popoverPadding)
             }
-            .padding(Design.popoverPadding)
         }
-        .background(mood.backgroundTint)
+        .background(backgroundGradient)
         .frame(width: Design.popoverWidth)
-        .animation(.easeInOut(duration: 0.5), value: viewModel.currentRoute?.travelTimeMinutes)
+        .animation(.easeInOut(duration: 0.5), value: viewModel.fastestRoute?.travelTimeMinutes)
+        .onAppear { updatePhrase() }
+        .onChange(of: mood) { _ in updatePhrase() }
+    }
+
+    // MARK: - Background
+
+    private var backgroundGradient: some View {
+        LinearGradient(
+            colors: colorScheme == .dark
+                ? [Design.darkBgTop, Design.darkBgBottom]
+                : [Design.lightBgTop, Design.lightBgBottom],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+
+    private var atmosphericGlow: some View {
+        Circle()
+            .fill(
+                RadialGradient(
+                    colors: [mood.darkAccentColor.opacity(colorScheme == .dark ? 0.10 : 0.06), .clear],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: colorScheme == .dark ? 80 : 60
+                )
+            )
+            .frame(width: 160, height: 160)
+            .offset(x: 40, y: -40)
+            .allowsHitTesting(false)
+            .animation(.easeInOut(duration: 0.6), value: mood)
     }
 
     // MARK: - Header
@@ -51,15 +110,14 @@ struct PopoverView: View {
     @ViewBuilder
     private var headerSection: some View {
         HStack(alignment: .top) {
-            // Direction + hero time
             VStack(alignment: .leading, spacing: 4) {
                 directionLabel
 
-                if viewModel.isLoading && viewModel.currentRoute == nil {
+                if viewModel.isLoading && viewModel.currentResult == nil {
                     loadingState
-                } else if viewModel.hasError && viewModel.currentRoute == nil {
+                } else if viewModel.hasError && viewModel.currentResult == nil {
                     errorState
-                } else if let route = viewModel.currentRoute {
+                } else if let route = viewModel.fastestRoute {
                     heroTime(minutes: route.travelTimeMinutes)
                 } else {
                     emptyState
@@ -68,21 +126,20 @@ struct PopoverView: View {
 
             Spacer()
 
-            // ETA column
             VStack(alignment: .trailing, spacing: 4) {
                 Text("ARRIVE BY")
                     .font(Design.labelFont(scale: fontScale))
-                    .foregroundColor(.secondary)
-                    .tracking(0.5)
+                    .foregroundColor(colorScheme == .dark ? .white.opacity(0.45) : .secondary)
+                    .tracking(1.2)
 
-                if let route = viewModel.currentRoute {
+                if let route = viewModel.fastestRoute {
                     Text(route.eta, style: .time)
                         .font(Design.etaValueFont(scale: fontScale))
-                        .foregroundColor(.primary)
+                        .foregroundColor(colorScheme == .dark ? .white.opacity(0.8) : .primary)
                 } else {
                     Text("—:——")
                         .font(Design.etaValueFont(scale: fontScale))
-                        .foregroundColor(.secondary.opacity(0.5))
+                        .foregroundColor(colorScheme == .dark ? .white.opacity(0.25) : .secondary.opacity(0.5))
                 }
             }
             .padding(.top, 2)
@@ -94,25 +151,26 @@ struct PopoverView: View {
         HStack(spacing: 5) {
             Image(systemName: viewModel.direction == .toWork ? "building.2" : "house")
                 .font(.system(size: 10, weight: .semibold))
-                .foregroundColor(mood.accentColor)
+                .foregroundColor(mood.darkAccentColor)
 
-            Text(viewModel.direction.displayName.uppercased())
+            Text(viewModel.direction == .toWork ? "TO WORK" : "TO HOME")
                 .font(Design.labelFont(scale: fontScale))
-                .foregroundColor(.secondary)
-                .tracking(1.0)
+                .foregroundColor(colorScheme == .dark ? .white.opacity(0.45) : .secondary)
+                .tracking(1.2)
         }
     }
 
     @ViewBuilder
     private func heroTime(minutes: Int) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 2) {
+        HStack(alignment: .firstTextBaseline, spacing: 4) {
             Text("\(minutes)")
                 .font(Design.heroTimeFont(scale: fontScale))
-                .foregroundColor(.primary)
+                .foregroundColor(colorScheme == .dark ? .white : Design.darkText)
+                .contentTransition(.numericText())
 
             Text("min")
                 .font(Design.heroUnitFont(scale: fontScale))
-                .foregroundColor(.secondary)
+                .foregroundColor(colorScheme == .dark ? .white.opacity(0.5) : .secondary)
         }
     }
 
@@ -120,44 +178,92 @@ struct PopoverView: View {
 
     @ViewBuilder
     private var moodBadge: some View {
-        if viewModel.currentRoute != nil {
-            HStack(spacing: 6) {
-                Text(mood.moodEmoji)
-                    .font(.system(size: 13))
+        if viewModel.currentResult != nil {
+            HStack(spacing: 8) {
+                PulseDotView(mood: mood, size: 10)
 
-                Text(mood.moodPhrase)
+                Text(moodPhrase)
                     .font(Design.moodFont(scale: fontScale))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(colorScheme == .dark ? mood.darkAccentColor : mood.lightTextColor)
 
-                if let route = viewModel.currentRoute, route.delayMinutes > 0 {
+                if let route = viewModel.fastestRoute, route.delayMinutes > 0 {
                     Text("· +\(route.delayMinutes) min")
                         .font(Design.moodFont(scale: fontScale))
-                        .foregroundColor(mood.accentColor)
+                        .foregroundColor(colorScheme == .dark ? mood.darkAccentColor : mood.lightTextColor)
                 }
             }
-            .padding(.horizontal, 10)
+            .padding(.horizontal, 14)
             .padding(.vertical, 6)
-            .background(mood.accentColor.opacity(0.08))
+            .background(mood.darkAccentColor.opacity(0.08))
+            .overlay(
+                Capsule()
+                    .strokeBorder(mood.darkAccentColor.opacity(0.15), lineWidth: 1)
+            )
             .clipShape(Capsule())
         }
     }
 
-    // MARK: - Map
+    // MARK: - Single Route (Smart Collapse)
 
     @ViewBuilder
-    private var mapSection: some View {
-        if let route = viewModel.currentRoute, !route.routePolyline.isEmpty,
-           let home = viewModel.settings.homeCoordinate,
-           let work = viewModel.settings.workCoordinate {
-            MapPreviewView(
-                routePolyline: route.routePolyline,
-                originCoordinate: viewModel.direction == .toWork ? home : work,
-                destinationCoordinate: viewModel.direction == .toWork ? work : home,
-                incidents: route.incidents
-            )
-            .frame(height: Design.mapHeight)
-            .clipShape(RoundedRectangle(cornerRadius: Design.smallCornerRadius))
-            .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 2)
+    private func singleRouteView(result: RouteResult) -> some View {
+        if let route = result.fastestRoute {
+            Button(action: {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                    expandedRoute = route
+                    showMap.toggle()
+                }
+            }) {
+                VStack(spacing: 0) {
+                    VStack(spacing: 6) {
+                        StylizedRouteLineView(
+                            route: route,
+                            fastestTravelTime: route.travelTime,
+                            isFastest: true
+                        )
+                        .frame(height: 20)
+
+                        HStack {
+                            Text(viewModel.direction == .toWork ? "Home" : "Work")
+                                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .black.opacity(0.3))
+                                .textCase(.uppercase)
+
+                            Spacer()
+
+                            Text("\(route.name) · \(String(format: "%.1f", route.distance / 1609.34)) mi")
+                                .font(.system(size: 10, design: .rounded))
+                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.4) : .black.opacity(0.3))
+
+                            Spacer()
+
+                            Text(viewModel.direction == .toWork ? "Work" : "Home")
+                                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .black.opacity(0.3))
+                                .textCase(.uppercase)
+                        }
+                    }
+                    .padding(14)
+
+                    Divider().opacity(colorScheme == .dark ? 0.06 : 0.08)
+
+                    Text("Tap to see on map")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundColor(colorScheme == .dark ? .white.opacity(0.2) : .black.opacity(0.2))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                }
+                .background(
+                    RoundedRectangle(cornerRadius: Design.routeCardCornerRadius)
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.02) : Color.black.opacity(0.02))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: Design.routeCardCornerRadius)
+                        .strokeBorder(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.05), lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: Design.routeCardCornerRadius))
+            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -175,7 +281,7 @@ struct PopoverView: View {
             if let updateText = viewModel.timeSinceUpdate {
                 Text(updateText)
                     .font(Design.captionFont(scale: fontScale))
-                    .foregroundColor(.secondary.opacity(0.7))
+                    .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.7))
             }
 
             if viewModel.hasError {
@@ -207,7 +313,7 @@ struct PopoverView: View {
             Button(action: { showQuickSettings.toggle() }) {
                 Image(systemName: "ellipsis.circle")
                     .font(.system(size: 14))
-                    .foregroundColor(.secondary.opacity(0.6))
+                    .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.6))
             }
             .buttonStyle(.plain)
             .contentShape(Rectangle())
@@ -217,7 +323,7 @@ struct PopoverView: View {
         }
     }
 
-    // MARK: - Empty / Loading / Error States
+    // MARK: - Empty / Loading / Error
 
     @ViewBuilder
     private var loadingState: some View {
@@ -225,14 +331,11 @@ struct PopoverView: View {
             HStack(spacing: 8) {
                 Image(systemName: EmptyState.loading.icon)
                     .font(.system(size: 20))
-                    .foregroundColor(.secondary)
-                Text(EmptyState.loading.title)
+                    .foregroundColor(colorScheme == .dark ? .white.opacity(0.4) : .secondary)
+                Text(mood.randomPhrase())
                     .font(.system(size: 16, weight: .medium, design: .rounded))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(colorScheme == .dark ? .white.opacity(0.5) : .secondary)
             }
-            Text(EmptyState.loading.subtitle)
-                .font(Design.captionFont(scale: fontScale))
-                .foregroundColor(.secondary.opacity(0.6))
         }
     }
 
@@ -243,13 +346,13 @@ struct PopoverView: View {
                 Image(systemName: EmptyState.error.icon)
                     .font(.system(size: 20))
                     .foregroundColor(.orange)
-                Text(EmptyState.error.title)
+                Text(EmptyState.errorPhrases.randomElement() ?? EmptyState.error.title)
                     .font(.system(size: 16, weight: .medium, design: .rounded))
-                    .foregroundColor(.primary)
+                    .foregroundColor(colorScheme == .dark ? .white : .primary)
             }
-            Text(EmptyState.error.subtitle)
+            Text("Will retry automatically")
                 .font(Design.captionFont(scale: fontScale))
-                .foregroundColor(.secondary.opacity(0.6))
+                .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.6))
         }
     }
 
@@ -259,14 +362,32 @@ struct PopoverView: View {
             HStack(spacing: 8) {
                 Image(systemName: EmptyState.noRoute.icon)
                     .font(.system(size: 20))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(colorScheme == .dark ? .white.opacity(0.4) : .secondary)
                 Text(EmptyState.noRoute.title)
                     .font(.system(size: 16, weight: .medium, design: .rounded))
-                    .foregroundColor(.primary)
+                    .foregroundColor(colorScheme == .dark ? .white : .primary)
             }
             Text(EmptyState.noRoute.subtitle)
                 .font(Design.captionFont(scale: fontScale))
-                .foregroundColor(.secondary.opacity(0.6))
+                .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.6))
         }
+    }
+
+    // MARK: - Helpers
+
+    private var originCoordinate: Coordinate {
+        let home = viewModel.settings.homeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        let work = viewModel.settings.workCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        return viewModel.direction == .toWork ? home : work
+    }
+
+    private var destinationCoordinate: Coordinate {
+        let home = viewModel.settings.homeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        let work = viewModel.settings.workCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        return viewModel.direction == .toWork ? work : home
+    }
+
+    private func updatePhrase() {
+        moodPhrase = mood.randomPhrase()
     }
 }
