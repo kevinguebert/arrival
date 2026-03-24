@@ -18,5 +18,5 @@ enum TrafficProviderError: Error, LocalizedError {
 }
 
 protocol TrafficProvider {
-    func fetchRoute(from origin: Coordinate, to destination: Coordinate) async throws -> RouteResult
+    func fetchRoutes(from origin: Coordinate, to destination: Coordinate) async throws -> RouteResult
 }
