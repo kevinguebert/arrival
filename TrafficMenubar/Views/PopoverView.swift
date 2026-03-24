@@ -315,6 +315,17 @@ struct PopoverView: View {
                 .clipShape(Capsule())
             }
 
+            if viewModel.currentResult != nil {
+                Button(action: openInAppleMaps) {
+                    Image(systemName: "arrow.triangle.turn.up.right.circle")
+                        .font(.system(size: 14))
+                        .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.6))
+                }
+                .buttonStyle(.plain)
+                .contentShape(Rectangle())
+                .help("Open in Apple Maps")
+            }
+
             Spacer()
 
             Button(action: { showQuickSettings.toggle() }) {
@@ -396,5 +407,16 @@ struct PopoverView: View {
 
     private func updatePhrase() {
         moodPhrase = mood.randomPhrase()
+    }
+
+    private func openInAppleMaps() {
+        let origin = originCoordinate
+        let destination = destinationCoordinate
+        guard origin.latitude != 0, destination.latitude != 0 else { return }
+
+        let urlString = "maps://?saddr=\(origin.latitude),\(origin.longitude)&daddr=\(destination.latitude),\(destination.longitude)&dirflg=d"
+        if let url = URL(string: urlString) {
+            NSWorkspace.shared.open(url)
+        }
     }
 }
