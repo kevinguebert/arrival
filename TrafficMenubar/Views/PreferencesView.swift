@@ -8,76 +8,156 @@ struct PreferencesView: View {
     @State private var workGeocodingError: String?
     @State private var isGeocodingHome = false
     @State private var isGeocodingWork = false
+    @State private var selectedTab: SettingsTab = .addresses
+
+    enum SettingsTab {
+        case addresses, schedule, general
+    }
 
     private let geocoder = GeocodingService()
 
     var body: some View {
-        TabView {
-            addressesTab
-                .tabItem { Label("Addresses", systemImage: "mappin.and.ellipse") }
+        VStack(spacing: 0) {
+            // Accent stripe
+            LinearGradient(
+                colors: [TrafficMood.clear.darkAccentColor, TrafficMood.clear.accentGradientEnd],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(height: 3)
 
-            scheduleTab
-                .tabItem { Label("Schedule", systemImage: "clock") }
+            // Custom tab bar
+            HStack(spacing: 0) {
+                tabButton("Addresses", icon: "mappin.and.ellipse", tab: .addresses)
+                tabButton("Schedule", icon: "clock", tab: .schedule)
+                tabButton("General", icon: "gearshape", tab: .general)
+            }
+            .padding(.horizontal, 20)
+            .overlay(
+                Rectangle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(height: 1),
+                alignment: .bottom
+            )
 
-            generalTab
-                .tabItem { Label("General", systemImage: "gearshape") }
+            // Tab content
+            Group {
+                switch selectedTab {
+                case .addresses: addressesTab
+                case .schedule:  scheduleTab
+                case .general:   generalTab
+                }
+            }
+            .padding(20)
         }
-        .frame(width: 420, height: 320)
-        .padding()
+        .background(
+            LinearGradient(
+                colors: [Design.darkBgTop, Design.darkBgBottom],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
+        .frame(width: 420, height: 360)
+    }
+
+    @ViewBuilder
+    private func tabButton(_ label: String, icon: String, tab: SettingsTab) -> some View {
+        Button(action: { selectedTab = tab }) {
+            HStack(spacing: 5) {
+                Image(systemName: icon)
+                    .font(.system(size: 11))
+                Text(label)
+                    .font(.system(size: 13, weight: selectedTab == tab ? .semibold : .medium, design: .rounded))
+            }
+            .foregroundColor(selectedTab == tab ? TrafficMood.clear.darkAccentColor : .white.opacity(0.45))
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .overlay(
+                Rectangle()
+                    .fill(selectedTab == tab ? TrafficMood.clear.darkAccentColor : Color.clear)
+                    .frame(height: 2),
+                alignment: .bottom
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder
     private var addressesTab: some View {
-        Form {
-            Section("Home Address") {
-                TextField("Enter home address", text: $settings.homeAddress)
-                    .onSubmit { geocodeHome() }
+        VStack(alignment: .leading, spacing: 16) {
+            darkTextField(
+                label: "Home Address",
+                text: $settings.homeAddress,
+                isGeocoding: isGeocodingHome,
+                error: homeGeocodingError,
+                isValid: settings.homeCoordinate != nil,
+                onSubmit: geocodeHome
+            )
 
-                HStack {
-                    if isGeocodingHome {
-                        ProgressView().controlSize(.small)
-                        Text("Looking up address...")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    } else if let error = homeGeocodingError {
-                        Image(systemName: "exclamationmark.triangle")
-                            .foregroundColor(.orange)
-                        Text(error).font(.caption).foregroundColor(.orange)
-                    } else if settings.homeCoordinate != nil {
-                        Image(systemName: "checkmark.circle")
-                            .foregroundColor(.green)
-                        Text("Address found").font(.caption).foregroundColor(.secondary)
-                    }
-                }
-            }
+            darkTextField(
+                label: "Work Address",
+                text: $settings.workAddress,
+                isGeocoding: isGeocodingWork,
+                error: workGeocodingError,
+                isValid: settings.workCoordinate != nil,
+                onSubmit: geocodeWork
+            )
 
-            Section("Work Address") {
-                TextField("Enter work address", text: $settings.workAddress)
-                    .onSubmit { geocodeWork() }
+            Divider().opacity(0.06)
 
-                HStack {
-                    if isGeocodingWork {
-                        ProgressView().controlSize(.small)
-                        Text("Looking up address...")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    } else if let error = workGeocodingError {
-                        Image(systemName: "exclamationmark.triangle")
-                            .foregroundColor(.orange)
-                        Text(error).font(.caption).foregroundColor(.orange)
-                    } else if settings.workCoordinate != nil {
-                        Image(systemName: "checkmark.circle")
-                            .foregroundColor(.green)
-                        Text("Address found").font(.caption).foregroundColor(.secondary)
-                    }
-                }
-            }
+            Text("Addresses are geocoded to coordinates for routing. Press Return to validate.")
+                .font(.system(size: 11, design: .rounded))
+                .foregroundColor(.white.opacity(0.35))
+                .lineSpacing(2)
 
-            Text("Press Return after entering an address to look it up.")
-                .font(.caption)
-                .foregroundColor(.secondary)
+            Spacer()
         }
-        .padding()
+    }
+
+    @ViewBuilder
+    private func darkTextField(
+        label: String,
+        text: Binding<String>,
+        isGeocoding: Bool,
+        error: String?,
+        isValid: Bool,
+        onSubmit: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(label.uppercased())
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                .foregroundColor(.white.opacity(0.5))
+                .tracking(0.5)
+
+            HStack(spacing: 8) {
+                TextField("", text: text)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 13, design: .rounded))
+                    .foregroundColor(.white.opacity(0.7))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color.white.opacity(0.06))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .onSubmit(onSubmit)
+
+                if isGeocoding {
+                    ProgressView()
+                        .controlSize(.small)
+                        .scaleEffect(0.7)
+                } else if let error = error {
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundColor(.orange)
+                        .help(error)
+                } else if isValid {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(TrafficMood.clear.darkAccentColor)
+                }
+            }
+        }
     }
 
     private func timeSlots() -> [(label: String, hour: Int, minute: Int)] {
@@ -94,75 +174,150 @@ struct PreferencesView: View {
 
     @ViewBuilder
     private var scheduleTab: some View {
-        Form {
-            Section("Morning Commute") {
-                HStack {
-                    Text("From")
-                    Picker("", selection: Binding(
-                        get: { timeTag(hour: settings.morningStartHour, minute: settings.morningStartMinute) },
-                        set: { settings.morningStartHour = $0 / 60; settings.morningStartMinute = $0 % 60 }
-                    )) {
-                        ForEach(timeSlots(), id: \.hour) { slot in
-                            Text(slot.label).tag(timeTag(hour: slot.hour, minute: slot.minute))
-                        }
-                    }.frame(width: 80)
+        VStack(alignment: .leading, spacing: 20) {
+            // Morning commute
+            VStack(alignment: .leading, spacing: 8) {
+                Text("MORNING COMMUTE")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white.opacity(0.5))
+                    .tracking(0.5)
+                HStack(spacing: 10) {
+                    darkTimePicker(
+                        selection: Binding(
+                            get: { timeTag(hour: settings.morningStartHour, minute: settings.morningStartMinute) },
+                            set: { settings.morningStartHour = $0 / 60; settings.morningStartMinute = $0 % 60 }
+                        )
+                    )
                     Text("to")
-                    Picker("", selection: Binding(
-                        get: { timeTag(hour: settings.morningEndHour, minute: settings.morningEndMinute) },
-                        set: { settings.morningEndHour = $0 / 60; settings.morningEndMinute = $0 % 60 }
-                    )) {
-                        ForEach(timeSlots(), id: \.hour) { slot in
-                            Text(slot.label).tag(timeTag(hour: slot.hour, minute: slot.minute))
-                        }
-                    }.frame(width: 80)
+                        .font(.system(size: 12, design: .rounded))
+                        .foregroundColor(.white.opacity(0.3))
+                    darkTimePicker(
+                        selection: Binding(
+                            get: { timeTag(hour: settings.morningEndHour, minute: settings.morningEndMinute) },
+                            set: { settings.morningEndHour = $0 / 60; settings.morningEndMinute = $0 % 60 }
+                        )
+                    )
                 }
             }
 
-            Section("Evening Commute") {
-                HStack {
-                    Text("From")
-                    Picker("", selection: Binding(
-                        get: { timeTag(hour: settings.eveningStartHour, minute: settings.eveningStartMinute) },
-                        set: { settings.eveningStartHour = $0 / 60; settings.eveningStartMinute = $0 % 60 }
-                    )) {
-                        ForEach(timeSlots(), id: \.hour) { slot in
-                            Text(slot.label).tag(timeTag(hour: slot.hour, minute: slot.minute))
-                        }
-                    }.frame(width: 80)
+            // Evening commute
+            VStack(alignment: .leading, spacing: 8) {
+                Text("EVENING COMMUTE")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white.opacity(0.5))
+                    .tracking(0.5)
+                HStack(spacing: 10) {
+                    darkTimePicker(
+                        selection: Binding(
+                            get: { timeTag(hour: settings.eveningStartHour, minute: settings.eveningStartMinute) },
+                            set: { settings.eveningStartHour = $0 / 60; settings.eveningStartMinute = $0 % 60 }
+                        )
+                    )
                     Text("to")
-                    Picker("", selection: Binding(
-                        get: { timeTag(hour: settings.eveningEndHour, minute: settings.eveningEndMinute) },
-                        set: { settings.eveningEndHour = $0 / 60; settings.eveningEndMinute = $0 % 60 }
-                    )) {
-                        ForEach(timeSlots(), id: \.hour) { slot in
-                            Text(slot.label).tag(timeTag(hour: slot.hour, minute: slot.minute))
-                        }
-                    }.frame(width: 80)
+                        .font(.system(size: 12, design: .rounded))
+                        .foregroundColor(.white.opacity(0.3))
+                    darkTimePicker(
+                        selection: Binding(
+                            get: { timeTag(hour: settings.eveningEndHour, minute: settings.eveningEndMinute) },
+                            set: { settings.eveningEndHour = $0 / 60; settings.eveningEndMinute = $0 % 60 }
+                        )
+                    )
                 }
             }
 
-            Section("Polling Frequency") {
-                Picker("During commute hours", selection: $settings.commutePollingInterval) {
-                    Text("Every 1 minute").tag(TimeInterval(60))
-                    Text("Every 3 minutes").tag(TimeInterval(180))
-                    Text("Every 5 minutes").tag(TimeInterval(300))
-                    Text("Every 10 minutes").tag(TimeInterval(600))
-                }
-                Picker("Outside commute hours", selection: $settings.offPeakPollingInterval) {
-                    Text("Every 5 minutes").tag(TimeInterval(300))
-                    Text("Every 10 minutes").tag(TimeInterval(600))
-                    Text("Every 15 minutes").tag(TimeInterval(900))
-                    Text("Every 30 minutes").tag(TimeInterval(1800))
+            Divider().opacity(0.06)
+
+            // Polling frequency
+            VStack(alignment: .leading, spacing: 12) {
+                Text("POLLING FREQUENCY")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white.opacity(0.5))
+                    .tracking(0.5)
+
+                pollingRow(
+                    label: "During commute",
+                    selection: $settings.commutePollingInterval,
+                    options: [
+                        (label: "1m", value: TimeInterval(60)),
+                        (label: "3m", value: TimeInterval(180)),
+                        (label: "5m", value: TimeInterval(300)),
+                        (label: "10m", value: TimeInterval(600)),
+                    ]
+                )
+                pollingRow(
+                    label: "Off-peak",
+                    selection: $settings.offPeakPollingInterval,
+                    options: [
+                        (label: "5m", value: TimeInterval(300)),
+                        (label: "10m", value: TimeInterval(600)),
+                        (label: "15m", value: TimeInterval(900)),
+                        (label: "30m", value: TimeInterval(1800)),
+                    ]
+                )
+            }
+
+            Spacer()
+        }
+    }
+
+    @ViewBuilder
+    private func darkTimePicker(selection: Binding<Int>) -> some View {
+        Picker("", selection: selection) {
+            ForEach(timeSlots(), id: \.hour) { slot in
+                Text(slot.label).tag(timeTag(hour: slot.hour, minute: slot.minute))
+            }
+        }
+        .labelsHidden()
+        .frame(width: 80)
+    }
+
+    @ViewBuilder
+    private func pollingRow(
+        label: String,
+        selection: Binding<TimeInterval>,
+        options: [(label: String, value: TimeInterval)]
+    ) -> some View {
+        HStack {
+            Text(label)
+                .font(.system(size: 13, design: .rounded))
+                .foregroundColor(.white.opacity(0.7))
+            Spacer()
+            HStack(spacing: 4) {
+                ForEach(options, id: \.value) { option in
+                    Button(action: { selection.wrappedValue = option.value }) {
+                        Text(option.label)
+                            .font(.system(size: 12, weight: selection.wrappedValue == option.value ? .semibold : .regular, design: .rounded))
+                            .foregroundColor(selection.wrappedValue == option.value
+                                ? TrafficMood.clear.darkAccentColor
+                                : .white.opacity(0.4))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(selection.wrappedValue == option.value
+                                ? TrafficMood.clear.darkAccentColor.opacity(0.15)
+                                : Color.white.opacity(0.06))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .strokeBorder(selection.wrappedValue == option.value
+                                        ? TrafficMood.clear.darkAccentColor.opacity(0.3)
+                                        : Color.white.opacity(0.1), lineWidth: 1)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
-        .padding()
     }
 
     @ViewBuilder
     private var generalTab: some View {
-        Form {
-            Section("Startup") {
+        VStack(alignment: .leading, spacing: 16) {
+            // Startup
+            VStack(alignment: .leading, spacing: 8) {
+                Text("STARTUP")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white.opacity(0.5))
+                    .tracking(0.5)
                 Toggle("Launch at login", isOn: Binding(
                     get: { settings.launchAtLogin },
                     set: { newValue in
@@ -170,37 +325,70 @@ struct PreferencesView: View {
                         updateLaunchAtLogin(newValue)
                     }
                 ))
+                .font(.system(size: 13, design: .rounded))
+                .foregroundColor(.white.opacity(0.7))
+                .tint(TrafficMood.clear.darkAccentColor)
             }
 
-            Section("Location") {
+            Divider().opacity(0.06)
+
+            // Location
+            VStack(alignment: .leading, spacing: 8) {
+                Text("LOCATION")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white.opacity(0.5))
+                    .tracking(0.5)
                 Text("Location access enables automatic direction detection (home vs. work). Without it, direction is based on time of day.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.system(size: 11, design: .rounded))
+                    .foregroundColor(.white.opacity(0.35))
+                    .lineSpacing(2)
             }
 
-            Section("Traffic Provider") {
-                Picker("Provider", selection: .constant("mapkit")) {
-                    Text("Apple Maps").tag("mapkit")
+            Divider().opacity(0.06)
+
+            // Traffic Provider
+            VStack(alignment: .leading, spacing: 8) {
+                Text("TRAFFIC PROVIDER")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white.opacity(0.5))
+                    .tracking(0.5)
+                HStack {
+                    Text("Apple Maps")
+                        .font(.system(size: 13, design: .rounded))
+                        .foregroundColor(.white.opacity(0.7))
+                    Spacer()
+                    Text("More coming soon")
+                        .font(.system(size: 11, design: .rounded))
+                        .foregroundColor(.white.opacity(0.25))
                 }
-                .disabled(true)
-                Text("More providers coming soon.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
 
-            Section("Developer") {
+            Divider().opacity(0.06)
+
+            // Developer
+            VStack(alignment: .leading, spacing: 8) {
+                Text("DEVELOPER")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white.opacity(0.5))
+                    .tracking(0.5)
                 Toggle("Developer Mode", isOn: $settings.developerModeEnabled)
+                    .font(.system(size: 13, design: .rounded))
+                    .foregroundColor(.white.opacity(0.7))
+                    .tint(.orange)
                 if settings.developerModeEnabled {
                     Button("Open Developer Settings") {
                         openDevWindow()
                     }
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundColor(.orange)
                 }
                 Text("Enables mock data controls for testing UI states.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.system(size: 11, design: .rounded))
+                    .foregroundColor(.white.opacity(0.25))
             }
+
+            Spacer()
         }
-        .padding()
     }
 
     private func geocodeHome() {
