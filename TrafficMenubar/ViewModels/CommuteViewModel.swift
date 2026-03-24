@@ -9,10 +9,11 @@ final class CommuteViewModel: ObservableObject {
     @Published var consecutiveFailures = 0
     @Published var lastUpdated: Date?
     @Published var directionOverride: CommuteDirection?
+    @Published var isDevMode = false
 
     let settings: SettingsStore
     let locationManager: LocationManager
-    private let provider: TrafficProvider
+    private(set) var provider: TrafficProvider
     private var scheduler: PollScheduler?
 
     init(settings: SettingsStore = .shared,
@@ -47,13 +48,33 @@ final class CommuteViewModel: ObservableObject {
         Task { await fetchRoute() }
     }
 
+    func enableDevMode(mockProvider: MockTrafficProvider) {
+        stopPolling()
+        provider = mockProvider
+        isDevMode = true
+    }
+
+    func disableDevMode() {
+        provider = MapKitProvider()
+        isDevMode = false
+        startPolling()
+    }
+
+    func updateFromMock(route: RouteResult?, direction: CommuteDirection, consecutiveFailures: Int, isLoading: Bool) {
+        self.currentRoute = route
+        self.direction = direction
+        self.consecutiveFailures = consecutiveFailures
+        self.isLoading = isLoading
+        self.lastUpdated = route != nil ? Date() : nil
+    }
+
     var menuBarText: String {
         guard let route = currentRoute else {
-            return "--m"
+            return "—m"
         }
         let minutes = route.travelTimeMinutes
-        let warning = route.hasIncidents ? " ⚠" : ""
-        return "\(minutes)m\(warning)"
+        let mood = TrafficMood(delayMinutes: route.delayMinutes, hasIncidents: route.hasIncidents)
+        return "\(minutes)m\(mood.menuBarSuffix)"
     }
 
     var hasError: Bool {

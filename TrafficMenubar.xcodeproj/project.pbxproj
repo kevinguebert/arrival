@@ -1,0 +1,406 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		161AFCE8BC7DF9EBEF561727 /* CommuteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C66FCC8B3661F91501E281F /* CommuteViewModel.swift */; };
+		219057907F75155D78C12179 /* RouteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505077E8682164B1048389A5 /* RouteResult.swift */; };
+		22972A8094D146CCB9596726 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EB5C002DD93D249231A279 /* SettingsStore.swift */; };
+		44584B5D0D28CDC3FD4BA484 /* GeocodingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1917A5406C85706393C904A8 /* GeocodingService.swift */; };
+		49FDE2C323772A87454B2B5D /* IncidentBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303CA47BEBC5AE2BD5F1AA29 /* IncidentBannerView.swift */; };
+		4AE9F76331E0C28E69414E05 /* MapPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB547F409FDDD0FC0C1040F0 /* MapPreviewView.swift */; };
+		52A6A36CC4A3E0F5AB7A7F97 /* TrafficProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADFC7EADD6310B046A1910C /* TrafficProvider.swift */; };
+		80CCEF8D8F53F4AE5CE7BD87 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0D33712B372A8C879AF55E /* LocationManager.swift */; };
+		92F914BBFEE9B91B384AC3BA /* QuickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB89605ABFC7388B77D8C430 /* QuickSettingsView.swift */; };
+		9D1F8D292CAE234A54C22341 /* MapKitProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131D8CF56933FFD42186B44B /* MapKitProvider.swift */; };
+		FA3C8D1E2B4F9A0761E5C234 /* MockTrafficProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7D2E4F1C9A3B8052F6D109 /* MockTrafficProvider.swift */; };
+		9DD29004792E1F788655D5FA /* PollScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84C0EB6D75FCD3B12B51590 /* PollScheduler.swift */; };
+		AAAA3DC516F5C958A84C25F9 /* TrafficMenubarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B3AC016D5A9CA662E8F609 /* TrafficMenubarApp.swift */; };
+		E454D3232B0CFA4CF6DF0048 /* CommuteDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AEBDD08F70ED68C66A25C4B /* CommuteDirection.swift */; };
+		E881CD3E0E477FC45229F7F6 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441453EB056314E1536D4E42 /* PreferencesView.swift */; };
+		EF2CB5C27111684053448ADD /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFFB5BD02390AE443708965 /* PopoverView.swift */; };
+		A1B2C3D4E5F60718293A4B5C /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6E7F8091A2B3C4D5E6F7081 /* DesignSystem.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0ADFC7EADD6310B046A1910C /* TrafficProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficProvider.swift; sourceTree = "<group>"; };
+		12EB5C002DD93D249231A279 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		131D8CF56933FFD42186B44B /* MapKitProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapKitProvider.swift; sourceTree = "<group>"; };
+		BA7D2E4F1C9A3B8052F6D109 /* MockTrafficProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTrafficProvider.swift; sourceTree = "<group>"; };
+		1917A5406C85706393C904A8 /* GeocodingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocodingService.swift; sourceTree = "<group>"; };
+		2AEBDD08F70ED68C66A25C4B /* CommuteDirection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommuteDirection.swift; sourceTree = "<group>"; };
+		303CA47BEBC5AE2BD5F1AA29 /* IncidentBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncidentBannerView.swift; sourceTree = "<group>"; };
+		35A610342063C60610D2E1F8 /* TrafficMenubar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrafficMenubar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C66FCC8B3661F91501E281F /* CommuteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommuteViewModel.swift; sourceTree = "<group>"; };
+		441453EB056314E1536D4E42 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		4EFFB5BD02390AE443708965 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
+		505077E8682164B1048389A5 /* RouteResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteResult.swift; sourceTree = "<group>"; };
+		B4B3AC016D5A9CA662E8F609 /* TrafficMenubarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficMenubarApp.swift; sourceTree = "<group>"; };
+		B84C0EB6D75FCD3B12B51590 /* PollScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollScheduler.swift; sourceTree = "<group>"; };
+		BEA9B90622C972DC78BC34ED /* TrafficMenubar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TrafficMenubar.entitlements; sourceTree = "<group>"; };
+		CF0D33712B372A8C879AF55E /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		EB547F409FDDD0FC0C1040F0 /* MapPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPreviewView.swift; sourceTree = "<group>"; };
+		FB89605ABFC7388B77D8C430 /* QuickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSettingsView.swift; sourceTree = "<group>"; };
+		D6E7F8091A2B3C4D5E6F7081 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0837E9FCFBDA92B0703AD3FC /* Providers */ = {
+			isa = PBXGroup;
+			children = (
+				131D8CF56933FFD42186B44B /* MapKitProvider.swift */,
+				BA7D2E4F1C9A3B8052F6D109 /* MockTrafficProvider.swift */,
+				0ADFC7EADD6310B046A1910C /* TrafficProvider.swift */,
+			);
+			path = Providers;
+			sourceTree = "<group>";
+		};
+		2484DAFD47F8D7061FA350CB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D6E7F8091A2B3C4D5E6F7081 /* DesignSystem.swift */,
+				303CA47BEBC5AE2BD5F1AA29 /* IncidentBannerView.swift */,
+				EB547F409FDDD0FC0C1040F0 /* MapPreviewView.swift */,
+				4EFFB5BD02390AE443708965 /* PopoverView.swift */,
+				441453EB056314E1536D4E42 /* PreferencesView.swift */,
+				FB89605ABFC7388B77D8C430 /* QuickSettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		292A2AADEFF84ED8404A4E43 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				3C66FCC8B3661F91501E281F /* CommuteViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		4A9879223518EF848468298C /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1917A5406C85706393C904A8 /* GeocodingService.swift */,
+				CF0D33712B372A8C879AF55E /* LocationManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		63146542A254E5368D6F7C39 = {
+			isa = PBXGroup;
+			children = (
+				CB4F1DFD9E156CA2BF2E4BA1 /* TrafficMenubar */,
+				703349EB0655EC7121686A79 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		695034175620289D4A6A15F1 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B84C0EB6D75FCD3B12B51590 /* PollScheduler.swift */,
+				12EB5C002DD93D249231A279 /* SettingsStore.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		703349EB0655EC7121686A79 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				35A610342063C60610D2E1F8 /* TrafficMenubar.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		89A1FAFB2FD8274CBFA9BE64 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				2AEBDD08F70ED68C66A25C4B /* CommuteDirection.swift */,
+				505077E8682164B1048389A5 /* RouteResult.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		CB4F1DFD9E156CA2BF2E4BA1 /* TrafficMenubar */ = {
+			isa = PBXGroup;
+			children = (
+				BEA9B90622C972DC78BC34ED /* TrafficMenubar.entitlements */,
+				B4B3AC016D5A9CA662E8F609 /* TrafficMenubarApp.swift */,
+				89A1FAFB2FD8274CBFA9BE64 /* Models */,
+				0837E9FCFBDA92B0703AD3FC /* Providers */,
+				4A9879223518EF848468298C /* Services */,
+				695034175620289D4A6A15F1 /* Utilities */,
+				292A2AADEFF84ED8404A4E43 /* ViewModels */,
+				2484DAFD47F8D7061FA350CB /* Views */,
+			);
+			path = TrafficMenubar;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2777564ADC3FE931F08FB096 /* TrafficMenubar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A81618D9D74327F45340FE81 /* Build configuration list for PBXNativeTarget "TrafficMenubar" */;
+			buildPhases = (
+				41B7DCC917B0A9CD984DC4C8 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TrafficMenubar;
+			packageProductDependencies = (
+			);
+			productName = TrafficMenubar;
+			productReference = 35A610342063C60610D2E1F8 /* TrafficMenubar.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C66EA8BE91E6C3C9DEA7C166 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 842EEBC84B62F7ABAD698750 /* Build configuration list for PBXProject "TrafficMenubar" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 63146542A254E5368D6F7C39;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 703349EB0655EC7121686A79 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2777564ADC3FE931F08FB096 /* TrafficMenubar */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		41B7DCC917B0A9CD984DC4C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E454D3232B0CFA4CF6DF0048 /* CommuteDirection.swift in Sources */,
+				161AFCE8BC7DF9EBEF561727 /* CommuteViewModel.swift in Sources */,
+				44584B5D0D28CDC3FD4BA484 /* GeocodingService.swift in Sources */,
+				49FDE2C323772A87454B2B5D /* IncidentBannerView.swift in Sources */,
+				80CCEF8D8F53F4AE5CE7BD87 /* LocationManager.swift in Sources */,
+				9D1F8D292CAE234A54C22341 /* MapKitProvider.swift in Sources */,
+				FA3C8D1E2B4F9A0761E5C234 /* MockTrafficProvider.swift in Sources */,
+				4AE9F76331E0C28E69414E05 /* MapPreviewView.swift in Sources */,
+				9DD29004792E1F788655D5FA /* PollScheduler.swift in Sources */,
+				EF2CB5C27111684053448ADD /* PopoverView.swift in Sources */,
+				E881CD3E0E477FC45229F7F6 /* PreferencesView.swift in Sources */,
+				92F914BBFEE9B91B384AC3BA /* QuickSettingsView.swift in Sources */,
+				219057907F75155D78C12179 /* RouteResult.swift in Sources */,
+				22972A8094D146CCB9596726 /* SettingsStore.swift in Sources */,
+				AAAA3DC516F5C958A84C25F9 /* TrafficMenubarApp.swift in Sources */,
+				52A6A36CC4A3E0F5AB7A7F97 /* TrafficProvider.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5C /* DesignSystem.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		66E4F608DA8864D8A35D5544 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TrafficMenubar/TrafficMenubar.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Traffic Menubar uses your location to detect whether you're near home or work to show the right commute direction.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.trafficmenubar.app;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		7A1177741E5C092C013E22FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		7BBF85914FF09F26ED32E230 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		D0F22C947E53C86BD2496ED4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TrafficMenubar/TrafficMenubar.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Traffic Menubar uses your location to detect whether you're near home or work to show the right commute direction.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.trafficmenubar.app;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		842EEBC84B62F7ABAD698750 /* Build configuration list for PBXProject "TrafficMenubar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7BBF85914FF09F26ED32E230 /* Debug */,
+				7A1177741E5C092C013E22FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A81618D9D74327F45340FE81 /* Build configuration list for PBXNativeTarget "TrafficMenubar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0F22C947E53C86BD2496ED4 /* Debug */,
+				66E4F608DA8864D8A35D5544 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C66EA8BE91E6C3C9DEA7C166 /* Project object */;
+}
