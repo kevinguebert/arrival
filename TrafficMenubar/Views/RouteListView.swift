@@ -122,6 +122,6 @@ struct RouteListView: View {
         .padding(.horizontal, 5)
         .padding(.vertical, 2)
         .background(Color(red: 0.96, green: 0.62, blue: 0.04).opacity(0.15))
-        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .clipShape(RoundedRectangle(cornerRadius: 3))
     }
 }

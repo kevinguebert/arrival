@@ -78,10 +78,10 @@ struct DeveloperSettingsView: View {
         .padding(12)
         .background(viewModel.isDevMode ? Color.orange.opacity(0.08) : Color.clear)
         .overlay(
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: 6)
                 .stroke(viewModel.isDevMode ? Color.orange.opacity(0.2) : Color.secondary.opacity(0.1), lineWidth: 1)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
     // MARK: - App State
@@ -299,7 +299,7 @@ struct DeveloperSettingsView: View {
                     }
                     .buttonStyle(.plain)
                     .background(Color.secondary.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
                 }
             }
         }
@@ -320,7 +320,7 @@ struct DeveloperSettingsView: View {
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.secondary.opacity(0.04))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
         }
     }
 

@@ -104,7 +104,7 @@ struct QuickSettingsView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .cornerRadius(6)
+        .cornerRadius(4)
     }
 }
 

@@ -136,8 +136,8 @@ enum Design {
     static let popoverWidth: CGFloat = 320
     static let popoverPadding: CGFloat = 20
     static let mapHeight: CGFloat = 150
-    static let cornerRadius: CGFloat = 12
-    static let smallCornerRadius: CGFloat = 8
+    static let cornerRadius: CGFloat = 8
+    static let smallCornerRadius: CGFloat = 6
 
     // Typography — base sizes
     static let heroTimeSize: CGFloat = 48
@@ -173,7 +173,7 @@ enum Design {
     static let lightBgBottom = Color(red: 0.973, green: 0.980, blue: 0.984)
     static let darkText = Color(red: 0.102, green: 0.102, blue: 0.180)
 
-    static let routeCardCornerRadius: CGFloat = 10
+    static let routeCardCornerRadius: CGFloat = 6
     static let moodBadgeCornerRadius: CGFloat = 20
     static let routeNameSize: CGFloat = 12
     static let routeTimeSize: CGFloat = 14
