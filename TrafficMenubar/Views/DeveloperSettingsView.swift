@@ -18,7 +18,7 @@ struct DeveloperSettingsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
                 masterToggle
                 if viewModel.isDevMode {
                     appStateSection
@@ -28,8 +28,15 @@ struct DeveloperSettingsView: View {
                     quickPresetsSection
                 }
             }
-            .padding(20)
+            .padding(16)
         }
+        .background(
+            LinearGradient(
+                colors: [Design.darkBgTop, Design.darkBgBottom],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
         .frame(width: 400)
         .frame(minHeight: 500)
         .onChange(of: forcedState) { _ in applyState() }
@@ -53,11 +60,12 @@ struct DeveloperSettingsView: View {
                         .foregroundColor(.orange)
                     Text(viewModel.isDevMode ? "Dev Mode Active" : "Dev Mode Off")
                         .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .foregroundColor(.white.opacity(0.9))
                 }
                 if viewModel.isDevMode {
                     Text("Polling paused · Mock data in use")
                         .font(.system(size: 11, design: .rounded))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.white.opacity(0.4))
                 }
             }
             Spacer()
@@ -76,10 +84,10 @@ struct DeveloperSettingsView: View {
             .tint(.orange)
         }
         .padding(12)
-        .background(viewModel.isDevMode ? Color.orange.opacity(0.08) : Color.clear)
+        .background(viewModel.isDevMode ? Color.orange.opacity(0.08) : Color.white.opacity(0.04))
         .overlay(
             RoundedRectangle(cornerRadius: 6)
-                .stroke(viewModel.isDevMode ? Color.orange.opacity(0.2) : Color.secondary.opacity(0.1), lineWidth: 1)
+                .stroke(viewModel.isDevMode ? Color.orange.opacity(0.2) : Color.white.opacity(0.08), lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }
@@ -93,6 +101,7 @@ struct DeveloperSettingsView: View {
                 HStack {
                     Text("Force state")
                         .font(.system(size: 12))
+                        .foregroundColor(.white.opacity(0.7))
                     Spacer()
                     Picker("", selection: $forcedState) {
                         ForEach(ForcedAppState.allCases, id: \.self) { state in
@@ -106,6 +115,7 @@ struct DeveloperSettingsView: View {
                 HStack {
                     Text("Direction")
                         .font(.system(size: 12))
+                        .foregroundColor(.white.opacity(0.7))
                     Spacer()
                     Picker("", selection: $forcedDirection) {
                         Text("To Work").tag(CommuteDirection.toWork)
@@ -118,6 +128,7 @@ struct DeveloperSettingsView: View {
                 HStack {
                     Text("Consecutive failures")
                         .font(.system(size: 12))
+                        .foregroundColor(.white.opacity(0.7))
                     Spacer()
                     Stepper("\(forcedFailures)", value: $forcedFailures, in: 0...10)
                         .frame(width: 100)
@@ -136,24 +147,28 @@ struct DeveloperSettingsView: View {
                     HStack {
                         Text("Travel time")
                             .font(.system(size: 12))
+                            .foregroundColor(.white.opacity(0.7))
                         Spacer()
                         Text("\(Int(mockProvider.travelTimeMinutes)) min")
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(.orange)
                     }
                     Slider(value: $mockProvider.travelTimeMinutes, in: 1...120, step: 1)
+                        .tint(.orange)
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text("Normal time (baseline)")
                             .font(.system(size: 12))
+                            .foregroundColor(.white.opacity(0.7))
                         Spacer()
                         Text("\(Int(mockProvider.normalTimeMinutes)) min")
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(.orange)
                     }
                     Slider(value: $mockProvider.normalTimeMinutes, in: 1...120, step: 1)
+                        .tint(.orange)
                 }
 
                 let delay = max(0, Int(mockProvider.travelTimeMinutes - mockProvider.normalTimeMinutes))
@@ -161,12 +176,12 @@ struct DeveloperSettingsView: View {
                 HStack {
                     Text("Delay: +\(delay) min")
                         .font(.system(size: 11))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.white.opacity(0.4))
                     Text("·")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.white.opacity(0.4))
                     Text(computedMood.randomPhrase())
                         .font(.system(size: 11))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.white.opacity(0.4))
                 }
                 .padding(.top, 4)
             }
@@ -181,11 +196,14 @@ struct DeveloperSettingsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Toggle("Include incidents", isOn: $mockProvider.includeIncidents)
                     .font(.system(size: 12))
+                    .foregroundColor(.white.opacity(0.7))
+                    .tint(.orange)
 
                 if mockProvider.includeIncidents {
                     HStack {
                         Text("Number of incidents")
                             .font(.system(size: 12))
+                            .foregroundColor(.white.opacity(0.7))
                         Spacer()
                         Stepper("\(mockProvider.incidentCount)", value: $mockProvider.incidentCount, in: 1...3)
                             .frame(width: 100)
@@ -194,6 +212,7 @@ struct DeveloperSettingsView: View {
                     HStack {
                         Text("Max severity")
                             .font(.system(size: 12))
+                            .foregroundColor(.white.opacity(0.7))
                         Spacer()
                         Picker("", selection: $mockProvider.maxSeverity) {
                             Text("Minor").tag(IncidentSeverity.minor)
@@ -217,6 +236,7 @@ struct DeveloperSettingsView: View {
                 HStack {
                     Text("Force mood")
                         .font(.system(size: 12))
+                        .foregroundColor(.white.opacity(0.7))
                     Spacer()
                     Picker("", selection: Binding(
                         get: { designOverrides.moodOverride },
@@ -235,12 +255,14 @@ struct DeveloperSettingsView: View {
                     HStack {
                         Text("Font scale")
                             .font(.system(size: 12))
+                            .foregroundColor(.white.opacity(0.7))
                         Spacer()
                         Text(String(format: "%.1f×", designOverrides.fontScale))
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(.orange)
                     }
                     Slider(value: $designOverrides.fontScale, in: 0.5...2.0, step: 0.1)
+                        .tint(.orange)
                 }
             }
         }
@@ -294,11 +316,16 @@ struct DeveloperSettingsView: View {
                     Button(action: action) {
                         Text(label)
                             .font(.system(size: 11, weight: .medium, design: .rounded))
+                            .foregroundColor(.white.opacity(0.7))
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
                     }
                     .buttonStyle(.plain)
-                    .background(Color.secondary.opacity(0.08))
+                    .background(Color.white.opacity(0.06))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
+                    )
                     .clipShape(RoundedRectangle(cornerRadius: 4))
                 }
             }
@@ -312,14 +339,18 @@ struct DeveloperSettingsView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title.uppercased())
                 .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundColor(.secondary)
+                .foregroundColor(.orange)
                 .tracking(1.0)
             VStack(alignment: .leading, spacing: 10) {
                 content()
             }
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.secondary.opacity(0.04))
+            .background(Color.white.opacity(0.04))
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
+            )
             .clipShape(RoundedRectangle(cornerRadius: 6))
         }
     }
