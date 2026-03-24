@@ -22,9 +22,17 @@ struct PopoverView: View {
             }
 
             if let route = viewModel.currentRoute, !route.routePolyline.isEmpty {
-                MapPreviewPlaceholder(route: route)
+                if let home = viewModel.settings.homeCoordinate,
+                   let work = viewModel.settings.workCoordinate {
+                    MapPreviewView(
+                        routePolyline: route.routePolyline,
+                        originCoordinate: viewModel.direction == .toWork ? home : work,
+                        destinationCoordinate: viewModel.direction == .toWork ? work : home,
+                        incidents: route.incidents
+                    )
                     .frame(height: 120)
                     .cornerRadius(8)
+                }
             }
 
             footerSection
@@ -108,16 +116,7 @@ struct PopoverView: View {
     }
 }
 
-// Temporary placeholders — replaced in later tasks
-struct MapPreviewPlaceholder: View {
-    let route: RouteResult
-    var body: some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(Color.secondary.opacity(0.15))
-            .overlay(Text("Map Preview").font(.caption).foregroundColor(.secondary))
-    }
-}
-
+// Temporary placeholder — replaced in later task
 struct QuickSettingsPlaceholder: View {
     @ObservedObject var viewModel: CommuteViewModel
     var body: some View {
