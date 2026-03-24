@@ -110,16 +110,9 @@ struct PopoverView: View {
             }
             .buttonStyle(.plain)
             .popover(isPresented: $showQuickSettings) {
-                QuickSettingsPlaceholder(viewModel: viewModel)
+                QuickSettingsView(viewModel: viewModel)
             }
         }
     }
 }
 
-// Temporary placeholder — replaced in later task
-struct QuickSettingsPlaceholder: View {
-    @ObservedObject var viewModel: CommuteViewModel
-    var body: some View {
-        Text("Quick Settings").padding()
-    }
-}
