@@ -71,21 +71,33 @@ enum TrafficMood {
                 "Smooth sailing", "Open road vibes", "Not a car in sight",
                 "Cruising along", "Highway's all yours", "Ghost town out there",
                 "Breezing through", "Like a Sunday drive", "Green lights all day",
-                "Wind in your hair", "The road is your oyster"
+                "Wind in your hair", "The road is your oyster",
+                "Zero drama today", "Practically teleporting", "Speed demon mode",
+                "Fast lane energy", "Born to cruise", "All clear, captain",
+                "Zoom zoom zoom", "The highway gods smile", "Rolling like butter",
+                "Not a brake light in sight", "Main character energy"
             ]
         case .moderate:
             return [
                 "A bit sluggish", "Dragging a little", "Could be worse",
                 "Patience, grasshopper", "Slow and steady", "Taking its sweet time",
                 "Not great, not terrible", "Hitting some molasses", "Rush hour vibes",
-                "The scenic pace", "Everyone had the same idea"
+                "The scenic pace", "Everyone had the same idea",
+                "Bumper to bumper-ish", "Mildly inconvenient", "Sipping coffee pace",
+                "The universe says chill", "Easy on the gas", "A gentle crawl",
+                "Turtle mode engaged", "Somebody hit the brakes", "Coasting along",
+                "Just vibing in traffic", "Zen and the art of commuting"
             ]
         case .heavy:
             return [
                 "Buckle up, buttercup", "Gonna be a minute", "Pour another coffee",
                 "Yikes on bikes", "It's a parking lot", "Send snacks",
                 "Abandon all hope", "Netflix in the car time", "Bring a podcast",
-                "Might wanna leave early", "RIP your ETA"
+                "Might wanna leave early", "RIP your ETA",
+                "Chaos on wheels", "This is fine (it's not)", "Pray for green lights",
+                "Time to learn patience", "Call in late", "The highway is a lie",
+                "Park it, we're walking", "Snail mail is faster", "Plot twist: we're stuck",
+                "Cancel everything", "Goodbye, punctuality"
             ]
         case .unknown:
             return [
@@ -93,7 +105,12 @@ enum TrafficMood {
                 "Asking the traffic gods...", "Hold tight...",
                 "Poking around out there...", "Consulting the oracle...",
                 "Summoning traffic data...", "Warming up the satellites...",
-                "One sec, peeking outside...", "Phoning a friend..."
+                "One sec, peeking outside...", "Phoning a friend...",
+                "Dusting off the crystal ball...", "Interrogating the GPS...",
+                "Bribing the traffic lights...", "Reading the tea leaves...",
+                "Sending out a scout...", "Pinging the mothership...",
+                "Shaking the magic 8-ball...", "Eavesdropping on Waze...",
+                "Decoding traffic runes...", "Asking the pigeons..."
             ]
         }
     }

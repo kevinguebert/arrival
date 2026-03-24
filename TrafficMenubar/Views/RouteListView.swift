@@ -105,7 +105,7 @@ struct RouteListView: View {
                 ? TrafficMood.clear.darkAccentColor.opacity(0.04)
                 : Color.clear)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(NoFeedbackButtonStyle())
         .contentShape(Rectangle())
     }
 
@@ -124,5 +124,12 @@ struct RouteListView: View {
         .padding(.vertical, 2)
         .background(Color(red: 0.96, green: 0.62, blue: 0.04).opacity(0.15))
         .clipShape(RoundedRectangle(cornerRadius: 3))
+    }
+}
+
+/// Button style that removes the default press opacity flash.
+private struct NoFeedbackButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
     }
 }
