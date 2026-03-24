@@ -1,0 +1,126 @@
+import SwiftUI
+
+struct PopoverView: View {
+    @ObservedObject var viewModel: CommuteViewModel
+    @State private var showQuickSettings = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            headerSection
+
+            if let route = viewModel.currentRoute, route.hasIncidents {
+                IncidentBannerView(
+                    incidents: route.incidents,
+                    delayMinutes: route.delayMinutes
+                )
+            }
+
+            if let route = viewModel.currentRoute, !route.hasIncidents, route.delayMinutes > 0 {
+                Text("+\(route.delayMinutes) min vs usual")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            if let route = viewModel.currentRoute, !route.routePolyline.isEmpty {
+                MapPreviewPlaceholder(route: route)
+                    .frame(height: 120)
+                    .cornerRadius(8)
+            }
+
+            footerSection
+        }
+        .padding(16)
+        .frame(width: 280)
+    }
+
+    @ViewBuilder
+    private var headerSection: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(viewModel.direction.displayName.uppercased())
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .tracking(0.5)
+
+                if viewModel.isLoading {
+                    Text("--")
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                } else if let route = viewModel.currentRoute {
+                    Text("\(route.travelTimeMinutes)")
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                    + Text(" min")
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("--m")
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("ETA")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+
+                if let route = viewModel.currentRoute {
+                    Text(route.eta, style: .time)
+                        .font(.system(size: 20, weight: .semibold))
+                } else {
+                    Text("--:--")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var footerSection: some View {
+        HStack {
+            if let updateText = viewModel.timeSinceUpdate {
+                Text(updateText)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+
+            if viewModel.hasError {
+                Image(systemName: "exclamationmark.circle")
+                    .font(.caption2)
+                    .foregroundColor(.orange)
+                    .help("Unable to fetch traffic data")
+            }
+
+            Spacer()
+
+            Button(action: { showQuickSettings.toggle() }) {
+                Image(systemName: "gearshape")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .buttonStyle(.plain)
+            .popover(isPresented: $showQuickSettings) {
+                QuickSettingsPlaceholder(viewModel: viewModel)
+            }
+        }
+    }
+}
+
+// Temporary placeholders — replaced in later tasks
+struct MapPreviewPlaceholder: View {
+    let route: RouteResult
+    var body: some View {
+        RoundedRectangle(cornerRadius: 8)
+            .fill(Color.secondary.opacity(0.15))
+            .overlay(Text("Map Preview").font(.caption).foregroundColor(.secondary))
+    }
+}
+
+struct QuickSettingsPlaceholder: View {
+    @ObservedObject var viewModel: CommuteViewModel
+    var body: some View {
+        Text("Quick Settings").padding()
+    }
+}
