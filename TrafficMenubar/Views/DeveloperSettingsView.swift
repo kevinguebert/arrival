@@ -164,7 +164,7 @@ struct DeveloperSettingsView: View {
                         .foregroundColor(.secondary)
                     Text("·")
                         .foregroundColor(.secondary)
-                    Text("\(computedMood.moodEmoji) \(computedMood.moodPhrase)")
+                    Text(computedMood.randomPhrase())
                         .font(.system(size: 11))
                         .foregroundColor(.secondary)
                 }
@@ -223,9 +223,9 @@ struct DeveloperSettingsView: View {
                         set: { designOverrides.moodOverride = $0 }
                     )) {
                         Text("Auto").tag(TrafficMood?.none)
-                        Text("☀️").tag(TrafficMood?.some(.clear))
-                        Text("🌤").tag(TrafficMood?.some(.moderate))
-                        Text("🌧").tag(TrafficMood?.some(.heavy))
+                        Text("Clear").tag(TrafficMood?.some(.clear))
+                        Text("Moderate").tag(TrafficMood?.some(.moderate))
+                        Text("Heavy").tag(TrafficMood?.some(.heavy))
                     }
                     .pickerStyle(.segmented)
                     .frame(width: 200)
@@ -329,30 +329,30 @@ struct DeveloperSettingsView: View {
 
         switch forcedState {
         case .normal:
-            let route = mockProvider.buildRoute()
+            let result = mockProvider.buildRoutes()
             viewModel.updateFromMock(
-                route: route,
+                result: result,
                 direction: forcedDirection,
                 consecutiveFailures: forcedFailures,
                 isLoading: false
             )
         case .loading:
             viewModel.updateFromMock(
-                route: nil,
+                result: nil,
                 direction: forcedDirection,
                 consecutiveFailures: 0,
                 isLoading: true
             )
         case .error:
             viewModel.updateFromMock(
-                route: nil,
+                result: nil,
                 direction: forcedDirection,
                 consecutiveFailures: max(3, forcedFailures),
                 isLoading: false
             )
         case .empty:
             viewModel.updateFromMock(
-                route: nil,
+                result: nil,
                 direction: forcedDirection,
                 consecutiveFailures: 0,
                 isLoading: false
