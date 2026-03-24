@@ -3,7 +3,7 @@ import Combine
 
 @MainActor
 final class CommuteViewModel: ObservableObject {
-    @Published var currentRoute: RouteResult?
+    @Published var currentResult: RouteResult?
     @Published var direction: CommuteDirection = .toWork
     @Published var isLoading = false
     @Published var consecutiveFailures = 0
@@ -60,17 +60,24 @@ final class CommuteViewModel: ObservableObject {
         startPolling()
     }
 
-    func updateFromMock(route: RouteResult?, direction: CommuteDirection, consecutiveFailures: Int, isLoading: Bool) {
-        self.currentRoute = route
+    func updateFromMock(result: RouteResult?, direction: CommuteDirection, consecutiveFailures: Int, isLoading: Bool) {
+        self.currentResult = result
         self.direction = direction
         self.consecutiveFailures = consecutiveFailures
         self.isLoading = isLoading
-        self.lastUpdated = route != nil ? Date() : nil
+        self.lastUpdated = result != nil ? Date() : nil
+    }
+
+    var fastestRoute: Route? { currentResult?.fastestRoute }
+
+    var mood: TrafficMood {
+        guard let route = fastestRoute else { return .unknown }
+        return TrafficMood(delayMinutes: route.delayMinutes, hasIncidents: route.hasIncidents)
     }
 
     var menuBarText: String {
-        guard let route = currentRoute else {
-            return "—m"
+        guard let route = fastestRoute else {
+            return "--"
         }
         let minutes = route.travelTimeMinutes
         let mood = TrafficMood(delayMinutes: route.delayMinutes, hasIncidents: route.hasIncidents)
@@ -111,10 +118,10 @@ final class CommuteViewModel: ObservableObject {
             destination = home
         }
 
-        isLoading = currentRoute == nil
+        isLoading = currentResult == nil
         do {
-            let result = try await provider.fetchRoute(from: origin, to: destination)
-            currentRoute = result
+            let result = try await provider.fetchRoutes(from: origin, to: destination)
+            currentResult = result
             consecutiveFailures = 0
             lastUpdated = Date()
         } catch {
