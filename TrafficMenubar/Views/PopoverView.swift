@@ -11,6 +11,9 @@ struct PopoverView: View {
     }
 
     private var mood: TrafficMood {
+        if let override = designOverrides?.moodOverride {
+            return override
+        }
         guard let route = viewModel.currentRoute else { return .unknown }
         return TrafficMood(delayMinutes: route.delayMinutes, hasIncidents: route.hasIncidents)
     }
@@ -183,6 +186,20 @@ struct PopoverView: View {
                         .font(Design.captionFont(scale: fontScale))
                 }
                 .foregroundColor(.orange.opacity(0.8))
+            }
+
+            if viewModel.isDevMode {
+                HStack(spacing: 3) {
+                    Image(systemName: "hammer")
+                        .font(.system(size: 9))
+                    Text("DEV")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                }
+                .foregroundColor(.orange)
+                .padding(.horizontal, 5)
+                .padding(.vertical, 2)
+                .background(Color.orange.opacity(0.12))
+                .clipShape(Capsule())
             }
 
             Spacer()
