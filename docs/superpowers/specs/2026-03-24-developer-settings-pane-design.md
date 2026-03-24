@@ -11,14 +11,15 @@ A developer settings window for the Traffic Menubar app that enables testing dif
 Two new observable objects provide full control:
 
 **`MockTrafficProvider`** — conforms to the existing `TrafficProvider` protocol. Instead of hitting MapKit, it returns a `RouteResult` built from developer-controlled values:
-- `travelTimeMinutes` (slider: 1–120)
-- `normalTravelTimeMinutes` (slider: 1–120, for computing delay)
+- `travelTimeMinutes` (slider: 1–120) — **Note:** slider displays minutes but `RouteResult.travelTime` is `TimeInterval` (seconds). The mock provider multiplies by 60 when constructing the result.
+- `normalTravelTimeMinutes` (slider: 1–120) — same conversion: `normalTravelTime = sliderValue * 60`
+- `eta` — computed as `Date().addingTimeInterval(travelTime)` (current time + travel seconds)
 - `incidents` toggle + count picker (1–3) + severity selector (minor/major/severe)
 - A hardcoded sample polyline (~20 coordinates) so the map always renders
 
 **`DevDesignOverrides`** — a separate `ObservableObject` for visual tweaks:
 - `moodOverride: TrafficMood?` — force a mood regardless of data
-- `fontScale: CGFloat` — multiplier against `Design` constants
+- `fontScale: CGFloat` — multiplier applied to font sizes. Since `Design` currently defines static `Font` values, `DesignSystem.swift` must be refactored to expose raw `CGFloat` sizes (e.g., `heroTimeSize: CGFloat = 48`) and build fonts dynamically via a helper that applies the scale. Views call `Design.heroTimeFont(scale:)` instead of using the static property directly.
 - Injected into the SwiftUI environment so views can read it without ViewModel changes
 
 ### ViewModel Changes
@@ -26,8 +27,8 @@ Two new observable objects provide full control:
 `CommuteViewModel`:
 - `provider` becomes `private(set) var` (currently `private let`)
 - New `@Published var isDevMode = false`
-- `enableDevMode()` — sets `isDevMode = true`, stops polling, swaps provider to `MockTrafficProvider`
-- `disableDevMode()` — sets `isDevMode = false`, restores `MapKitProvider`, resumes polling
+- `enableDevMode()` — sets `isDevMode = true`, calls `stopPolling()`, swaps provider to `MockTrafficProvider`
+- `disableDevMode()` — sets `isDevMode = false`, restores `MapKitProvider`, calls `startPolling()` to create a fresh `PollScheduler` and resume normal operation (re-requesting authorization is safe — it's a no-op if already granted)
 - `updateFromMock(_ route: RouteResult)` — directly sets `currentRoute`, `lastUpdated`, `consecutiveFailures`, and `direction`
 
 ### SettingsStore Changes
@@ -121,6 +122,8 @@ Placeholder descriptions based on severity:
 - Minor: "Minor slowdown ahead"
 - Major: "Construction on main route"
 - Severe: "Major accident — expect significant delays"
+
+Mock incidents use coordinates sampled from the hardcoded polyline (e.g., every 5th point) so they appear along the route on the map preview.
 
 ## Testable Scenarios
 
