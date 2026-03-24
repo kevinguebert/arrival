@@ -43,10 +43,12 @@ struct PopoverView: View {
                         } else {
                             RouteListView(result: result) { route in
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                    if expandedRoute?.id == route.id {
+                                    if showMap && expandedRoute?.id == route.id {
+                                        // Same route tapped while map open → close
                                         showMap = false
                                         expandedRoute = nil
                                     } else {
+                                        // New route or map closed → open/swap
                                         expandedRoute = route
                                         showMap = true
                                     }
@@ -210,8 +212,13 @@ struct PopoverView: View {
         if let route = result.fastestRoute {
             Button(action: {
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                    expandedRoute = route
-                    showMap.toggle()
+                    if showMap {
+                        showMap = false
+                        expandedRoute = nil
+                    } else {
+                        expandedRoute = route
+                        showMap = true
+                    }
                 }
             }) {
                 VStack(spacing: 0) {
