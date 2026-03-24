@@ -10,6 +10,8 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
     @Published var includeIncidents: Bool = false
     @Published var incidentCount: Int = 2
     @Published var maxSeverity: IncidentSeverity = .major
+    @Published var alternateRouteCount: Int = 2
+    @Published var alternateDelayMinutes: Double = 8
 
     // MARK: - Sample Data
 
@@ -38,29 +40,47 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
 
     // MARK: - TrafficProvider Conformance
 
-    func fetchRoute(from origin: Coordinate, to destination: Coordinate) async throws -> RouteResult {
-        buildRoute()
+    func fetchRoutes(from origin: Coordinate, to destination: Coordinate) async throws -> RouteResult {
+        buildRoutes()
     }
 
     // MARK: - Route Building
 
-    func buildRoute() -> RouteResult {
+    func buildRoutes() -> RouteResult {
         let travelTime = travelTimeMinutes * 60
         let normalTime = normalTimeMinutes * 60
 
-        let incidents: [TrafficIncident]
-        if includeIncidents {
-            incidents = generateIncidents()
-        } else {
-            incidents = []
+        let primaryRoute = Route(
+            name: "via I-285 S",
+            travelTime: travelTime,
+            normalTravelTime: normalTime,
+            distance: 20_000,
+            polylineCoordinates: Self.samplePolyline,
+            mkPolyline: nil,
+            advisoryNotices: includeIncidents ? ["Construction on main route"] : []
+        )
+
+        var routes = [primaryRoute]
+
+        let altNames = ["via Peachtree Rd", "via GA-400 N"]
+        for i in 0..<min(alternateRouteCount, altNames.count) {
+            let altDelay = alternateDelayMinutes * Double(i + 1)
+            let altRoute = Route(
+                name: altNames[i],
+                travelTime: travelTime + altDelay * 60,
+                normalTravelTime: normalTime + altDelay * 60,
+                distance: 20_000 + Double((i + 1) * 2000),
+                polylineCoordinates: Self.samplePolyline,
+                mkPolyline: nil,
+                advisoryNotices: []
+            )
+            routes.append(altRoute)
         }
 
         return RouteResult(
-            travelTime: travelTime,
-            normalTravelTime: normalTime,
-            eta: Date().addingTimeInterval(travelTime),
-            incidents: incidents,
-            routePolyline: Self.samplePolyline
+            routes: routes,
+            incidents: includeIncidents ? generateIncidents() : [],
+            fetchedAt: Date()
         )
     }
 
