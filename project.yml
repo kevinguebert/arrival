@@ -12,6 +12,7 @@ targets:
       - TrafficMenubar
     settings:
       base:
+        GENERATE_INFOPLIST_FILE: true
         INFOPLIST_KEY_LSUIElement: true
         INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Traffic Menubar uses your location to detect whether you're near home or work to show the right commute direction."
         PRODUCT_BUNDLE_IDENTIFIER: com.trafficmenubar.app

@@ -21,14 +21,14 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     func requestLocation() {
-        guard authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways else {
+        guard authorizationStatus == .authorized else {
             return
         }
         manager.requestLocation()
     }
 
     var isAuthorized: Bool {
-        authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways
+        authorizationStatus == .authorized
     }
 
     func detectDirection(home: Coordinate, work: Coordinate) -> CommuteDirection? {

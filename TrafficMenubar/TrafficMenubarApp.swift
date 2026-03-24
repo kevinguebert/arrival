@@ -20,6 +20,7 @@ struct TrafficMenubarApp: App {
     }
 }
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let viewModel = CommuteViewModel()
 
