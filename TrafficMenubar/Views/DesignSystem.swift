@@ -104,9 +104,9 @@ enum TrafficMood {
 
     var menuBarSuffix: String {
         switch self {
-        case .clear:    return ""
-        case .moderate: return " ●"
-        case .heavy:    return " ▲"
+        case .clear:    return " ●"
+        case .moderate: return " ▲"
+        case .heavy:    return " ‼"
         case .unknown:  return ""
         }
     }
