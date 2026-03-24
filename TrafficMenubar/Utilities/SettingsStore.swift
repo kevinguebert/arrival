@@ -68,6 +68,9 @@ final class SettingsStore: ObservableObject {
     @Published var launchAtLogin: Bool {
         didSet { UserDefaults.standard.set(launchAtLogin, forKey: "launchAtLogin") }
     }
+    @Published var developerModeEnabled: Bool {
+        didSet { UserDefaults.standard.set(developerModeEnabled, forKey: "developerModeEnabled") }
+    }
 
     var isConfigured: Bool {
         homeCoordinate != nil && workCoordinate != nil
@@ -109,6 +112,7 @@ final class SettingsStore: ObservableObject {
         self.offPeakPollingInterval = defaults.object(forKey: "offPeakPollingInterval") as? TimeInterval ?? 900
 
         self.launchAtLogin = defaults.bool(forKey: "launchAtLogin")
+        self.developerModeEnabled = defaults.bool(forKey: "developerModeEnabled")
     }
 
     func isCommuteHour(at date: Date = Date()) -> Bool {
