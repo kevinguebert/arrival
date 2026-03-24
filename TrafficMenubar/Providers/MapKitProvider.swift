@@ -2,7 +2,7 @@ import Foundation
 import MapKit
 
 final class MapKitProvider: TrafficProvider {
-    func fetchRoute(from origin: Coordinate, to destination: Coordinate) async throws -> RouteResult {
+    func fetchRoutes(from origin: Coordinate, to destination: Coordinate) async throws -> RouteResult {
         let request = MKDirections.Request()
         request.source = MKMapItem(placemark: MKPlacemark(
             coordinate: CLLocationCoordinate2D(latitude: origin.latitude, longitude: origin.longitude)
@@ -12,6 +12,7 @@ final class MapKitProvider: TrafficProvider {
         ))
         request.transportType = .automobile
         request.departureDate = Date()
+        request.requestsAlternateRoutes = true
 
         let directions = MKDirections(request: request)
 
@@ -22,21 +23,27 @@ final class MapKitProvider: TrafficProvider {
             throw TrafficProviderError.networkError(error)
         }
 
-        guard let route = response.routes.first else {
+        guard !response.routes.isEmpty else {
             throw TrafficProviderError.noRouteFound
         }
 
-        let travelTime = route.expectedTravelTime
-        let normalTravelTime = estimateNormalTravelTime(distanceMeters: route.distance)
-
-        let polyline = extractPolyline(from: route.polyline)
+        let sortedRoutes = response.routes.sorted { $0.expectedTravelTime < $1.expectedTravelTime }
+        let routes = Array(sortedRoutes.prefix(3)).map { mkRoute in
+            Route(
+                name: mkRoute.name,
+                travelTime: mkRoute.expectedTravelTime,
+                normalTravelTime: estimateNormalTravelTime(distanceMeters: mkRoute.distance),
+                distance: mkRoute.distance,
+                polylineCoordinates: extractPolyline(from: mkRoute.polyline),
+                mkPolyline: mkRoute.polyline,
+                advisoryNotices: mkRoute.advisoryNotices
+            )
+        }
 
         return RouteResult(
-            travelTime: travelTime,
-            normalTravelTime: normalTravelTime,
-            eta: Date().addingTimeInterval(travelTime),
+            routes: routes,
             incidents: [],
-            routePolyline: polyline
+            fetchedAt: Date()
         )
     }
 
