@@ -4,6 +4,7 @@ import ServiceManagement
 struct PreferencesView: View {
     @ObservedObject var settings: SettingsStore
     @Environment(\.openDevWindow) private var openDevWindow
+    @Environment(\.colorScheme) private var colorScheme
     @State private var homeGeocodingError: String?
     @State private var workGeocodingError: String?
     @State private var isGeocodingHome = false
@@ -15,6 +16,8 @@ struct PreferencesView: View {
     }
 
     private let geocoder = GeocodingService()
+
+    private var isDark: Bool { colorScheme == .dark }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -35,7 +38,7 @@ struct PreferencesView: View {
             .padding(.horizontal, 20)
             .overlay(
                 Rectangle()
-                    .fill(Color.white.opacity(0.08))
+                    .fill(isDark ? Color.white.opacity(0.08) : Color.black.opacity(0.08))
                     .frame(height: 1),
                 alignment: .bottom
             )
@@ -51,14 +54,22 @@ struct PreferencesView: View {
             .padding(20)
         }
         .background(
-            LinearGradient(
-                colors: [Design.darkBgTop, Design.darkBgBottom],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+            isDark
+                ? AnyView(LinearGradient(
+                    colors: [Design.darkBgTop, Design.darkBgBottom],
+                    startPoint: .top,
+                    endPoint: .bottom
+                ))
+                : AnyView(LinearGradient(
+                    colors: [Design.lightBgTop, Design.lightBgBottom],
+                    startPoint: .top,
+                    endPoint: .bottom
+                ))
         )
-        .frame(width: 420, height: 360)
+        .frame(width: 420, height: 420)
     }
+
+    // MARK: - Tab Bar
 
     @ViewBuilder
     private func tabButton(_ label: String, icon: String, tab: SettingsTab) -> some View {
@@ -69,7 +80,9 @@ struct PreferencesView: View {
                 Text(label)
                     .font(.system(size: 13, weight: selectedTab == tab ? .semibold : .medium, design: .rounded))
             }
-            .foregroundColor(selectedTab == tab ? TrafficMood.clear.darkAccentColor : .white.opacity(0.45))
+            .foregroundColor(selectedTab == tab
+                ? TrafficMood.clear.darkAccentColor
+                : (isDark ? .white.opacity(0.45) : .secondary))
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
             .overlay(
@@ -81,6 +94,8 @@ struct PreferencesView: View {
         }
         .buttonStyle(.plain)
     }
+
+    // MARK: - Addresses Tab
 
     @ViewBuilder
     private var addressesTab: some View {
@@ -103,11 +118,11 @@ struct PreferencesView: View {
                 onSubmit: geocodeWork
             )
 
-            Divider().opacity(0.06)
+            Divider().opacity(isDark ? 0.06 : 0.15)
 
             Text("Addresses are geocoded to coordinates for routing. Press Return to validate.")
                 .font(.system(size: 11, design: .rounded))
-                .foregroundColor(.white.opacity(0.35))
+                .foregroundColor(isDark ? .white.opacity(0.35) : .secondary)
                 .lineSpacing(2)
 
             Spacer()
@@ -126,20 +141,20 @@ struct PreferencesView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label.uppercased())
                 .font(.system(size: 11, weight: .semibold, design: .rounded))
-                .foregroundColor(.white.opacity(0.5))
+                .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
                 .tracking(0.5)
 
             HStack(spacing: 8) {
                 TextField("", text: text)
                     .textFieldStyle(.plain)
                     .font(.system(size: 13, design: .rounded))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(isDark ? .white.opacity(0.7) : .primary)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.06))
+                    .background(isDark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
                     .overlay(
                         RoundedRectangle(cornerRadius: 6)
-                            .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                            .strokeBorder(isDark ? Color.white.opacity(0.1) : Color.black.opacity(0.1), lineWidth: 1)
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                     .onSubmit(onSubmit)
@@ -160,6 +175,8 @@ struct PreferencesView: View {
         }
     }
 
+    // MARK: - Schedule Tab
+
     private func timeSlots() -> [(label: String, hour: Int, minute: Int)] {
         (0..<24).flatMap { hour in
             [0, 30].map { minute in
@@ -179,7 +196,7 @@ struct PreferencesView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("MORNING COMMUTE")
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
                     .tracking(0.5)
                 HStack(spacing: 10) {
                     darkTimePicker(
@@ -190,7 +207,7 @@ struct PreferencesView: View {
                     )
                     Text("to")
                         .font(.system(size: 12, design: .rounded))
-                        .foregroundColor(.white.opacity(0.3))
+                        .foregroundColor(isDark ? .white.opacity(0.3) : .secondary)
                     darkTimePicker(
                         selection: Binding(
                             get: { timeTag(hour: settings.morningEndHour, minute: settings.morningEndMinute) },
@@ -204,7 +221,7 @@ struct PreferencesView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("EVENING COMMUTE")
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
                     .tracking(0.5)
                 HStack(spacing: 10) {
                     darkTimePicker(
@@ -215,7 +232,7 @@ struct PreferencesView: View {
                     )
                     Text("to")
                         .font(.system(size: 12, design: .rounded))
-                        .foregroundColor(.white.opacity(0.3))
+                        .foregroundColor(isDark ? .white.opacity(0.3) : .secondary)
                     darkTimePicker(
                         selection: Binding(
                             get: { timeTag(hour: settings.eveningEndHour, minute: settings.eveningEndMinute) },
@@ -225,13 +242,13 @@ struct PreferencesView: View {
                 }
             }
 
-            Divider().opacity(0.06)
+            Divider().opacity(isDark ? 0.06 : 0.15)
 
             // Polling frequency
             VStack(alignment: .leading, spacing: 12) {
                 Text("POLLING FREQUENCY")
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
                     .tracking(0.5)
 
                 pollingRow(
@@ -269,6 +286,7 @@ struct PreferencesView: View {
         }
         .labelsHidden()
         .frame(width: 80)
+        .colorScheme(colorScheme)
     }
 
     @ViewBuilder
@@ -280,7 +298,7 @@ struct PreferencesView: View {
         HStack {
             Text(label)
                 .font(.system(size: 13, design: .rounded))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(isDark ? .white.opacity(0.7) : .primary)
             Spacer()
             HStack(spacing: 4) {
                 ForEach(options, id: \.value) { option in
@@ -289,17 +307,17 @@ struct PreferencesView: View {
                             .font(.system(size: 12, weight: selection.wrappedValue == option.value ? .semibold : .regular, design: .rounded))
                             .foregroundColor(selection.wrappedValue == option.value
                                 ? TrafficMood.clear.darkAccentColor
-                                : .white.opacity(0.4))
+                                : (isDark ? .white.opacity(0.4) : .secondary))
                             .padding(.horizontal, 10)
                             .padding(.vertical, 4)
                             .background(selection.wrappedValue == option.value
                                 ? TrafficMood.clear.darkAccentColor.opacity(0.15)
-                                : Color.white.opacity(0.06))
+                                : (isDark ? Color.white.opacity(0.06) : Color.black.opacity(0.04)))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4)
                                     .strokeBorder(selection.wrappedValue == option.value
                                         ? TrafficMood.clear.darkAccentColor.opacity(0.3)
-                                        : Color.white.opacity(0.1), lineWidth: 1)
+                                        : (isDark ? Color.white.opacity(0.1) : Color.black.opacity(0.1)), lineWidth: 1)
                             )
                             .clipShape(RoundedRectangle(cornerRadius: 4))
                     }
@@ -309,6 +327,8 @@ struct PreferencesView: View {
         }
     }
 
+    // MARK: - General Tab
+
     @ViewBuilder
     private var generalTab: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -316,7 +336,7 @@ struct PreferencesView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("STARTUP")
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
                     .tracking(0.5)
                 Toggle("Launch at login", isOn: Binding(
                     get: { settings.launchAtLogin },
@@ -326,54 +346,54 @@ struct PreferencesView: View {
                     }
                 ))
                 .font(.system(size: 13, design: .rounded))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(isDark ? .white.opacity(0.7) : .primary)
                 .tint(TrafficMood.clear.darkAccentColor)
             }
 
-            Divider().opacity(0.06)
+            Divider().opacity(isDark ? 0.06 : 0.15)
 
             // Location
             VStack(alignment: .leading, spacing: 8) {
                 Text("LOCATION")
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
                     .tracking(0.5)
                 Text("Location access enables automatic direction detection (home vs. work). Without it, direction is based on time of day.")
                     .font(.system(size: 11, design: .rounded))
-                    .foregroundColor(.white.opacity(0.35))
+                    .foregroundColor(isDark ? .white.opacity(0.35) : .secondary)
                     .lineSpacing(2)
             }
 
-            Divider().opacity(0.06)
+            Divider().opacity(isDark ? 0.06 : 0.15)
 
             // Traffic Provider
             VStack(alignment: .leading, spacing: 8) {
                 Text("TRAFFIC PROVIDER")
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
                     .tracking(0.5)
                 HStack {
                     Text("Apple Maps")
                         .font(.system(size: 13, design: .rounded))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(isDark ? .white.opacity(0.7) : .primary)
                     Spacer()
                     Text("More coming soon")
                         .font(.system(size: 11, design: .rounded))
-                        .foregroundColor(.white.opacity(0.25))
+                        .foregroundColor(isDark ? .white.opacity(0.25) : .secondary.opacity(0.6))
                 }
             }
 
-            Divider().opacity(0.06)
+            Divider().opacity(isDark ? 0.06 : 0.15)
 
             // Developer
             VStack(alignment: .leading, spacing: 8) {
                 Text("DEVELOPER")
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
                     .tracking(0.5)
                 Toggle("Developer Mode", isOn: $settings.developerModeEnabled)
                     .font(.system(size: 13, design: .rounded))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(isDark ? .white.opacity(0.7) : .primary)
                     .tint(.orange)
                 if settings.developerModeEnabled {
                     Button("Open Developer Settings") {
@@ -384,12 +404,14 @@ struct PreferencesView: View {
                 }
                 Text("Enables mock data controls for testing UI states.")
                     .font(.system(size: 11, design: .rounded))
-                    .foregroundColor(.white.opacity(0.25))
+                    .foregroundColor(isDark ? .white.opacity(0.25) : .secondary.opacity(0.6))
             }
 
             Spacer()
         }
     }
+
+    // MARK: - Geocoding
 
     private func geocodeHome() {
         isGeocodingHome = true

@@ -106,6 +106,7 @@ struct RouteListView: View {
                 : Color.clear)
         }
         .buttonStyle(.plain)
+        .contentShape(Rectangle())
     }
 
     private var incidentBadge: some View {
