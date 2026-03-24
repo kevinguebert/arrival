@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/kevinguebert/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/start-server.sh --project-dir /Users/kevinguebert/Documents/Development/traffic-menubar)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(/Users/kevinguebert/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/stop-server.sh /Users/kevinguebert/Documents/Development/traffic-menubar/.superpowers/brainstorm/63329-1774355215)",
+      "Bash(xcodegen --version)",
+      "Bash(git:*)",
+      "Bash(brew install:*)",
+      "Bash(xcodegen generate:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(sudo xcodebuild:*)",
+      "Bash(xcode-select -p)",
+      "Bash(open:*)",
+      "Bash(pkill -f TrafficMenubar)",
+      "Bash(grep -E \"\\\\.\\(swift|js|ts|tsx|css|json\\)$\")",
+      "Bash(pkill -x TrafficMenubar)",
+      "Bash(xcrun swift:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:paperclip.ing)",
+      "Bash(/Users/kevinguebert/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/stop-server.sh /Users/kevinguebert/Documents/Development/traffic-menubar/.superpowers/brainstorm/42870-1774363330)",
+      "Bash(plutil:*)"
+    ]
+  }
+}
