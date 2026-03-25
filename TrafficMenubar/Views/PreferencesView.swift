@@ -10,6 +10,8 @@ struct PreferencesView: View {
     @State private var isGeocodingHome = false
     @State private var isGeocodingWork = false
     @State private var selectedTab: SettingsTab = .addresses
+    @State private var showingBYOKInput = false
+    @State private var byokKeyInput = ""
 
     enum SettingsTab {
         case addresses, schedule, general
@@ -360,15 +362,8 @@ struct PreferencesView: View {
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
                     .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
                     .tracking(0.5)
-                HStack {
-                    Text("Apple Maps")
-                        .font(.system(size: 13, design: .rounded))
-                        .foregroundColor(isDark ? .white.opacity(0.7) : .primary)
-                    Spacer()
-                    Text("More coming soon")
-                        .font(.system(size: 11, design: .rounded))
-                        .foregroundColor(isDark ? .white.opacity(0.25) : .secondary.opacity(0.6))
-                }
+
+                trafficProviderContent
             }
 
             Divider().opacity(isDark ? 0.06 : 0.15)
@@ -397,6 +392,229 @@ struct PreferencesView: View {
 
             Spacer()
         }
+    }
+
+    // MARK: - Traffic Provider
+
+    @ViewBuilder
+    private var trafficProviderContent: some View {
+        let isMapboxActive = settings.effectiveMapboxKey != nil
+
+        // Apple Maps row
+        HStack {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(LinearGradient(colors: [Color(red: 0.20, green: 0.78, blue: 0.35), Color(red: 0.19, green: 0.82, blue: 0.35)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: 20, height: 20)
+                    .overlay(Circle().fill(.white).frame(width: 6, height: 6))
+                Text("Apple Maps")
+                    .font(.system(size: 13, design: .rounded))
+                    .foregroundColor(isDark ? .white.opacity(isMapboxActive ? 0.4 : 0.85) : (isMapboxActive ? .secondary : .primary))
+            }
+            Spacer()
+            if !isMapboxActive {
+                Text("✓ Active")
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundColor(TrafficMood.clear.darkAccentColor)
+            }
+        }
+        .opacity(isMapboxActive ? 0.45 : 1.0)
+
+        // Mapbox card
+        if isMapboxActive {
+            mapboxActiveCard
+        } else if showingBYOKInput {
+            mapboxBYOKInputCard
+        } else {
+            mapboxTeaserCard
+        }
+    }
+
+    @ViewBuilder
+    private var mapboxTeaserCard: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(LinearGradient(colors: [Color(red: 0.65, green: 0.55, blue: 0.98), Color(red: 0.51, green: 0.55, blue: 0.97)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: 20, height: 20)
+                    .overlay(Image(systemName: "lock.fill").font(.system(size: 8)).foregroundColor(.white))
+                Text("Mapbox Premium")
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundColor(isDark ? .white.opacity(0.95) : .primary)
+            }
+
+            Text("Real-time congestion data · Per-segment traffic colors · Incident alerts · Accurate free-flow ETAs")
+                .font(.system(size: 11, design: .rounded))
+                .foregroundColor(isDark ? .white.opacity(0.6) : .secondary)
+                .lineSpacing(2)
+
+            HStack(spacing: 8) {
+                Button("I have a Mapbox key") {
+                    showingBYOKInput = true
+                }
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                .foregroundColor(Color(red: 0.77, green: 0.71, blue: 0.99))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color(red: 0.65, green: 0.55, blue: 0.98).opacity(0.15))
+                .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(Color(red: 0.65, green: 0.55, blue: 0.98).opacity(0.3), lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+                .buttonStyle(.plain)
+
+                Button("Get Premium Access") {}
+                .font(.system(size: 11, weight: .medium, design: .rounded))
+                .foregroundColor(isDark ? .white.opacity(0.6) : .secondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(isDark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
+                .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(isDark ? Color.white.opacity(0.12) : Color.black.opacity(0.1), lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(14)
+        .background(Color(red: 0.65, green: 0.55, blue: 0.98).opacity(0.08))
+        .overlay(
+            VStack {
+                LinearGradient(colors: [Color(red: 0.65, green: 0.55, blue: 0.98), Color(red: 0.51, green: 0.55, blue: 0.97)], startPoint: .leading, endPoint: .trailing)
+                    .frame(height: 2)
+                Spacer()
+            }
+        )
+        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(Color(red: 0.65, green: 0.55, blue: 0.98).opacity(0.2), lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    @ViewBuilder
+    private var mapboxBYOKInputCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(LinearGradient(colors: [Color(red: 0.65, green: 0.55, blue: 0.98), Color(red: 0.51, green: 0.55, blue: 0.97)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: 20, height: 20)
+                    .overlay(Image(systemName: "key.fill").font(.system(size: 8)).foregroundColor(.white))
+                Text("Enter Mapbox API Key")
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundColor(isDark ? .white.opacity(0.95) : .primary)
+            }
+
+            TextField("pk.eyJ1IjoiZXhhbXBsZSIsImEiOiJja...", text: $byokKeyInput)
+                .textFieldStyle(.plain)
+                .font(.system(size: 12, design: .monospaced))
+                .foregroundColor(isDark ? .white.opacity(0.7) : .primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 9)
+                .background(isDark ? Color.black.opacity(0.4) : Color.black.opacity(0.04))
+                .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(isDark ? Color.white.opacity(0.15) : Color.black.opacity(0.1), lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+
+            HStack(spacing: 10) {
+                Button("Save Key") {
+                    guard !byokKeyInput.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+                    settings.setMapboxKey(byokKeyInput.trimmingCharacters(in: .whitespaces), source: "byok")
+                    byokKeyInput = ""
+                    showingBYOKInput = false
+                }
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                .foregroundColor(.white)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 6)
+                .background(LinearGradient(colors: [Color(red: 0.65, green: 0.55, blue: 0.98), Color(red: 0.51, green: 0.55, blue: 0.97)], startPoint: .leading, endPoint: .trailing))
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+                .buttonStyle(.plain)
+
+                Button("Cancel") {
+                    byokKeyInput = ""
+                    showingBYOKInput = false
+                }
+                .font(.system(size: 11, design: .rounded))
+                .foregroundColor(isDark ? .white.opacity(0.55) : .secondary)
+                .buttonStyle(.plain)
+            }
+
+            Text("Get a free key at mapbox.com/account · Includes 100k directions requests/month")
+                .font(.system(size: 10, design: .rounded))
+                .foregroundColor(isDark ? .white.opacity(0.45) : .secondary.opacity(0.7))
+        }
+        .padding(14)
+        .background(Color(red: 0.65, green: 0.55, blue: 0.98).opacity(0.08))
+        .overlay(
+            VStack {
+                LinearGradient(colors: [Color(red: 0.65, green: 0.55, blue: 0.98), Color(red: 0.51, green: 0.55, blue: 0.97)], startPoint: .leading, endPoint: .trailing)
+                    .frame(height: 2)
+                Spacer()
+            }
+        )
+        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(Color(red: 0.65, green: 0.55, blue: 0.98).opacity(0.25), lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    @ViewBuilder
+    private var mapboxActiveCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                HStack(spacing: 8) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(LinearGradient(colors: [Color(red: 0.65, green: 0.55, blue: 0.98), Color(red: 0.51, green: 0.55, blue: 0.97)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .frame(width: 20, height: 20)
+                        .overlay(Image(systemName: "bolt.fill").font(.system(size: 9)).foregroundColor(.white))
+                    Text("Mapbox Premium")
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .foregroundColor(isDark ? .white.opacity(0.95) : .primary)
+                }
+                Spacer()
+                HStack(spacing: 8) {
+                    Text(settings.mapboxKeySource == "byok" ? "BYOK" : "PREMIUM")
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                        .tracking(0.4)
+                        .foregroundColor(Color(red: 0.77, green: 0.71, blue: 0.99))
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(Color(red: 0.65, green: 0.55, blue: 0.98).opacity(0.18))
+                        .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(Color(red: 0.65, green: 0.55, blue: 0.98).opacity(0.25), lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                    Text("✓ Active")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundColor(TrafficMood.clear.darkAccentColor)
+                }
+            }
+
+            // Masked key
+            let maskedKey = String(settings.mapboxAPIKey.prefix(4)) + " ••••••••••••••••"
+            Text(maskedKey)
+                .font(.system(size: 11, design: .monospaced))
+                .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(isDark ? Color.black.opacity(0.25) : Color.black.opacity(0.03))
+                .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(isDark ? Color.white.opacity(0.06) : Color.black.opacity(0.06), lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+
+            HStack(spacing: 12) {
+                Button("Remove Key") {
+                    settings.clearMapboxKey()
+                }
+                .font(.system(size: 11, weight: .medium, design: .rounded))
+                .foregroundColor(Color(red: 0.99, green: 0.65, blue: 0.65))
+                .buttonStyle(.plain)
+
+                Text("Falls back to Apple Maps")
+                    .font(.system(size: 10, design: .rounded))
+                    .foregroundColor(isDark ? .white.opacity(0.4) : .secondary.opacity(0.6))
+            }
+        }
+        .padding(14)
+        .background(Color(red: 0.65, green: 0.55, blue: 0.98).opacity(0.08))
+        .overlay(
+            VStack {
+                LinearGradient(colors: [TrafficMood.clear.darkAccentColor, Color(red: 0.19, green: 0.82, blue: 0.35)], startPoint: .leading, endPoint: .trailing)
+                    .frame(height: 2)
+                Spacer()
+            }
+        )
+        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(Color(red: 0.65, green: 0.55, blue: 0.98).opacity(0.3), lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     // MARK: - Helpers
