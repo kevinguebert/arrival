@@ -31,6 +31,7 @@ struct DeveloperSettingsView: View {
                 if viewModel.isDevMode {
                     appStateSection
                     routeDataSection
+                    baselineSection
                     incidentsSection
                     designOverridesSection
                     quickPresetsSection
@@ -200,6 +201,63 @@ struct DeveloperSettingsView: View {
                     .font(.system(size: 12))
                     .foregroundColor(primaryText)
                     .tint(.orange)
+            }
+        }
+    }
+
+    // MARK: - Baseline
+
+    @ViewBuilder
+    private var baselineSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Divider().opacity(0.06)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Baseline (persisted)")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(primaryText)
+
+                let settings = SettingsStore.shared
+                HStack {
+                    Text("Compare mode:")
+                        .font(.system(size: 12))
+                        .foregroundColor(secondaryText)
+                    Text(settings.baselineCompareMode.displayName)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.orange)
+                }
+
+                if let toWork = settings.baselineToWorkTime {
+                    HStack {
+                        Text("To work baseline:")
+                            .font(.system(size: 12))
+                            .foregroundColor(secondaryText)
+                        Text("\(Int(toWork / 60)) min")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.orange)
+                    }
+                }
+
+                if let toHome = settings.baselineToHomeTime {
+                    HStack {
+                        Text("To home baseline:")
+                            .font(.system(size: 12))
+                            .foregroundColor(secondaryText)
+                        Text("\(Int(toHome / 60)) min")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.orange)
+                    }
+                }
+
+                if let fetchedAt = settings.baselineFetchedAt {
+                    Text("Fetched: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.system(size: 11))
+                        .foregroundColor(secondaryText)
+                } else {
+                    Text("No baseline set")
+                        .font(.system(size: 11))
+                        .foregroundColor(secondaryText.opacity(0.6))
+                }
             }
         }
     }
