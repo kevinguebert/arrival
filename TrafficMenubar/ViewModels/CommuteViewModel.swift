@@ -14,14 +14,28 @@ final class CommuteViewModel: ObservableObject {
     let settings: SettingsStore
     let locationManager: LocationManager
     private(set) var provider: TrafficProvider
+    private var settingsCancellable: AnyCancellable?
     private var scheduler: PollScheduler?
 
     init(settings: SettingsStore = .shared,
          locationManager: LocationManager = LocationManager(),
-         provider: TrafficProvider = MapKitProvider()) {
+         provider: TrafficProvider? = nil) {
         self.settings = settings
         self.locationManager = locationManager
-        self.provider = provider
+        self.provider = provider ?? Self.makeProvider(for: settings)
+        settingsCancellable = settings.$mapboxKeySource
+            .combineLatest(settings.$mapboxAPIKey)
+            .sink { [weak self] _, _ in
+                guard let self else { return }
+                self.provider = Self.makeProvider(for: self.settings)
+            }
+    }
+
+    private static func makeProvider(for settings: SettingsStore) -> TrafficProvider {
+        if let key = settings.effectiveMapboxKey {
+            return MapboxDirectionsProvider(apiKey: key)
+        }
+        return MapKitProvider()
     }
 
     func startPolling() {
@@ -55,7 +69,7 @@ final class CommuteViewModel: ObservableObject {
     }
 
     func disableDevMode() {
-        provider = MapKitProvider()
+        provider = Self.makeProvider(for: settings)
         isDevMode = false
         startPolling()
     }
@@ -72,6 +86,9 @@ final class CommuteViewModel: ObservableObject {
 
     var mood: TrafficMood {
         guard let route = fastestRoute else { return .unknown }
+        if let congestion = route.segmentCongestion, !congestion.isEmpty {
+            return TrafficMood(segmentCongestion: congestion)
+        }
         return TrafficMood(delayMinutes: route.delayMinutes, hasIncidents: route.hasIncidents)
     }
 
@@ -80,7 +97,6 @@ final class CommuteViewModel: ObservableObject {
             return "--"
         }
         let minutes = route.travelTimeMinutes
-        let mood = TrafficMood(delayMinutes: route.delayMinutes, hasIncidents: route.hasIncidents)
         return "\(minutes)m\(mood.menuBarSuffix)"
     }
 

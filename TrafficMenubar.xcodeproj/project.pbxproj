@@ -11,6 +11,8 @@
 		219057907F75155D78C12179 /* RouteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505077E8682164B1048389A5 /* RouteResult.swift */; };
 		22972A8094D146CCB9596726 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EB5C002DD93D249231A279 /* SettingsStore.swift */; };
 		29F5E9603404987AB7BFB804 /* MockTrafficProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6109B85A030C72507E44B9 /* MockTrafficProvider.swift */; };
+		BB11111111111111BBBBBBBB /* MapboxDirectionsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22222222222222BBBBBBBB /* MapboxDirectionsProvider.swift */; };
+		BB33333333333333BBBBBBBB /* MapboxModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB44444444444444BBBBBBBB /* MapboxModels.swift */; };
 		44584B5D0D28CDC3FD4BA484 /* GeocodingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1917A5406C85706393C904A8 /* GeocodingService.swift */; };
 		4AE9F76331E0C28E69414E05 /* MapPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB547F409FDDD0FC0C1040F0 /* MapPreviewView.swift */; };
 		AA11111111111111AAAAAAAA /* PulseDotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA22222222222222AAAAAAAA /* PulseDotView.swift */; };
@@ -45,6 +47,8 @@
 		AA66666666666666AAAAAAAA /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
 		AA88888888888888AAAAAAAA /* ExpandableMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableMapView.swift; sourceTree = "<group>"; };
 		3A6109B85A030C72507E44B9 /* MockTrafficProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTrafficProvider.swift; sourceTree = "<group>"; };
+		BB22222222222222BBBBBBBB /* MapboxDirectionsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxDirectionsProvider.swift; sourceTree = "<group>"; };
+		BB44444444444444BBBBBBBB /* MapboxModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxModels.swift; sourceTree = "<group>"; };
 		3C66FCC8B3661F91501E281F /* CommuteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommuteViewModel.swift; sourceTree = "<group>"; };
 		43F708E3F27EAAC688CC6C71 /* DeveloperSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperSettingsView.swift; sourceTree = "<group>"; };
 		441453EB056314E1536D4E42 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
@@ -62,6 +66,8 @@
 		0837E9FCFBDA92B0703AD3FC /* Providers */ = {
 			isa = PBXGroup;
 			children = (
+				BB22222222222222BBBBBBBB /* MapboxDirectionsProvider.swift */,
+				BB44444444444444BBBBBBBB /* MapboxModels.swift */,
 				131D8CF56933FFD42186B44B /* MapKitProvider.swift */,
 				3A6109B85A030C72507E44B9 /* MockTrafficProvider.swift */,
 				0ADFC7EADD6310B046A1910C /* TrafficProvider.swift */,
@@ -216,6 +222,8 @@
 				44584B5D0D28CDC3FD4BA484 /* GeocodingService.swift in Sources */,
 				AA77777777777777AAAAAAAA /* ExpandableMapView.swift in Sources */,
 				80CCEF8D8F53F4AE5CE7BD87 /* LocationManager.swift in Sources */,
+				BB11111111111111BBBBBBBB /* MapboxDirectionsProvider.swift in Sources */,
+				BB33333333333333BBBBBBBB /* MapboxModels.swift in Sources */,
 				9D1F8D292CAE234A54C22341 /* MapKitProvider.swift in Sources */,
 				4AE9F76331E0C28E69414E05 /* MapPreviewView.swift in Sources */,
 				29F5E9603404987AB7BFB804 /* MockTrafficProvider.swift in Sources */,
