@@ -59,7 +59,7 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
             polylineCoordinates: Self.samplePolyline,
             mkPolyline: nil,
             advisoryNotices: includeIncidents ? ["Construction on main route"] : [],
-            segmentCongestion: nil
+            segmentCongestion: includeCongestion ? generateCongestion(count: Self.samplePolyline.count - 1) : nil
         )
 
         var routes = [primaryRoute]
@@ -75,7 +75,7 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
                 polylineCoordinates: Self.samplePolyline,
                 mkPolyline: nil,
                 advisoryNotices: [],
-                segmentCongestion: nil
+                segmentCongestion: includeCongestion ? generateCongestion(count: Self.samplePolyline.count - 1) : nil
             )
             routes.append(altRoute)
         }
@@ -85,6 +85,11 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
             incidents: includeIncidents ? generateIncidents() : [],
             fetchedAt: Date()
         )
+    }
+
+    private func generateCongestion(count: Int) -> [CongestionLevel] {
+        let levels: [CongestionLevel] = [.low, .low, .low, .moderate, .moderate, .heavy, .severe]
+        return (0..<count).map { _ in levels.randomElement() ?? .low }
     }
 
     private func generateIncidents() -> [TrafficIncident] {
