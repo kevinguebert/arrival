@@ -12,6 +12,8 @@ struct PreferencesView: View {
     @State private var selectedTab: SettingsTab = .addresses
     @State private var showingBYOKInput = false
     @State private var byokKeyInput = ""
+    @State private var isFetchingBaseline = false
+    @State private var baselineFetchError: String?
 
     enum SettingsTab {
         case addresses, schedule, general
@@ -56,7 +58,7 @@ struct PreferencesView: View {
             .padding(20)
         }
         .background(backgroundGradient)
-        .frame(width: 420, height: 420)
+        .frame(minWidth: 420, maxWidth: 420, minHeight: 420, maxHeight: 520)
     }
 
     // MARK: - Tab Bar
@@ -292,29 +294,42 @@ struct PreferencesView: View {
             Spacer()
             HStack(spacing: 4) {
                 ForEach(options, id: \.value) { option in
-                    Button(action: { selection.wrappedValue = option.value }) {
-                        Text(option.label)
-                            .font(.system(size: 12, weight: selection.wrappedValue == option.value ? .semibold : .regular, design: .rounded))
-                            .foregroundColor(selection.wrappedValue == option.value
-                                ? TrafficMood.clear.darkAccentColor
-                                : (isDark ? .white.opacity(0.4) : .secondary))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 4)
-                            .background(selection.wrappedValue == option.value
-                                ? TrafficMood.clear.darkAccentColor.opacity(0.15)
-                                : (isDark ? Color.white.opacity(0.06) : Color.black.opacity(0.04)))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .strokeBorder(selection.wrappedValue == option.value
-                                        ? TrafficMood.clear.darkAccentColor.opacity(0.3)
-                                        : (isDark ? Color.white.opacity(0.1) : Color.black.opacity(0.1)), lineWidth: 1)
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                    }
-                    .buttonStyle(.plain)
+                    pollingOptionButton(option: option, selection: selection)
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private func pollingOptionButton(
+        option: (label: String, value: TimeInterval),
+        selection: Binding<TimeInterval>
+    ) -> some View {
+        let isSelected = selection.wrappedValue == option.value
+        let textColor: Color = isSelected
+            ? TrafficMood.clear.darkAccentColor
+            : (isDark ? .white.opacity(0.4) : .secondary)
+        let bgColor: Color = isSelected
+            ? TrafficMood.clear.darkAccentColor.opacity(0.15)
+            : (isDark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
+        let borderColor: Color = isSelected
+            ? TrafficMood.clear.darkAccentColor.opacity(0.3)
+            : (isDark ? Color.white.opacity(0.1) : Color.black.opacity(0.1))
+
+        Button(action: { selection.wrappedValue = option.value }) {
+            Text(option.label)
+                .font(.system(size: 12, weight: isSelected ? .semibold : .regular, design: .rounded))
+                .foregroundColor(textColor)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(bgColor)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .strokeBorder(borderColor, lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - General Tab
@@ -352,6 +367,55 @@ struct PreferencesView: View {
                     .font(.system(size: 11, design: .rounded))
                     .foregroundColor(isDark ? .white.opacity(0.35) : .secondary)
                     .lineSpacing(2)
+            }
+
+            Divider().opacity(isDark ? 0.06 : 0.15)
+
+            // Traffic Comparison
+            VStack(alignment: .leading, spacing: 8) {
+                Text("TRAFFIC COMPARISON")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
+                    .tracking(0.5)
+
+                Picker("Compare to", selection: $settings.baselineCompareMode) {
+                    ForEach(BaselineCompareMode.allCases, id: \.self) { mode in
+                        Text(mode.displayName).tag(mode)
+                    }
+                }
+                .pickerStyle(.radioGroup)
+                .font(.system(size: 13, design: .rounded))
+                .foregroundColor(isDark ? .white.opacity(0.7) : .primary)
+
+                if settings.effectiveMapboxKey != nil {
+                    Toggle("Use Mapbox for baseline", isOn: $settings.useMapboxBaseline)
+                        .font(.system(size: 13, design: .rounded))
+                        .foregroundColor(isDark ? .white.opacity(0.7) : .primary)
+                        .tint(TrafficMood.clear.darkAccentColor)
+                }
+
+                HStack(spacing: 10) {
+                    Button(action: fetchBaseline) {
+                        if isFetchingBaseline {
+                            ProgressView()
+                                .controlSize(.small)
+                                .scaleEffect(0.7)
+                        } else {
+                            Text("Recalibrate")
+                        }
+                    }
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(TrafficMood.clear.darkAccentColor)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(TrafficMood.clear.darkAccentColor.opacity(0.15))
+                    .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(TrafficMood.clear.darkAccentColor.opacity(0.3), lineWidth: 1))
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                    .buttonStyle(.plain)
+                    .disabled(!settings.isConfigured || isFetchingBaseline)
+
+                    baselineSummaryText
+                }
             }
 
             Divider().opacity(isDark ? 0.06 : 0.15)
@@ -617,6 +681,58 @@ struct PreferencesView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
+    // MARK: - Baseline
+
+    @ViewBuilder
+    private var baselineSummaryText: some View {
+        if let error = baselineFetchError {
+            Text(error)
+                .font(.system(size: 10, design: .rounded))
+                .foregroundColor(.orange)
+        } else if let toWork = settings.baselineToWorkTime,
+                  let toHome = settings.baselineToHomeTime {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\(Int(toWork / 60)) min \u{2192} work, \(Int(toHome / 60)) min \u{2192} home")
+                    .font(.system(size: 10, design: .rounded))
+                    .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
+                if let fetchedAt = settings.baselineFetchedAt {
+                    Text("Set on \(fetchedAt.formatted(date: .abbreviated, time: .omitted))")
+                        .font(.system(size: 9, design: .rounded))
+                        .foregroundColor(isDark ? .white.opacity(0.3) : .secondary.opacity(0.6))
+                }
+            }
+        } else {
+            Text("No baseline set")
+                .font(.system(size: 10, design: .rounded))
+                .foregroundColor(isDark ? .white.opacity(0.35) : .secondary)
+        }
+    }
+
+    private func fetchBaseline() {
+        guard let home = settings.homeCoordinate,
+              let work = settings.workCoordinate else { return }
+
+        isFetchingBaseline = true
+        baselineFetchError = nil
+        Task {
+            do {
+                let apiKey = settings.useMapboxBaseline ? settings.effectiveMapboxKey : nil
+                let result = try await BaselineFetcher.fetch(
+                    home: home,
+                    work: work,
+                    mapboxAPIKey: apiKey
+                )
+                settings.baselineToWorkTime = result.toWorkTime
+                settings.baselineToHomeTime = result.toHomeTime
+                settings.baselineFetchedAt = Date()
+                baselineFetchError = nil
+            } catch {
+                baselineFetchError = "Baseline not available — try again"
+            }
+            isFetchingBaseline = false
+        }
+    }
+
     // MARK: - Helpers
 
     private var backgroundGradient: some View {
@@ -632,6 +748,7 @@ struct PreferencesView: View {
     // MARK: - Geocoding
 
     private func geocodeHome() {
+        settings.clearBaselines()
         isGeocodingHome = true
         homeGeocodingError = nil
         Task {
@@ -639,6 +756,9 @@ struct PreferencesView: View {
                 let coord = try await geocoder.geocode(address: settings.homeAddress)
                 settings.homeCoordinate = coord
                 homeGeocodingError = nil
+                if settings.isConfigured {
+                    fetchBaseline()
+                }
             } catch {
                 homeGeocodingError = "Couldn't find this address"
                 settings.homeCoordinate = nil
@@ -648,6 +768,7 @@ struct PreferencesView: View {
     }
 
     private func geocodeWork() {
+        settings.clearBaselines()
         isGeocodingWork = true
         workGeocodingError = nil
         Task {
@@ -655,6 +776,9 @@ struct PreferencesView: View {
                 let coord = try await geocoder.geocode(address: settings.workAddress)
                 settings.workCoordinate = coord
                 workGeocodingError = nil
+                if settings.isConfigured {
+                    fetchBaseline()
+                }
             } catch {
                 workGeocodingError = "Couldn't find this address"
                 settings.workCoordinate = nil
