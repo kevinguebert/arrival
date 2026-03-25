@@ -41,7 +41,7 @@ struct PopoverView: View {
                         if result.shouldCollapse {
                             singleRouteView(result: result)
                         } else {
-                            RouteListView(result: result) { route in
+                            RouteListView(result: result, originCoordinate: originCoordinate, destinationCoordinate: destinationCoordinate) { route in
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                                     if showMap && expandedRoute?.id == route.id {
                                         // Same route tapped while map open → close
@@ -188,8 +188,8 @@ struct PopoverView: View {
                     .font(Design.moodFont(scale: fontScale))
                     .foregroundColor(colorScheme == .dark ? mood.darkAccentColor : mood.lightTextColor)
 
-                if let route = viewModel.fastestRoute, route.delayMinutes > 0 {
-                    Text("· +\(route.delayMinutes) min")
+                if let route = viewModel.fastestRoute, baselineDelayMinutes(for: route) > 0 {
+                    Text("· +\(baselineDelayMinutes(for: route)) min")
                         .font(Design.moodFont(scale: fontScale))
                         .foregroundColor(colorScheme == .dark ? mood.darkAccentColor : mood.lightTextColor)
                 }
@@ -203,6 +203,20 @@ struct PopoverView: View {
             )
             .clipShape(Capsule())
         }
+    }
+
+    private func baselineDelayMinutes(for route: Route) -> Int {
+        let baseline: TimeInterval
+        switch viewModel.settings.baselineCompareMode {
+        case .typical:
+            baseline = route.normalTravelTime
+        case .bestCase:
+            let persisted = viewModel.direction == .toWork
+                ? viewModel.settings.baselineToWorkTime
+                : viewModel.settings.baselineToHomeTime
+            baseline = persisted ?? route.normalTravelTime
+        }
+        return max(0, Int((route.travelTime - baseline) / 60))
     }
 
     // MARK: - Single Route (Smart Collapse)
@@ -233,6 +247,21 @@ struct PopoverView: View {
                             Text("\(route.travelTimeMinutes) min")
                                 .font(Design.routeTimeFont(scale: fontScale, isFastest: true))
                                 .foregroundColor(colorScheme == .dark ? TrafficMood.clear.darkAccentColor : TrafficMood.clear.lightTextColor)
+
+                            Button(action: {
+                                MapsURLBuilder.open(
+                                    route: route,
+                                    from: originCoordinate,
+                                    to: destinationCoordinate,
+                                    app: viewModel.settings.preferredMapsApp
+                                )
+                            }) {
+                                Image(systemName: "arrow.triangle.turn.up.right.circle")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.6))
+                            }
+                            .buttonStyle(.plain)
+                            .help("Open in \(viewModel.settings.preferredMapsApp.displayName)")
                         }
 
                         StylizedRouteLineView(
@@ -309,14 +338,14 @@ struct PopoverView: View {
             }
 
             if viewModel.currentResult != nil {
-                Button(action: openInAppleMaps) {
+                Button(action: openInMaps) {
                     Image(systemName: "arrow.triangle.turn.up.right.circle")
                         .font(.system(size: 14))
                         .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.6))
                 }
                 .buttonStyle(.plain)
                 .contentShape(Rectangle())
-                .help("Open in Apple Maps")
+                .help("Open in \(viewModel.settings.preferredMapsApp.displayName)")
             }
 
             Spacer()
@@ -402,14 +431,19 @@ struct PopoverView: View {
         moodPhrase = mood.randomPhrase()
     }
 
-    private func openInAppleMaps() {
+    private func openInMaps() {
         let origin = originCoordinate
         let destination = destinationCoordinate
         guard origin.latitude != 0, destination.latitude != 0 else { return }
 
-        let urlString = "maps://?saddr=\(origin.latitude),\(origin.longitude)&daddr=\(destination.latitude),\(destination.longitude)&dirflg=d"
-        if let url = URL(string: urlString) {
-            NSWorkspace.shared.open(url)
+        if let route = expandedRoute ?? viewModel.fastestRoute {
+            MapsURLBuilder.open(route: route, from: origin, to: destination, app: viewModel.settings.preferredMapsApp)
+        } else {
+            // No route data — fall back to simple origin→destination
+            let urlString = "maps://?saddr=\(origin.latitude),\(origin.longitude)&daddr=\(destination.latitude),\(destination.longitude)&dirflg=d"
+            if let url = URL(string: urlString) {
+                NSWorkspace.shared.open(url)
+            }
         }
     }
 }
