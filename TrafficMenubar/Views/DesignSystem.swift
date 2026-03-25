@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 // MARK: - Traffic Mood
 
@@ -13,6 +14,24 @@ enum TrafficMood {
         if hasIncidents || delayMinutes >= 15 {
             self = .heavy
         } else if delayMinutes >= 5 {
+            self = .moderate
+        } else {
+            self = .clear
+        }
+    }
+
+    init(segmentCongestion: [CongestionLevel]) {
+        guard !segmentCongestion.isEmpty else {
+            self = .unknown
+            return
+        }
+        let total = segmentCongestion.count
+        let severeOrHeavy = segmentCongestion.filter { $0 == .severe || $0 == .heavy }.count
+        let ratio = Double(severeOrHeavy) / Double(total)
+
+        if ratio > 0.3 {
+            self = .heavy
+        } else if ratio > 0.1 {
             self = .moderate
         } else {
             self = .clear
@@ -236,4 +255,28 @@ enum EmptyState {
         title: "Hmm, no routes found",
         subtitle: "MapKit shrugged. Try different addresses?"
     )
+}
+
+// MARK: - CongestionLevel Color Helpers
+
+extension CongestionLevel {
+    var color: Color {
+        switch self {
+        case .low:      return Color(red: 0.29, green: 0.68, blue: 0.50) // #4DAD80
+        case .moderate: return Color(red: 0.98, green: 0.75, blue: 0.14) // #FDC21C
+        case .heavy:    return Color(red: 0.97, green: 0.44, blue: 0.44) // #F76F6F
+        case .severe:   return Color(red: 0.83, green: 0.18, blue: 0.18) // #D32F2F
+        case .unknown:  return Color.gray.opacity(0.5)
+        }
+    }
+
+    var nsColor: NSColor {
+        switch self {
+        case .low:      return NSColor(red: 0.29, green: 0.68, blue: 0.50, alpha: 0.9)
+        case .moderate: return NSColor(red: 0.98, green: 0.75, blue: 0.14, alpha: 0.9)
+        case .heavy:    return NSColor(red: 0.97, green: 0.44, blue: 0.44, alpha: 0.9)
+        case .severe:   return NSColor(red: 0.83, green: 0.18, blue: 0.18, alpha: 0.9)
+        case .unknown:  return NSColor.gray.withAlphaComponent(0.5)
+        }
+    }
 }
