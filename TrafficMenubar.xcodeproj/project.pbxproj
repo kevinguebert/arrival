@@ -11,22 +11,24 @@
 		219057907F75155D78C12179 /* RouteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505077E8682164B1048389A5 /* RouteResult.swift */; };
 		22972A8094D146CCB9596726 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EB5C002DD93D249231A279 /* SettingsStore.swift */; };
 		29F5E9603404987AB7BFB804 /* MockTrafficProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6109B85A030C72507E44B9 /* MockTrafficProvider.swift */; };
-		BB11111111111111BBBBBBBB /* MapboxDirectionsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22222222222222BBBBBBBB /* MapboxDirectionsProvider.swift */; };
-		BB33333333333333BBBBBBBB /* MapboxModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB44444444444444BBBBBBBB /* MapboxModels.swift */; };
 		44584B5D0D28CDC3FD4BA484 /* GeocodingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1917A5406C85706393C904A8 /* GeocodingService.swift */; };
 		4AE9F76331E0C28E69414E05 /* MapPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB547F409FDDD0FC0C1040F0 /* MapPreviewView.swift */; };
-		AA11111111111111AAAAAAAA /* PulseDotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA22222222222222AAAAAAAA /* PulseDotView.swift */; };
-		AA33333333333333AAAAAAAA /* StylizedRouteLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA44444444444444AAAAAAAA /* StylizedRouteLineView.swift */; };
-		AA55555555555555AAAAAAAA /* RouteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA66666666666666AAAAAAAA /* RouteListView.swift */; };
-		AA77777777777777AAAAAAAA /* ExpandableMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA88888888888888AAAAAAAA /* ExpandableMapView.swift */; };
 		52A6A36CC4A3E0F5AB7A7F97 /* TrafficProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADFC7EADD6310B046A1910C /* TrafficProvider.swift */; };
+		5A71F9C78E3C8D6A1402E600 /* RouteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F57E5A2B286B716760F748 /* RouteListView.swift */; };
 		69E01FA3B856C2A82A80DAE4 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DACCD8C826CA42249DD59BD /* DesignSystem.swift */; };
 		80CCEF8D8F53F4AE5CE7BD87 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0D33712B372A8C879AF55E /* LocationManager.swift */; };
+		83A7BDFD46CA4347366D07C2 /* PulseDotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C45B2741A5C333CA9BD049 /* PulseDotView.swift */; };
 		92F914BBFEE9B91B384AC3BA /* QuickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB89605ABFC7388B77D8C430 /* QuickSettingsView.swift */; };
 		9D1F8D292CAE234A54C22341 /* MapKitProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131D8CF56933FFD42186B44B /* MapKitProvider.swift */; };
 		9DD29004792E1F788655D5FA /* PollScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84C0EB6D75FCD3B12B51590 /* PollScheduler.swift */; };
+		A1B9F43280D16FFD374ED750 /* StylizedRouteLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5EACCF47DE40676D570461 /* StylizedRouteLineView.swift */; };
+		A453E1C338037EE0E131D6D4 /* MapboxDirectionsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE680ADCB8B371D5A61AC714 /* MapboxDirectionsProvider.swift */; };
+		A703AEA4886E00F1CF1D1F45 /* MapsURLBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BC68CEEE3EEB11E9156B8F /* MapsURLBuilder.swift */; };
 		AAAA3DC516F5C958A84C25F9 /* TrafficMenubarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B3AC016D5A9CA662E8F609 /* TrafficMenubarApp.swift */; };
+		B25DBB56D2390F182C9A0DFC /* ExpandableMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8463BE9DDFBE7F66A903CDF9 /* ExpandableMapView.swift */; };
 		CA48C65D2938AC8065C31070 /* DeveloperSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F708E3F27EAAC688CC6C71 /* DeveloperSettingsView.swift */; };
+		CF59AD5D2FCF70EB0F781A06 /* BaselineFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525D7C27F1CA053C0E5BF407 /* BaselineFetcher.swift */; };
+		D31F301F6C11A9DD12B99046 /* MapboxModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84B03DB4395EF35AEF0ADC7 /* MapboxModels.swift */; };
 		E454D3232B0CFA4CF6DF0048 /* CommuteDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AEBDD08F70ED68C66A25C4B /* CommuteDirection.swift */; };
 		E881CD3E0E477FC45229F7F6 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441453EB056314E1536D4E42 /* PreferencesView.swift */; };
 		EF2CB5C27111684053448ADD /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFFB5BD02390AE443708965 /* PopoverView.swift */; };
@@ -38,27 +40,29 @@
 		12EB5C002DD93D249231A279 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		131D8CF56933FFD42186B44B /* MapKitProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapKitProvider.swift; sourceTree = "<group>"; };
 		1917A5406C85706393C904A8 /* GeocodingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocodingService.swift; sourceTree = "<group>"; };
+		21C45B2741A5C333CA9BD049 /* PulseDotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseDotView.swift; sourceTree = "<group>"; };
 		232064AC7E94BEBC2CF21205 /* DevDesignOverrides.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevDesignOverrides.swift; sourceTree = "<group>"; };
 		2AEBDD08F70ED68C66A25C4B /* CommuteDirection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommuteDirection.swift; sourceTree = "<group>"; };
 		2DACCD8C826CA42249DD59BD /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		35A610342063C60610D2E1F8 /* TrafficMenubar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrafficMenubar.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA22222222222222AAAAAAAA /* PulseDotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseDotView.swift; sourceTree = "<group>"; };
-		AA44444444444444AAAAAAAA /* StylizedRouteLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StylizedRouteLineView.swift; sourceTree = "<group>"; };
-		AA66666666666666AAAAAAAA /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
-		AA88888888888888AAAAAAAA /* ExpandableMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableMapView.swift; sourceTree = "<group>"; };
 		3A6109B85A030C72507E44B9 /* MockTrafficProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTrafficProvider.swift; sourceTree = "<group>"; };
-		BB22222222222222BBBBBBBB /* MapboxDirectionsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxDirectionsProvider.swift; sourceTree = "<group>"; };
-		BB44444444444444BBBBBBBB /* MapboxModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxModels.swift; sourceTree = "<group>"; };
 		3C66FCC8B3661F91501E281F /* CommuteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommuteViewModel.swift; sourceTree = "<group>"; };
 		43F708E3F27EAAC688CC6C71 /* DeveloperSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperSettingsView.swift; sourceTree = "<group>"; };
 		441453EB056314E1536D4E42 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		4EFFB5BD02390AE443708965 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
 		505077E8682164B1048389A5 /* RouteResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteResult.swift; sourceTree = "<group>"; };
+		525D7C27F1CA053C0E5BF407 /* BaselineFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineFetcher.swift; sourceTree = "<group>"; };
+		52BC68CEEE3EEB11E9156B8F /* MapsURLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapsURLBuilder.swift; sourceTree = "<group>"; };
+		8463BE9DDFBE7F66A903CDF9 /* ExpandableMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableMapView.swift; sourceTree = "<group>"; };
 		B4B3AC016D5A9CA662E8F609 /* TrafficMenubarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficMenubarApp.swift; sourceTree = "<group>"; };
 		B84C0EB6D75FCD3B12B51590 /* PollScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollScheduler.swift; sourceTree = "<group>"; };
+		BE5EACCF47DE40676D570461 /* StylizedRouteLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StylizedRouteLineView.swift; sourceTree = "<group>"; };
+		BE680ADCB8B371D5A61AC714 /* MapboxDirectionsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxDirectionsProvider.swift; sourceTree = "<group>"; };
 		BEA9B90622C972DC78BC34ED /* TrafficMenubar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TrafficMenubar.entitlements; sourceTree = "<group>"; };
 		CF0D33712B372A8C879AF55E /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		D84B03DB4395EF35AEF0ADC7 /* MapboxModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxModels.swift; sourceTree = "<group>"; };
 		EB547F409FDDD0FC0C1040F0 /* MapPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPreviewView.swift; sourceTree = "<group>"; };
+		F9F57E5A2B286B716760F748 /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
 		FB89605ABFC7388B77D8C430 /* QuickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -66,8 +70,8 @@
 		0837E9FCFBDA92B0703AD3FC /* Providers */ = {
 			isa = PBXGroup;
 			children = (
-				BB22222222222222BBBBBBBB /* MapboxDirectionsProvider.swift */,
-				BB44444444444444BBBBBBBB /* MapboxModels.swift */,
+				BE680ADCB8B371D5A61AC714 /* MapboxDirectionsProvider.swift */,
+				D84B03DB4395EF35AEF0ADC7 /* MapboxModels.swift */,
 				131D8CF56933FFD42186B44B /* MapKitProvider.swift */,
 				3A6109B85A030C72507E44B9 /* MockTrafficProvider.swift */,
 				0ADFC7EADD6310B046A1910C /* TrafficProvider.swift */,
@@ -80,14 +84,14 @@
 			children = (
 				2DACCD8C826CA42249DD59BD /* DesignSystem.swift */,
 				43F708E3F27EAAC688CC6C71 /* DeveloperSettingsView.swift */,
-				AA88888888888888AAAAAAAA /* ExpandableMapView.swift */,
+				8463BE9DDFBE7F66A903CDF9 /* ExpandableMapView.swift */,
 				EB547F409FDDD0FC0C1040F0 /* MapPreviewView.swift */,
 				4EFFB5BD02390AE443708965 /* PopoverView.swift */,
 				441453EB056314E1536D4E42 /* PreferencesView.swift */,
-				AA22222222222222AAAAAAAA /* PulseDotView.swift */,
+				21C45B2741A5C333CA9BD049 /* PulseDotView.swift */,
 				FB89605ABFC7388B77D8C430 /* QuickSettingsView.swift */,
-				AA66666666666666AAAAAAAA /* RouteListView.swift */,
-				AA44444444444444AAAAAAAA /* StylizedRouteLineView.swift */,
+				F9F57E5A2B286B716760F748 /* RouteListView.swift */,
+				BE5EACCF47DE40676D570461 /* StylizedRouteLineView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -121,6 +125,8 @@
 		695034175620289D4A6A15F1 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				525D7C27F1CA053C0E5BF407 /* BaselineFetcher.swift */,
+				52BC68CEEE3EEB11E9156B8F /* MapsURLBuilder.swift */,
 				B84C0EB6D75FCD3B12B51590 /* PollScheduler.swift */,
 				12EB5C002DD93D249231A279 /* SettingsStore.swift */,
 			);
@@ -214,28 +220,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF59AD5D2FCF70EB0F781A06 /* BaselineFetcher.swift in Sources */,
 				E454D3232B0CFA4CF6DF0048 /* CommuteDirection.swift in Sources */,
 				161AFCE8BC7DF9EBEF561727 /* CommuteViewModel.swift in Sources */,
 				69E01FA3B856C2A82A80DAE4 /* DesignSystem.swift in Sources */,
 				FC9BDC90022CCD2ABECD9061 /* DevDesignOverrides.swift in Sources */,
 				CA48C65D2938AC8065C31070 /* DeveloperSettingsView.swift in Sources */,
+				B25DBB56D2390F182C9A0DFC /* ExpandableMapView.swift in Sources */,
 				44584B5D0D28CDC3FD4BA484 /* GeocodingService.swift in Sources */,
-				AA77777777777777AAAAAAAA /* ExpandableMapView.swift in Sources */,
 				80CCEF8D8F53F4AE5CE7BD87 /* LocationManager.swift in Sources */,
-				BB11111111111111BBBBBBBB /* MapboxDirectionsProvider.swift in Sources */,
-				BB33333333333333BBBBBBBB /* MapboxModels.swift in Sources */,
 				9D1F8D292CAE234A54C22341 /* MapKitProvider.swift in Sources */,
 				4AE9F76331E0C28E69414E05 /* MapPreviewView.swift in Sources */,
+				A453E1C338037EE0E131D6D4 /* MapboxDirectionsProvider.swift in Sources */,
+				D31F301F6C11A9DD12B99046 /* MapboxModels.swift in Sources */,
+				A703AEA4886E00F1CF1D1F45 /* MapsURLBuilder.swift in Sources */,
 				29F5E9603404987AB7BFB804 /* MockTrafficProvider.swift in Sources */,
 				9DD29004792E1F788655D5FA /* PollScheduler.swift in Sources */,
 				EF2CB5C27111684053448ADD /* PopoverView.swift in Sources */,
 				E881CD3E0E477FC45229F7F6 /* PreferencesView.swift in Sources */,
-				AA11111111111111AAAAAAAA /* PulseDotView.swift in Sources */,
-				AA55555555555555AAAAAAAA /* RouteListView.swift in Sources */,
-				AA33333333333333AAAAAAAA /* StylizedRouteLineView.swift in Sources */,
+				83A7BDFD46CA4347366D07C2 /* PulseDotView.swift in Sources */,
 				92F914BBFEE9B91B384AC3BA /* QuickSettingsView.swift in Sources */,
+				5A71F9C78E3C8D6A1402E600 /* RouteListView.swift in Sources */,
 				219057907F75155D78C12179 /* RouteResult.swift in Sources */,
 				22972A8094D146CCB9596726 /* SettingsStore.swift in Sources */,
+				A1B9F43280D16FFD374ED750 /* StylizedRouteLineView.swift in Sources */,
 				AAAA3DC516F5C958A84C25F9 /* TrafficMenubarApp.swift in Sources */,
 				52A6A36CC4A3E0F5AB7A7F97 /* TrafficProvider.swift in Sources */,
 			);
