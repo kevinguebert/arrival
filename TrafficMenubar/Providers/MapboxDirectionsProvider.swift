@@ -60,7 +60,8 @@ final class MapboxDirectionsProvider: TrafficProvider {
         let routes: [Route] = Array(directionsResponse.routes.prefix(3)).enumerated().map { index, mbRoute in
             let coordinates = decodePolyline6(mbRoute.geometry)
             let congestion = combineLegCongestion(mbRoute.legs)
-            let name = index == 0 ? "Fastest Route" : "Alternate \(index)"
+            let summary = mbRoute.legs.compactMap(\.summary).first(where: { !$0.isEmpty })
+            let name = summary.map { "via \($0)" } ?? (index == 0 ? "Fastest Route" : "Alternate \(index)")
 
             return Route(
                 name: name,

@@ -21,6 +21,7 @@ struct MapboxRoute: Codable {
 }
 
 struct MapboxLeg: Codable {
+    let summary: String?
     let annotation: MapboxAnnotation?
     let incidents: [MapboxIncident]?
 }
