@@ -10,32 +10,48 @@ enum TrafficMood {
     case heavy       // Significant delay, incidents likely
     case unknown     // No data yet
 
-    init(delayMinutes: Int, hasIncidents: Bool) {
-        if hasIncidents || delayMinutes >= 15 {
-            self = .heavy
-        } else if delayMinutes >= 5 {
-            self = .moderate
-        } else {
-            self = .clear
-        }
-    }
+    init(currentTime: TimeInterval,
+         baselineTime: TimeInterval,
+         segmentCongestion: [CongestionLevel]?,
+         hasMajorIncidents: Bool) {
 
-    init(segmentCongestion: [CongestionLevel]) {
-        guard !segmentCongestion.isEmpty else {
-            self = .unknown
+        // Major incidents bypass all duration logic
+        if hasMajorIncidents {
+            self = .heavy
             return
         }
-        let total = segmentCongestion.count
-        let severeOrHeavy = segmentCongestion.filter { $0 == .severe || $0 == .heavy }.count
-        let ratio = Double(severeOrHeavy) / Double(total)
 
-        if ratio > 0.3 {
-            self = .heavy
-        } else if ratio > 0.1 {
-            self = .moderate
+        let delay = currentTime - baselineTime
+        let delayMinutes = delay / 60.0
+        let percentOver = baselineTime > 0 ? delay / baselineTime : 0
+
+        // Primary mood from duration comparison (if/else-if, first match wins)
+        var result: TrafficMood
+        if delayMinutes < 3 {
+            result = .clear
+        } else if percentOver <= 0.15 && delayMinutes < 5 {
+            result = .clear
+        } else if percentOver > 0.30 && delayMinutes >= 10 {
+            result = .heavy
         } else {
-            self = .clear
+            result = .moderate
         }
+
+        // Congestion bump: if >25% of segments are heavy/severe, bump up one level
+        if let congestion = segmentCongestion, !congestion.isEmpty {
+            let total = congestion.count
+            let severeOrHeavy = congestion.filter { $0 == .severe || $0 == .heavy }.count
+            let ratio = Double(severeOrHeavy) / Double(total)
+            if ratio > 0.25 {
+                switch result {
+                case .clear: result = .moderate
+                case .moderate: result = .heavy
+                case .heavy, .unknown: break
+                }
+            }
+        }
+
+        self = result
     }
 
     var accentColor: Color {

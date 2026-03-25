@@ -88,10 +88,28 @@ final class CommuteViewModel: ObservableObject {
 
     var mood: TrafficMood {
         guard let route = fastestRoute else { return .unknown }
-        if let congestion = route.segmentCongestion, !congestion.isEmpty {
-            return TrafficMood(segmentCongestion: congestion)
+
+        let baseline: TimeInterval
+        switch settings.baselineCompareMode {
+        case .typical:
+            baseline = route.normalTravelTime
+        case .bestCase:
+            let persisted = direction == .toWork
+                ? settings.baselineToWorkTime
+                : settings.baselineToHomeTime
+            baseline = persisted ?? route.normalTravelTime
         }
-        return TrafficMood(delayMinutes: route.delayMinutes, hasIncidents: route.hasIncidents)
+
+        let hasMajorIncidents = currentResult?.incidents.contains {
+            $0.severity == .major || $0.severity == .severe
+        } ?? false
+
+        return TrafficMood(
+            currentTime: route.travelTime,
+            baselineTime: baseline,
+            segmentCongestion: route.segmentCongestion,
+            hasMajorIncidents: hasMajorIncidents
+        )
     }
 
     var menuBarText: String {

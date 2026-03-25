@@ -175,8 +175,15 @@ struct DeveloperSettingsView: View {
                         .tint(.orange)
                 }
 
+                let currentTime = mockProvider.travelTimeMinutes * 60
+                let baselineTime = mockProvider.normalTimeMinutes * 60
+                let computedMood = TrafficMood(
+                    currentTime: currentTime,
+                    baselineTime: baselineTime,
+                    segmentCongestion: nil,
+                    hasMajorIncidents: mockProvider.includeIncidents && mockProvider.maxSeverity != .minor
+                )
                 let delay = max(0, Int(mockProvider.travelTimeMinutes - mockProvider.normalTimeMinutes))
-                let computedMood = TrafficMood(delayMinutes: delay, hasIncidents: mockProvider.includeIncidents)
                 HStack {
                     Text("Delay: +\(delay) min")
                         .font(.system(size: 11))
