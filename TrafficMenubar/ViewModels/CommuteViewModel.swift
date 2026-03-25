@@ -10,6 +10,7 @@ final class CommuteViewModel: ObservableObject {
     @Published var lastUpdated: Date?
     @Published var directionOverride: CommuteDirection?
     @Published var isDevMode = false
+    @Published var selectedRouteIndex: Int = 0
 
     let settings: SettingsStore
     let locationManager: LocationManager
@@ -118,6 +119,18 @@ final class CommuteViewModel: ObservableObject {
         }
         let minutes = route.travelTimeMinutes
         return "\(minutes)m\(mood.menuBarSuffix)"
+    }
+
+    var originCoordinate: Coordinate {
+        let home = settings.homeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        let work = settings.workCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        return direction == .toWork ? home : work
+    }
+
+    var destinationCoordinate: Coordinate {
+        let home = settings.homeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        let work = settings.workCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        return direction == .toWork ? work : home
     }
 
     var hasError: Bool {

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		161AFCE8BC7DF9EBEF561727 /* CommuteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C66FCC8B3661F91501E281F /* CommuteViewModel.swift */; };
+		1693A5B7C34C63B41A36A2DF /* DetachedMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1271175765193642DF46F1C8 /* DetachedMapView.swift */; };
 		219057907F75155D78C12179 /* RouteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505077E8682164B1048389A5 /* RouteResult.swift */; };
 		22972A8094D146CCB9596726 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EB5C002DD93D249231A279 /* SettingsStore.swift */; };
 		29F5E9603404987AB7BFB804 /* MockTrafficProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6109B85A030C72507E44B9 /* MockTrafficProvider.swift */; };
@@ -37,6 +38,7 @@
 
 /* Begin PBXFileReference section */
 		0ADFC7EADD6310B046A1910C /* TrafficProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficProvider.swift; sourceTree = "<group>"; };
+		1271175765193642DF46F1C8 /* DetachedMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetachedMapView.swift; sourceTree = "<group>"; };
 		12EB5C002DD93D249231A279 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		131D8CF56933FFD42186B44B /* MapKitProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapKitProvider.swift; sourceTree = "<group>"; };
 		1917A5406C85706393C904A8 /* GeocodingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocodingService.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				2DACCD8C826CA42249DD59BD /* DesignSystem.swift */,
+				1271175765193642DF46F1C8 /* DetachedMapView.swift */,
 				43F708E3F27EAAC688CC6C71 /* DeveloperSettingsView.swift */,
 				8463BE9DDFBE7F66A903CDF9 /* ExpandableMapView.swift */,
 				EB547F409FDDD0FC0C1040F0 /* MapPreviewView.swift */,
@@ -224,6 +227,7 @@
 				E454D3232B0CFA4CF6DF0048 /* CommuteDirection.swift in Sources */,
 				161AFCE8BC7DF9EBEF561727 /* CommuteViewModel.swift in Sources */,
 				69E01FA3B856C2A82A80DAE4 /* DesignSystem.swift in Sources */,
+				1693A5B7C34C63B41A36A2DF /* DetachedMapView.swift in Sources */,
 				FC9BDC90022CCD2ABECD9061 /* DevDesignOverrides.swift in Sources */,
 				CA48C65D2938AC8065C31070 /* DeveloperSettingsView.swift in Sources */,
 				B25DBB56D2390F182C9A0DFC /* ExpandableMapView.swift in Sources */,

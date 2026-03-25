@@ -6,15 +6,17 @@ struct MapPreviewView: NSViewRepresentable {
     let primaryRouteIndex: Int
     let originCoordinate: Coordinate
     let destinationCoordinate: Coordinate
+    var isInteractive: Bool = false
+    var recenterTrigger: UUID = UUID()
 
     func makeNSView(context: Context) -> MKMapView {
         let mapView = MKMapView()
-        mapView.isZoomEnabled = false
-        mapView.isScrollEnabled = false
-        mapView.isRotateEnabled = false
-        mapView.isPitchEnabled = false
-        mapView.showsZoomControls = false
-        mapView.showsCompass = false
+        mapView.isZoomEnabled = isInteractive
+        mapView.isScrollEnabled = isInteractive
+        mapView.isRotateEnabled = isInteractive
+        mapView.isPitchEnabled = isInteractive
+        mapView.showsZoomControls = isInteractive
+        mapView.showsCompass = isInteractive
         mapView.delegate = context.coordinator
 
         // Subtle dark appearance for the map
@@ -59,14 +61,18 @@ struct MapPreviewView: NSViewRepresentable {
                     mapView.addOverlay(polyline)
                 }
 
-                // Fit to full route bounds
-                let allCoords = coords
-                let polyline = MKPolyline(coordinates: allCoords, count: allCoords.count)
-                mapView.setVisibleMapRect(
-                    polyline.boundingMapRect,
-                    edgePadding: NSEdgeInsets(top: 24, left: 24, bottom: 24, right: 24),
-                    animated: false
-                )
+                // Fit to full route bounds (skip if interactive and already positioned)
+                if !context.coordinator.isInteractive || !context.coordinator.hasSetInitialRegion {
+                    let allCoords = coords
+                    let fullPolyline = MKPolyline(coordinates: allCoords, count: allCoords.count)
+                    let padding: CGFloat = isInteractive ? 40 : 24
+                    mapView.setVisibleMapRect(
+                        fullPolyline.boundingMapRect,
+                        edgePadding: NSEdgeInsets(top: padding, left: padding, bottom: padding, right: padding),
+                        animated: false
+                    )
+                    context.coordinator.hasSetInitialRegion = true
+                }
             } else {
                 // Fallback: solid green (existing behavior)
                 let coordinates = primary.polylineCoordinates.map {
@@ -76,11 +82,15 @@ struct MapPreviewView: NSViewRepresentable {
                 polyline.isPrimary = true
                 mapView.addOverlay(polyline)
 
-                mapView.setVisibleMapRect(
-                    polyline.boundingMapRect,
-                    edgePadding: NSEdgeInsets(top: 24, left: 24, bottom: 24, right: 24),
-                    animated: false
-                )
+                if !context.coordinator.isInteractive || !context.coordinator.hasSetInitialRegion {
+                    let padding: CGFloat = isInteractive ? 40 : 24
+                    mapView.setVisibleMapRect(
+                        polyline.boundingMapRect,
+                        edgePadding: NSEdgeInsets(top: padding, left: padding, bottom: padding, right: padding),
+                        animated: false
+                    )
+                    context.coordinator.hasSetInitialRegion = true
+                }
             }
         }
 
@@ -94,13 +104,40 @@ struct MapPreviewView: NSViewRepresentable {
             annotationType: .destination
         )
         mapView.addAnnotations([originAnnotation, destAnnotation])
+
+        // Handle recenter trigger
+        if context.coordinator.lastRecenterTrigger != recenterTrigger {
+            context.coordinator.lastRecenterTrigger = recenterTrigger
+            context.coordinator.hasSetInitialRegion = false
+            if let primary = routes.indices.contains(primaryRouteIndex) ? routes[primaryRouteIndex] : nil {
+                let coords = primary.polylineCoordinates.map {
+                    CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+                }
+                let polyline = MKPolyline(coordinates: coords, count: coords.count)
+                let padding: CGFloat = isInteractive ? 40 : 24
+                mapView.setVisibleMapRect(
+                    polyline.boundingMapRect,
+                    edgePadding: NSEdgeInsets(top: padding, left: padding, bottom: padding, right: padding),
+                    animated: true
+                )
+                context.coordinator.hasSetInitialRegion = true
+            }
+        }
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator()
+        Coordinator(isInteractive: isInteractive)
     }
 
     class Coordinator: NSObject, MKMapViewDelegate {
+        let isInteractive: Bool
+        var hasSetInitialRegion = false
+        var lastRecenterTrigger: UUID?
+
+        init(isInteractive: Bool) {
+            self.isInteractive = isInteractive
+        }
+
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let polyline = overlay as? TaggedPolyline {
                 let renderer = MKPolylineRenderer(polyline: polyline)
@@ -110,10 +147,10 @@ struct MapPreviewView: NSViewRepresentable {
                     } else {
                         renderer.strokeColor = NSColor(red: 0.29, green: 0.68, blue: 0.50, alpha: 0.9)
                     }
-                    renderer.lineWidth = 4
+                    renderer.lineWidth = isInteractive ? 5 : 4
                 } else {
                     renderer.strokeColor = NSColor.white.withAlphaComponent(0.15)
-                    renderer.lineWidth = 3
+                    renderer.lineWidth = isInteractive ? 4 : 3
                     renderer.lineDashPattern = [6, 4]
                 }
                 renderer.lineCap = .round

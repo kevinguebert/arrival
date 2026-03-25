@@ -53,6 +53,17 @@ struct QuickSettingsView: View {
 
             Divider().opacity(0.5)
 
+            // Maps app toggle
+            settingsButton(
+                icon: viewModel.settings.preferredMapsApp == .googleMaps ? "globe" : "map",
+                label: "Maps: \(viewModel.settings.preferredMapsApp.displayName)",
+                tint: .purple
+            ) {
+                viewModel.settings.preferredMapsApp = viewModel.settings.preferredMapsApp == .googleMaps ? .appleMaps : .googleMaps
+            }
+
+            Divider().opacity(0.5)
+
             // Preferences
             settingsButton(
                 icon: "gearshape.2",

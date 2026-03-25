@@ -48,17 +48,19 @@ struct PreferencesView: View {
             )
 
             // Tab content
-            Group {
-                switch selectedTab {
-                case .addresses: addressesTab
-                case .schedule:  scheduleTab
-                case .general:   generalTab
+            ScrollView {
+                Group {
+                    switch selectedTab {
+                    case .addresses: addressesTab
+                    case .schedule:  scheduleTab
+                    case .general:   generalTab
+                    }
                 }
+                .padding(20)
             }
-            .padding(20)
         }
         .background(backgroundGradient)
-        .frame(minWidth: 420, maxWidth: 420, minHeight: 420, maxHeight: 520)
+        .frame(minWidth: 420, maxWidth: 420, minHeight: 420, maxHeight: 650)
     }
 
     // MARK: - Tab Bar
@@ -116,8 +118,6 @@ struct PreferencesView: View {
                 .font(.system(size: 11, design: .rounded))
                 .foregroundColor(isDark ? .white.opacity(0.35) : .secondary)
                 .lineSpacing(2)
-
-            Spacer()
         }
     }
 
@@ -264,8 +264,6 @@ struct PreferencesView: View {
                     ]
                 )
             }
-
-            Spacer()
         }
     }
 
@@ -453,8 +451,6 @@ struct PreferencesView: View {
                     .font(.system(size: 11, design: .rounded))
                     .foregroundColor(isDark ? .white.opacity(0.25) : .secondary.opacity(0.6))
             }
-
-            Spacer()
         }
     }
 

@@ -15,6 +15,10 @@ struct TrafficMenubarApp: App {
                     openWindow(id: "preferences")
                     NSApp.activate(ignoringOtherApps: true)
                 })
+                .environment(\.openMapWindow, OpenMapWindowAction { [self] in
+                    openWindow(id: "traffic-map")
+                    NSApp.activate(ignoringOtherApps: true)
+                })
                 .environment(\.devDesignOverrides, designOverrides)
                 .environmentObject(designOverrides)
                 .onAppear {
@@ -40,8 +44,14 @@ struct TrafficMenubarApp: App {
                     NSApp.activate(ignoringOtherApps: true)
                 })
         }
-        .defaultSize(width: 420, height: 320)
+        .defaultSize(width: 420, height: 520)
         .windowResizability(.contentSize)
+
+        Window("Traffic Map", id: "traffic-map") {
+            DetachedMapView(viewModel: viewModel)
+        }
+        .defaultSize(width: Design.detachedMapWidth, height: Design.detachedMapHeight)
+        .windowResizability(.contentMinSize)
 
         Window("Developer Settings", id: "developer") {
             DeveloperSettingsView(
@@ -69,6 +79,22 @@ extension EnvironmentValues {
     var openPreferencesWindow: OpenPreferencesAction {
         get { self[OpenPreferencesKey.self] }
         set { self[OpenPreferencesKey.self] = newValue }
+    }
+}
+
+struct OpenMapWindowAction {
+    let action: () -> Void
+    func callAsFunction() { action() }
+}
+
+struct OpenMapWindowKey: EnvironmentKey {
+    static let defaultValue = OpenMapWindowAction { }
+}
+
+extension EnvironmentValues {
+    var openMapWindow: OpenMapWindowAction {
+        get { self[OpenMapWindowKey.self] }
+        set { self[OpenMapWindowKey.self] = newValue }
     }
 }
 

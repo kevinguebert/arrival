@@ -187,7 +187,9 @@ enum TrafficMood {
 enum Design {
     static let popoverWidth: CGFloat = 320
     static let popoverPadding: CGFloat = 20
-    static let mapHeight: CGFloat = 150
+    static let mapHeight: CGFloat = 200
+    static let detachedMapWidth: CGFloat = 600
+    static let detachedMapHeight: CGFloat = 450
     static let cornerRadius: CGFloat = 8
     static let smallCornerRadius: CGFloat = 6
 

@@ -41,7 +41,7 @@ struct PopoverView: View {
                         if result.shouldCollapse {
                             singleRouteView(result: result)
                         } else {
-                            RouteListView(result: result, originCoordinate: originCoordinate, destinationCoordinate: destinationCoordinate) { route in
+                            RouteListView(result: result, originCoordinate: originCoordinate, destinationCoordinate: destinationCoordinate, selectedRoute: showMap ? expandedRoute : nil) { route in
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                                     if showMap && expandedRoute?.id == route.id {
                                         // Same route tapped while map open → close
@@ -51,15 +51,23 @@ struct PopoverView: View {
                                         // New route or map closed → open/swap
                                         expandedRoute = route
                                         showMap = true
+                                        if let idx = result.routes.firstIndex(where: { $0.id == route.id }) {
+                                            viewModel.selectedRouteIndex = idx
+                                        }
                                     }
                                 }
                             }
                         }
 
                         if showMap {
+                            let selectedIndex = expandedRoute.flatMap { exp in
+                                result.routes.firstIndex(where: { $0.id == exp.id })
+                            } ?? 0
+
                             ExpandableMapView(
                                 routes: result.routes,
                                 selectedRoute: expandedRoute,
+                                primaryRouteIndex: selectedIndex,
                                 originCoordinate: originCoordinate,
                                 destinationCoordinate: destinationCoordinate,
                                 isExpanded: $showMap
@@ -415,17 +423,8 @@ struct PopoverView: View {
 
     // MARK: - Helpers
 
-    private var originCoordinate: Coordinate {
-        let home = viewModel.settings.homeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
-        let work = viewModel.settings.workCoordinate ?? Coordinate(latitude: 0, longitude: 0)
-        return viewModel.direction == .toWork ? home : work
-    }
-
-    private var destinationCoordinate: Coordinate {
-        let home = viewModel.settings.homeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
-        let work = viewModel.settings.workCoordinate ?? Coordinate(latitude: 0, longitude: 0)
-        return viewModel.direction == .toWork ? work : home
-    }
+    private var originCoordinate: Coordinate { viewModel.originCoordinate }
+    private var destinationCoordinate: Coordinate { viewModel.destinationCoordinate }
 
     private func updatePhrase() {
         moodPhrase = mood.randomPhrase()
