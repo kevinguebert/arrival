@@ -50,6 +50,7 @@ struct DeveloperSettingsView: View {
         .onChange(of: mockProvider.includeIncidents) { _ in applyState() }
         .onChange(of: mockProvider.incidentCount) { _ in applyState() }
         .onChange(of: mockProvider.maxSeverity) { _ in applyState() }
+        .onChange(of: mockProvider.includeCongestion) { _ in applyState() }
     }
 
     // MARK: - Master Toggle
@@ -187,6 +188,11 @@ struct DeveloperSettingsView: View {
                         .foregroundColor(secondaryText)
                 }
                 .padding(.top, 4)
+
+                Toggle("Include congestion data (Mapbox-style)", isOn: $mockProvider.includeCongestion)
+                    .font(.system(size: 12))
+                    .foregroundColor(primaryText)
+                    .tint(.orange)
             }
         }
     }
@@ -281,6 +287,7 @@ struct DeveloperSettingsView: View {
                     mockProvider.travelTimeMinutes = 25
                     mockProvider.normalTimeMinutes = 25
                     mockProvider.includeIncidents = false
+                    mockProvider.includeCongestion = false
                     forcedState = .normal
                     forcedFailures = 0
                 }),
@@ -297,6 +304,7 @@ struct DeveloperSettingsView: View {
                     mockProvider.includeIncidents = true
                     mockProvider.incidentCount = 2
                     mockProvider.maxSeverity = .severe
+                    mockProvider.includeCongestion = true
                     forcedState = .normal
                     forcedFailures = 0
                 }),

@@ -8,6 +8,7 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
     @Published var travelTimeMinutes: Double = 25
     @Published var normalTimeMinutes: Double = 25
     @Published var includeIncidents: Bool = false
+    @Published var includeCongestion: Bool = false
     @Published var incidentCount: Int = 2
     @Published var maxSeverity: IncidentSeverity = .major
     @Published var alternateRouteCount: Int = 2
