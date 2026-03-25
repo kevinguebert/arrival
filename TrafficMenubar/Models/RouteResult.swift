@@ -18,6 +18,14 @@ struct TrafficIncident: Equatable, Codable {
     let location: Coordinate
 }
 
+enum CongestionLevel: String, Codable {
+    case unknown
+    case low
+    case moderate
+    case heavy
+    case severe
+}
+
 struct Route: Identifiable {
     let id = UUID()
     let name: String
@@ -27,6 +35,7 @@ struct Route: Identifiable {
     let polylineCoordinates: [Coordinate]
     let mkPolyline: MKPolyline?
     let advisoryNotices: [String]
+    let segmentCongestion: [CongestionLevel]?
 
     var travelTimeMinutes: Int { Int(travelTime / 60) }
     var delayMinutes: Int { max(0, Int((travelTime - normalTravelTime) / 60)) }

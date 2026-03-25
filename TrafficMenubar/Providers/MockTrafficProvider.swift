@@ -57,7 +57,8 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
             distance: 20_000,
             polylineCoordinates: Self.samplePolyline,
             mkPolyline: nil,
-            advisoryNotices: includeIncidents ? ["Construction on main route"] : []
+            advisoryNotices: includeIncidents ? ["Construction on main route"] : [],
+            segmentCongestion: nil
         )
 
         var routes = [primaryRoute]
@@ -72,7 +73,8 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
                 distance: 20_000 + Double((i + 1) * 2000),
                 polylineCoordinates: Self.samplePolyline,
                 mkPolyline: nil,
-                advisoryNotices: []
+                advisoryNotices: [],
+                segmentCongestion: nil
             )
             routes.append(altRoute)
         }
