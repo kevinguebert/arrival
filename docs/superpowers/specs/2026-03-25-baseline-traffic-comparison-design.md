@@ -165,7 +165,7 @@ Traffic Comparison
       - "typical" mode → route.normalTravelTime
       - "bestCase" mode → settings.baselineToWorkTime/ToHomeTime
       - fallback → route.normalTravelTime
-   c. Call TrafficMood(currentTime:baselineTime:segmentCongestion:hasIncidents:)
+   c. Call TrafficMood(currentTime:baselineTime:segmentCongestion:hasMajorIncidents:)
 4. UI updates: menu bar icon, popover badge, colors
 ```
 
