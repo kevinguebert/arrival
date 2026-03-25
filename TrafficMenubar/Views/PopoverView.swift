@@ -222,33 +222,26 @@ struct PopoverView: View {
                 }
             }) {
                 VStack(spacing: 0) {
-                    VStack(spacing: 6) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack {
+                            Text(route.name)
+                                .font(Design.routeNameFont(scale: fontScale, isFastest: true))
+                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.9) : .black.opacity(0.7))
+
+                            Spacer()
+
+                            Text("\(route.travelTimeMinutes) min")
+                                .font(Design.routeTimeFont(scale: fontScale, isFastest: true))
+                                .foregroundColor(colorScheme == .dark ? TrafficMood.clear.darkAccentColor : TrafficMood.clear.lightTextColor)
+                        }
+
                         StylizedRouteLineView(
                             route: route,
                             fastestTravelTime: route.travelTime,
                             isFastest: true
                         )
                         .frame(height: 20)
-
-                        HStack {
-                            Text(viewModel.direction == .toWork ? "Home" : "Work")
-                                .font(.system(size: 9, weight: .semibold, design: .rounded))
-                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .black.opacity(0.3))
-                                .textCase(.uppercase)
-
-                            Spacer()
-
-                            Text("\(route.name) · \(String(format: "%.1f", route.distance / 1609.34)) mi")
-                                .font(.system(size: 10, design: .rounded))
-                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.4) : .black.opacity(0.3))
-
-                            Spacer()
-
-                            Text(viewModel.direction == .toWork ? "Work" : "Home")
-                                .font(.system(size: 9, weight: .semibold, design: .rounded))
-                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .black.opacity(0.3))
-                                .textCase(.uppercase)
-                        }
+                        .padding(.top, 8)
                     }
                     .padding(14)
 
