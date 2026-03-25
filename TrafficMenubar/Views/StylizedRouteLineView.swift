@@ -21,9 +21,9 @@ struct StylizedRouteLineView: View {
                 .zIndex(2)
 
             GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    let hasCongestion = route.segmentCongestion != nil && !(route.segmentCongestion?.isEmpty ?? true)
+                let hasCongestion = route.segmentCongestion != nil && !(route.segmentCongestion?.isEmpty ?? true)
 
+                ZStack {
                     if isFastest {
                         Group {
                             if hasCongestion { congestionGradientLine } else { gradientLine }
@@ -49,6 +49,7 @@ struct StylizedRouteLineView: View {
                             .opacity(Double(drawProgress))
                     }
                 }
+                .frame(maxHeight: .infinity)
             }
             .frame(height: dotSize)
             .padding(.horizontal, -2)
