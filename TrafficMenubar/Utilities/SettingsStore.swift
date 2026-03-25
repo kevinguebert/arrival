@@ -71,6 +71,26 @@ final class SettingsStore: ObservableObject {
     @Published var developerModeEnabled: Bool {
         didSet { UserDefaults.standard.set(developerModeEnabled, forKey: "developerModeEnabled") }
     }
+    @Published var mapboxAPIKey: String {
+        didSet { UserDefaults.standard.set(mapboxAPIKey, forKey: "mapboxAPIKey") }
+    }
+    @Published var mapboxKeySource: String {
+        didSet { UserDefaults.standard.set(mapboxKeySource, forKey: "mapboxKeySource") }
+    }
+
+    var effectiveMapboxKey: String? {
+        mapboxKeySource != "none" && !mapboxAPIKey.isEmpty ? mapboxAPIKey : nil
+    }
+
+    func setMapboxKey(_ key: String, source: String) {
+        mapboxAPIKey = key
+        mapboxKeySource = source
+    }
+
+    func clearMapboxKey() {
+        mapboxAPIKey = ""
+        mapboxKeySource = "none"
+    }
 
     var isConfigured: Bool {
         homeCoordinate != nil && workCoordinate != nil
@@ -113,6 +133,8 @@ final class SettingsStore: ObservableObject {
 
         self.launchAtLogin = defaults.bool(forKey: "launchAtLogin")
         self.developerModeEnabled = defaults.bool(forKey: "developerModeEnabled")
+        self.mapboxAPIKey = defaults.string(forKey: "mapboxAPIKey") ?? ""
+        self.mapboxKeySource = defaults.string(forKey: "mapboxKeySource") ?? "none"
     }
 
     func isCommuteHour(at date: Date = Date()) -> Bool {
