@@ -61,7 +61,15 @@ final class MapboxDirectionsProvider: TrafficProvider {
             let coordinates = decodePolyline6(mbRoute.geometry)
             let congestion = combineLegCongestion(mbRoute.legs)
             let summary = mbRoute.legs.compactMap(\.summary).first(where: { !$0.isEmpty })
-            let name = summary.map { "via \($0)" } ?? (index == 0 ? "Fastest Route" : "Alternate \(index)")
+            let name: String
+            if let summary {
+                // Take first 2 road names for a concise label
+                let roads = summary.components(separatedBy: ", ")
+                let shortSummary = roads.prefix(2).joined(separator: ", ")
+                name = "via \(shortSummary)"
+            } else {
+                name = index == 0 ? "Fastest Route" : "Alternate \(index)"
+            }
 
             return Route(
                 name: name,
