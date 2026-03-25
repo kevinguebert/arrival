@@ -25,6 +25,8 @@ final class CommuteViewModel: ObservableObject {
         self.provider = provider ?? Self.makeProvider(for: settings)
         settingsCancellable = settings.$mapboxKeySource
             .combineLatest(settings.$mapboxAPIKey)
+            .debounce(for: .milliseconds(50), scheduler: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _, _ in
                 guard let self else { return }
                 self.provider = Self.makeProvider(for: self.settings)

@@ -10,15 +10,21 @@ final class MapboxDirectionsProvider: TrafficProvider {
     }
 
     func fetchRoutes(from origin: Coordinate, to destination: Coordinate) async throws -> RouteResult {
-        let urlString = "\(baseURL)/directions/v5/mapbox/driving-traffic/"
+        let path = "/directions/v5/mapbox/driving-traffic/"
             + "\(origin.longitude),\(origin.latitude);\(destination.longitude),\(destination.latitude)"
-            + "?access_token=\(apiKey)"
-            + "&alternatives=true"
-            + "&annotations=congestion,duration"
-            + "&geometries=polyline6"
-            + "&overview=full"
 
-        guard let url = URL(string: urlString) else {
+        guard var components = URLComponents(string: baseURL + path) else {
+            throw TrafficProviderError.networkError(URLError(.badURL))
+        }
+        components.queryItems = [
+            URLQueryItem(name: "access_token", value: apiKey),
+            URLQueryItem(name: "alternatives", value: "true"),
+            URLQueryItem(name: "annotations", value: "congestion,duration"),
+            URLQueryItem(name: "geometries", value: "polyline6"),
+            URLQueryItem(name: "overview", value: "full"),
+        ]
+
+        guard let url = components.url else {
             throw TrafficProviderError.networkError(URLError(.badURL))
         }
 
@@ -69,7 +75,8 @@ final class MapboxDirectionsProvider: TrafficProvider {
         }
 
         let sortedRoutes = routes.sorted { $0.travelTime < $1.travelTime }
-        let incidents = extractIncidents(from: directionsResponse.routes.first, coordinates: sortedRoutes.first?.polylineCoordinates ?? [])
+        let firstRouteCoords = decodePolyline6(directionsResponse.routes.first?.geometry ?? "")
+        let incidents = extractIncidents(from: directionsResponse.routes.first, coordinates: firstRouteCoords)
 
         return RouteResult(
             routes: sortedRoutes,
@@ -103,7 +110,8 @@ final class MapboxDirectionsProvider: TrafficProvider {
         var shift = 0
 
         while index < string.endIndex {
-            let char = Int(string[index].asciiValue! - 63)
+            guard let ascii = string[index].asciiValue else { return result }
+            let char = Int(ascii) - 63
             index = string.index(after: index)
             result |= (char & 0x1F) << shift
             shift += 5
@@ -115,12 +123,13 @@ final class MapboxDirectionsProvider: TrafficProvider {
 
     // MARK: - Response Mapping Helpers
 
-    private func combineLegCongestion(_ legs: [MapboxLeg]) -> [CongestionLevel] {
-        legs.flatMap { leg in
+    private func combineLegCongestion(_ legs: [MapboxLeg]) -> [CongestionLevel]? {
+        let result = legs.flatMap { leg in
             (leg.annotation?.congestion ?? []).map { raw in
                 CongestionLevel(rawValue: raw) ?? .unknown
             }
         }
+        return result.isEmpty ? nil : result
     }
 
     private func extractAdvisories(_ legs: [MapboxLeg]) -> [String] {
