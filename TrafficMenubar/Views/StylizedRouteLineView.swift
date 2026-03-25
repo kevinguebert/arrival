@@ -136,14 +136,10 @@ struct StylizedRouteLineView: View {
     }
 
     private var originColor: Color {
-        isFastest
-            ? Color(red: 0.29, green: 0.68, blue: 0.50)
-            : (colorScheme == .dark ? Color.white.opacity(0.25) : Color.black.opacity(0.15))
+        Color(red: 0.29, green: 0.68, blue: 0.50).opacity(isFastest ? 1.0 : 0.5)
     }
 
     private var destinationColor: Color {
-        isFastest
-            ? Color(red: 0.97, green: 0.44, blue: 0.44)
-            : (colorScheme == .dark ? Color.white.opacity(0.25) : Color.black.opacity(0.15))
+        Color(red: 0.97, green: 0.44, blue: 0.44).opacity(isFastest ? 1.0 : 0.5)
     }
 }
