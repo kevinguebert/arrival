@@ -22,20 +22,26 @@ struct StylizedRouteLineView: View {
 
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
+                    let hasCongestion = route.segmentCongestion != nil && !(route.segmentCongestion?.isEmpty ?? true)
+
                     if isFastest {
-                        gradientLine
-                            .frame(height: lineThickness + 6)
-                            .opacity(0.08)
-                            .blur(radius: 2)
+                        Group {
+                            if hasCongestion { congestionGradientLine } else { gradientLine }
+                        }
+                        .frame(height: lineThickness + 6)
+                        .opacity(0.08)
+                        .blur(radius: 2)
                     }
 
-                    gradientLine
-                        .frame(height: lineThickness)
-                        .mask(
-                            Rectangle()
-                                .frame(width: geo.size.width * drawProgress)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        )
+                    Group {
+                        if hasCongestion { congestionGradientLine } else { gradientLine }
+                    }
+                    .frame(height: lineThickness)
+                    .mask(
+                        Rectangle()
+                            .frame(width: geo.size.width * drawProgress)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    )
 
                     if route.hasIncidents {
                         incidentDiamond
@@ -97,6 +103,24 @@ struct StylizedRouteLineView: View {
                         .init(color: Color(red: 0.98, green: 0.75, blue: 0.14), location: 0.75),
                         .init(color: Color(red: 0.29, green: 0.68, blue: 0.50), location: 1.0),
                     ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                ))
+        }
+    }
+
+    @ViewBuilder
+    private var congestionGradientLine: some View {
+        if let congestion = route.segmentCongestion, !congestion.isEmpty {
+            let stops = congestion.enumerated().map { index, level in
+                Gradient.Stop(
+                    color: level.color,
+                    location: CGFloat(index) / CGFloat(max(congestion.count - 1, 1))
+                )
+            }
+            RoundedRectangle(cornerRadius: 2)
+                .fill(LinearGradient(
+                    stops: stops,
                     startPoint: .leading,
                     endPoint: .trailing
                 ))
