@@ -578,6 +578,9 @@ struct PreferencesView: View {
                     settings.setMapboxKey(byokKeyInput.trimmingCharacters(in: .whitespaces), source: "byok")
                     byokKeyInput = ""
                     showingBYOKInput = false
+                    if settings.isConfigured {
+                        fetchBaseline()
+                    }
                 }
                 .font(.system(size: 11, weight: .semibold, design: .rounded))
                 .foregroundColor(.white)
@@ -658,6 +661,10 @@ struct PreferencesView: View {
             HStack(spacing: 12) {
                 Button("Remove Key") {
                     settings.clearMapboxKey()
+                    settings.clearBaselines()
+                    if settings.isConfigured {
+                        fetchBaseline()
+                    }
                 }
                 .font(.system(size: 11, weight: .medium, design: .rounded))
                 .foregroundColor(Color(red: 0.99, green: 0.65, blue: 0.65))
