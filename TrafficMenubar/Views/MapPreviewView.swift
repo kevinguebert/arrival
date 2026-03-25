@@ -44,18 +44,44 @@ struct MapPreviewView: NSViewRepresentable {
         // Add primary route on top
         if primaryRouteIndex < routes.count {
             let primary = routes[primaryRouteIndex]
-            let coordinates = primary.polylineCoordinates.map {
-                CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
-            }
-            let polyline = TaggedPolyline(coordinates: coordinates, count: coordinates.count)
-            polyline.isPrimary = true
-            mapView.addOverlay(polyline)
 
-            mapView.setVisibleMapRect(
-                polyline.boundingMapRect,
-                edgePadding: NSEdgeInsets(top: 24, left: 24, bottom: 24, right: 24),
-                animated: false
-            )
+            if let congestion = primary.segmentCongestion, congestion.count > 1 {
+                // Draw congestion-colored segments
+                let coords = primary.polylineCoordinates.map {
+                    CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+                }
+                let segmentCount = min(congestion.count, coords.count - 1)
+                for i in 0..<segmentCount {
+                    var segCoords = [coords[i], coords[i + 1]]
+                    let polyline = TaggedPolyline(coordinates: &segCoords, count: 2)
+                    polyline.isPrimary = true
+                    polyline.congestionColor = congestion[i].nsColor
+                    mapView.addOverlay(polyline)
+                }
+
+                // Fit to full route bounds
+                let allCoords = coords
+                let polyline = MKPolyline(coordinates: allCoords, count: allCoords.count)
+                mapView.setVisibleMapRect(
+                    polyline.boundingMapRect,
+                    edgePadding: NSEdgeInsets(top: 24, left: 24, bottom: 24, right: 24),
+                    animated: false
+                )
+            } else {
+                // Fallback: solid green (existing behavior)
+                let coordinates = primary.polylineCoordinates.map {
+                    CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+                }
+                let polyline = TaggedPolyline(coordinates: coordinates, count: coordinates.count)
+                polyline.isPrimary = true
+                mapView.addOverlay(polyline)
+
+                mapView.setVisibleMapRect(
+                    polyline.boundingMapRect,
+                    edgePadding: NSEdgeInsets(top: 24, left: 24, bottom: 24, right: 24),
+                    animated: false
+                )
+            }
         }
 
         // Origin/destination markers
@@ -79,7 +105,11 @@ struct MapPreviewView: NSViewRepresentable {
             if let polyline = overlay as? TaggedPolyline {
                 let renderer = MKPolylineRenderer(polyline: polyline)
                 if polyline.isPrimary {
-                    renderer.strokeColor = NSColor(red: 0.29, green: 0.68, blue: 0.50, alpha: 0.9)
+                    if let congestionColor = polyline.congestionColor {
+                        renderer.strokeColor = congestionColor
+                    } else {
+                        renderer.strokeColor = NSColor(red: 0.29, green: 0.68, blue: 0.50, alpha: 0.9)
+                    }
                     renderer.lineWidth = 4
                 } else {
                     renderer.strokeColor = NSColor.white.withAlphaComponent(0.15)
@@ -141,6 +171,7 @@ struct MapPreviewView: NSViewRepresentable {
 
 class TaggedPolyline: MKPolyline {
     var isPrimary: Bool = true
+    var congestionColor: NSColor?
 }
 
 enum RouteAnnotationType {
