@@ -1,6 +1,30 @@
 import Foundation
 import Combine
 
+enum MapsApp: String, CaseIterable {
+    case googleMaps = "googleMaps"
+    case appleMaps = "appleMaps"
+
+    var displayName: String {
+        switch self {
+        case .googleMaps: return "Google Maps"
+        case .appleMaps: return "Apple Maps"
+        }
+    }
+}
+
+enum BaselineCompareMode: String, CaseIterable {
+    case bestCase = "bestCase"
+    case typical = "typical"
+
+    var displayName: String {
+        switch self {
+        case .bestCase: return "Best case (no traffic)"
+        case .typical: return "Typical traffic"
+        }
+    }
+}
+
 final class SettingsStore: ObservableObject {
     static let shared = SettingsStore()
 
@@ -77,6 +101,42 @@ final class SettingsStore: ObservableObject {
     @Published var mapboxKeySource: String {
         didSet { UserDefaults.standard.set(mapboxKeySource, forKey: "mapboxKeySource") }
     }
+    @Published var preferredMapsApp: MapsApp {
+        didSet { UserDefaults.standard.set(preferredMapsApp.rawValue, forKey: "preferredMapsApp") }
+    }
+    @Published var baselineCompareMode: BaselineCompareMode {
+        didSet { UserDefaults.standard.set(baselineCompareMode.rawValue, forKey: "baselineCompareMode") }
+    }
+    @Published var useMapboxBaseline: Bool {
+        didSet { UserDefaults.standard.set(useMapboxBaseline, forKey: "useMapboxBaseline") }
+    }
+    @Published var baselineToWorkTime: TimeInterval? {
+        didSet {
+            if let time = baselineToWorkTime {
+                UserDefaults.standard.set(time, forKey: "baselineToWorkTime")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "baselineToWorkTime")
+            }
+        }
+    }
+    @Published var baselineToHomeTime: TimeInterval? {
+        didSet {
+            if let time = baselineToHomeTime {
+                UserDefaults.standard.set(time, forKey: "baselineToHomeTime")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "baselineToHomeTime")
+            }
+        }
+    }
+    @Published var baselineFetchedAt: Date? {
+        didSet {
+            if let date = baselineFetchedAt {
+                UserDefaults.standard.set(date.timeIntervalSince1970, forKey: "baselineFetchedAt")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "baselineFetchedAt")
+            }
+        }
+    }
 
     var effectiveMapboxKey: String? {
         mapboxKeySource != "none" && !mapboxAPIKey.isEmpty ? mapboxAPIKey : nil
@@ -90,6 +150,12 @@ final class SettingsStore: ObservableObject {
     func clearMapboxKey() {
         mapboxAPIKey = ""
         mapboxKeySource = "none"
+    }
+
+    func clearBaselines() {
+        baselineToWorkTime = nil
+        baselineToHomeTime = nil
+        baselineFetchedAt = nil
     }
 
     var isConfigured: Bool {
@@ -135,6 +201,24 @@ final class SettingsStore: ObservableObject {
         self.developerModeEnabled = defaults.bool(forKey: "developerModeEnabled")
         self.mapboxAPIKey = defaults.string(forKey: "mapboxAPIKey") ?? ""
         self.mapboxKeySource = defaults.string(forKey: "mapboxKeySource") ?? "none"
+        self.preferredMapsApp = MapsApp(rawValue: defaults.string(forKey: "preferredMapsApp") ?? "") ?? .googleMaps
+        self.baselineCompareMode = BaselineCompareMode(rawValue: defaults.string(forKey: "baselineCompareMode") ?? "") ?? .bestCase
+        self.useMapboxBaseline = defaults.object(forKey: "useMapboxBaseline") as? Bool ?? true
+        if defaults.object(forKey: "baselineToWorkTime") != nil {
+            self.baselineToWorkTime = defaults.double(forKey: "baselineToWorkTime")
+        } else {
+            self.baselineToWorkTime = nil
+        }
+        if defaults.object(forKey: "baselineToHomeTime") != nil {
+            self.baselineToHomeTime = defaults.double(forKey: "baselineToHomeTime")
+        } else {
+            self.baselineToHomeTime = nil
+        }
+        if defaults.object(forKey: "baselineFetchedAt") != nil {
+            self.baselineFetchedAt = Date(timeIntervalSince1970: defaults.double(forKey: "baselineFetchedAt"))
+        } else {
+            self.baselineFetchedAt = nil
+        }
     }
 
     func isCommuteHour(at date: Date = Date()) -> Bool {
