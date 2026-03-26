@@ -43,7 +43,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(gh api:*)",
       "Bash(python3 -c \"import json,sys; [print\\(f[''''name'''']\\) for f in json.loads\\(sys.stdin.read\\(\\)\\)]\")",
-      "WebFetch(domain:morioh.com)"
+      "WebFetch(domain:morioh.com)",
+      "Bash(grep:*)"
     ]
   }
 }
