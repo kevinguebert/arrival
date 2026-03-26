@@ -28,7 +28,7 @@
 <body class="bg-background text-foreground antialiased">
 
   <!-- Scroll-driven mood gradient background -->
-  <div id="mood-bg" class="fixed inset-0 -z-10 transition-opacity duration-1000" style="background: radial-gradient(ellipse 80% 50% at 50% 40%, var(--mood-glow, rgba(77,173,128,0.07)) 0%, transparent 70%);"></div>
+  <div id="mood-bg" class="fixed inset-0 -z-10"></div>
 
   <!-- ─── NAV ─────────────────────────────────────────────────────────────── -->
   <nav class="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
@@ -468,8 +468,13 @@
           const docHeight = document.documentElement.scrollHeight - window.innerHeight;
           const progress = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
           const c = getColor(progress);
+          // Full-page gradient that tints the entire background
           moodBg.style.background =
-            'radial-gradient(ellipse 80% 50% at 50% 40%, rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.07) 0%, transparent 70%)';
+            'linear-gradient(180deg, ' +
+            'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.15) 0%, ' +
+            'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.08) 30%, ' +
+            '#0F1219 70%, ' +
+            '#161B26 100%)';
           ticking = false;
         });
       }
