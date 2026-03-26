@@ -27,9 +27,6 @@
 </head>
 <body class="bg-background text-foreground antialiased">
 
-  <!-- Scroll-driven mood gradient background -->
-  <div id="mood-bg" class="fixed inset-0 -z-10"></div>
-
   <!-- ─── NAV ─────────────────────────────────────────────────────────────── -->
   <nav class="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
     <div class="max-w-site mx-auto px-6 h-14 flex items-center justify-between">
@@ -92,7 +89,10 @@
   </nav>
 
   <!-- ─── HERO ─────────────────────────────────────────────────────────────── -->
-  <section class="pt-28 pb-24 px-6">
+  <section class="pt-28 pb-24 px-6 relative overflow-hidden">
+    <!-- Green mood background -->
+    <div class="absolute inset-0 -z-10" style="background: radial-gradient(ellipse 120% 80% at 50% 0%, rgba(77,173,128,0.18) 0%, rgba(77,173,128,0.06) 40%, transparent 70%);"></div>
+    <div class="absolute inset-0 -z-10" style="background: radial-gradient(circle at 80% 30%, rgba(33,196,94,0.1) 0%, transparent 50%);"></div>
     <div class="max-w-site mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
       <!-- Left: copy -->
@@ -145,7 +145,10 @@
   </section>
 
   <!-- ─── FEATURE 1: MAP ───────────────────────────────────────────────────── -->
-  <section id="features" class="py-24 px-6">
+  <section id="features" class="py-24 px-6 relative overflow-hidden">
+    <!-- Amber mood background -->
+    <div class="absolute inset-0 -z-10" style="background: radial-gradient(ellipse 120% 80% at 50% 20%, rgba(253,192,33,0.14) 0%, rgba(253,192,33,0.05) 40%, transparent 70%);"></div>
+    <div class="absolute inset-0 -z-10" style="background: radial-gradient(circle at 20% 60%, rgba(245,159,10,0.08) 0%, transparent 50%);"></div>
     <div class="max-w-site mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
       <!-- Left: screenshot (reversed) -->
@@ -195,7 +198,10 @@
   </div>
 
   <!-- ─── FEATURE 3: INCIDENTS ─────────────────────────────────────────────── -->
-  <section class="py-24 px-6">
+  <section class="py-24 px-6 relative overflow-hidden">
+    <!-- Red mood background -->
+    <div class="absolute inset-0 -z-10" style="background: radial-gradient(ellipse 120% 80% at 50% 20%, rgba(247,112,112,0.16) 0%, rgba(247,112,112,0.06) 40%, transparent 70%);"></div>
+    <div class="absolute inset-0 -z-10" style="background: radial-gradient(circle at 80% 50%, rgba(240,69,69,0.08) 0%, transparent 50%);"></div>
     <div class="max-w-site mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
       <!-- Left: copy -->
@@ -245,7 +251,10 @@
   </div>
 
   <!-- ─── PERSONALITY ───────────────────────────────────────────────────────── -->
-  <section class="py-24 px-6 text-center">
+  <section class="py-24 px-6 text-center relative overflow-hidden">
+    <!-- All three moods layered -->
+    <div class="absolute inset-0 -z-10" style="background: radial-gradient(circle at 20% 30%, rgba(77,173,128,0.15) 0%, transparent 40%), radial-gradient(circle at 50% 50%, rgba(253,192,33,0.12) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(247,112,112,0.15) 0%, transparent 40%);"></div>
+    <div class="absolute inset-0 -z-10" style="background: linear-gradient(180deg, rgba(77,173,128,0.08) 0%, rgba(253,192,33,0.06) 50%, rgba(247,112,112,0.08) 100%);"></div>
     <div class="max-w-2xl mx-auto">
       <p class="text-foreground-subtle text-sm font-medium tracking-widest uppercase mb-10">Traffic has personality. So does Arrival.</p>
 
@@ -276,7 +285,9 @@
   </div>
 
   <!-- ─── INSTALL ───────────────────────────────────────────────────────────── -->
-  <section id="install" class="py-24 px-6">
+  <section id="install" class="py-24 px-6 relative overflow-hidden">
+    <!-- Back to green mood -->
+    <div class="absolute inset-0 -z-10" style="background: radial-gradient(ellipse 100% 70% at 50% 30%, rgba(77,173,128,0.12) 0%, rgba(77,173,128,0.04) 40%, transparent 70%);"></div>
     <div class="max-w-site mx-auto">
 
       <div class="text-center mb-12">
@@ -426,63 +437,6 @@
 
   <script src="js/main.js"></script>
 
-  <!-- Scroll-driven mood gradient -->
-  <script>
-    (function() {
-      const moodBg = document.getElementById('mood-bg');
-      if (!moodBg) return;
-
-      // Mood color stops: green → amber → red → back to green
-      const stops = [
-        { at: 0.00, r: 77,  g: 173, b: 128 }, // clear green (hero)
-        { at: 0.30, r: 77,  g: 173, b: 128 }, // still green (hero/map)
-        { at: 0.50, r: 253, g: 192, b: 33  }, // amber (incidents transition)
-        { at: 0.65, r: 247, g: 112, b: 112 }, // red (incidents)
-        { at: 0.80, r: 247, g: 112, b: 112 }, // red (personality)
-        { at: 0.90, r: 77,  g: 173, b: 128 }, // back to green (install)
-        { at: 1.00, r: 77,  g: 173, b: 128 }, // green (footer)
-      ];
-
-      function lerp(a, b, t) { return a + (b - a) * t; }
-
-      function getColor(progress) {
-        for (let i = 0; i < stops.length - 1; i++) {
-          if (progress >= stops[i].at && progress <= stops[i + 1].at) {
-            const t = (progress - stops[i].at) / (stops[i + 1].at - stops[i].at);
-            return {
-              r: Math.round(lerp(stops[i].r, stops[i + 1].r, t)),
-              g: Math.round(lerp(stops[i].g, stops[i + 1].g, t)),
-              b: Math.round(lerp(stops[i].b, stops[i + 1].b, t)),
-            };
-          }
-        }
-        return stops[stops.length - 1];
-      }
-
-      let ticking = false;
-      function onScroll() {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-          const scrollTop = window.scrollY;
-          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-          const progress = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
-          const c = getColor(progress);
-          // Full-page gradient that tints the entire background
-          moodBg.style.background =
-            'linear-gradient(180deg, ' +
-            'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.15) 0%, ' +
-            'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.08) 30%, ' +
-            '#0F1219 70%, ' +
-            '#161B26 100%)';
-          ticking = false;
-        });
-      }
-
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
-    })();
-  </script>
 
 </body>
 </html>
