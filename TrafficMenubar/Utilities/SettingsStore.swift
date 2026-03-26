@@ -95,6 +95,37 @@ final class SettingsStore: ObservableObject {
     @Published var developerModeEnabled: Bool {
         didSet { UserDefaults.standard.set(developerModeEnabled, forKey: "developerModeEnabled") }
     }
+    @Published var devAddressOverrideEnabled: Bool {
+        didSet { UserDefaults.standard.set(devAddressOverrideEnabled, forKey: "devAddressOverrideEnabled") }
+    }
+    @Published var devHomeAddress: String {
+        didSet { UserDefaults.standard.set(devHomeAddress, forKey: "devHomeAddress") }
+    }
+    @Published var devWorkAddress: String {
+        didSet { UserDefaults.standard.set(devWorkAddress, forKey: "devWorkAddress") }
+    }
+    @Published var devHomeCoordinate: Coordinate? {
+        didSet {
+            if let coord = devHomeCoordinate {
+                UserDefaults.standard.set(coord.latitude, forKey: "devHomeLatitude")
+                UserDefaults.standard.set(coord.longitude, forKey: "devHomeLongitude")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "devHomeLatitude")
+                UserDefaults.standard.removeObject(forKey: "devHomeLongitude")
+            }
+        }
+    }
+    @Published var devWorkCoordinate: Coordinate? {
+        didSet {
+            if let coord = devWorkCoordinate {
+                UserDefaults.standard.set(coord.latitude, forKey: "devWorkLatitude")
+                UserDefaults.standard.set(coord.longitude, forKey: "devWorkLongitude")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "devWorkLatitude")
+                UserDefaults.standard.removeObject(forKey: "devWorkLongitude")
+            }
+        }
+    }
     @Published var mapboxAPIKey: String {
         didSet { UserDefaults.standard.set(mapboxAPIKey, forKey: "mapboxAPIKey") }
     }
@@ -142,6 +173,26 @@ final class SettingsStore: ObservableObject {
         mapboxKeySource != "none" && !mapboxAPIKey.isEmpty ? mapboxAPIKey : nil
     }
 
+    private var devOverrideActive: Bool {
+        developerModeEnabled && devAddressOverrideEnabled
+    }
+
+    var effectiveHomeAddress: String {
+        devOverrideActive ? devHomeAddress : homeAddress
+    }
+
+    var effectiveWorkAddress: String {
+        devOverrideActive ? devWorkAddress : workAddress
+    }
+
+    var effectiveHomeCoordinate: Coordinate? {
+        devOverrideActive ? devHomeCoordinate : homeCoordinate
+    }
+
+    var effectiveWorkCoordinate: Coordinate? {
+        devOverrideActive ? devWorkCoordinate : workCoordinate
+    }
+
     func setMapboxKey(_ key: String, source: String) {
         mapboxAPIKey = key
         mapboxKeySource = source
@@ -159,7 +210,7 @@ final class SettingsStore: ObservableObject {
     }
 
     var isConfigured: Bool {
-        homeCoordinate != nil && workCoordinate != nil
+        effectiveHomeCoordinate != nil && effectiveWorkCoordinate != nil
     }
 
     private init() {
@@ -199,6 +250,28 @@ final class SettingsStore: ObservableObject {
 
         self.launchAtLogin = defaults.bool(forKey: "launchAtLogin")
         self.developerModeEnabled = defaults.bool(forKey: "developerModeEnabled")
+        self.devAddressOverrideEnabled = defaults.bool(forKey: "devAddressOverrideEnabled")
+        self.devHomeAddress = defaults.string(forKey: "devHomeAddress") ?? ""
+        self.devWorkAddress = defaults.string(forKey: "devWorkAddress") ?? ""
+
+        if defaults.object(forKey: "devHomeLatitude") != nil {
+            self.devHomeCoordinate = Coordinate(
+                latitude: defaults.double(forKey: "devHomeLatitude"),
+                longitude: defaults.double(forKey: "devHomeLongitude")
+            )
+        } else {
+            self.devHomeCoordinate = nil
+        }
+
+        if defaults.object(forKey: "devWorkLatitude") != nil {
+            self.devWorkCoordinate = Coordinate(
+                latitude: defaults.double(forKey: "devWorkLatitude"),
+                longitude: defaults.double(forKey: "devWorkLongitude")
+            )
+        } else {
+            self.devWorkCoordinate = nil
+        }
+
         self.mapboxAPIKey = defaults.string(forKey: "mapboxAPIKey") ?? ""
         self.mapboxKeySource = defaults.string(forKey: "mapboxKeySource") ?? "none"
         self.preferredMapsApp = MapsApp(rawValue: defaults.string(forKey: "preferredMapsApp") ?? "") ?? .googleMaps
