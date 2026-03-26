@@ -112,7 +112,18 @@ struct DeveloperSettingsView: View {
     private var addressOverridesSection: some View {
         devSection("Address Overrides") {
             VStack(alignment: .leading, spacing: 10) {
-                Toggle("Use custom addresses", isOn: $settings.devAddressOverrideEnabled)
+                Toggle("Use custom addresses", isOn: Binding(
+                    get: { settings.devAddressOverrideEnabled },
+                    set: { enabled in
+                        settings.devAddressOverrideEnabled = enabled
+                        if enabled {
+                            viewModel.enableAddressOverride()
+                        } else {
+                            viewModel.disableAddressOverride(mockProvider: mockProvider)
+                            applyState()
+                        }
+                    }
+                ))
                     .font(.system(size: 12))
                     .foregroundColor(primaryText)
                     .tint(.orange)
@@ -545,6 +556,9 @@ struct DeveloperSettingsView: View {
                 let coord = try await geocoder.geocode(address: address)
                 viewModel.settings.devHomeCoordinate = coord
                 devHomeGeocodingError = nil
+                if viewModel.settings.isConfigured {
+                    viewModel.enableAddressOverride()
+                }
             } catch {
                 devHomeGeocodingError = "Couldn't find this address"
                 viewModel.settings.devHomeCoordinate = nil
@@ -563,6 +577,9 @@ struct DeveloperSettingsView: View {
                 let coord = try await geocoder.geocode(address: address)
                 viewModel.settings.devWorkCoordinate = coord
                 devWorkGeocodingError = nil
+                if viewModel.settings.isConfigured {
+                    viewModel.enableAddressOverride()
+                }
             } catch {
                 devWorkGeocodingError = "Couldn't find this address"
                 viewModel.settings.devWorkCoordinate = nil

@@ -77,6 +77,15 @@ final class CommuteViewModel: ObservableObject {
         startPolling()
     }
 
+    func enableAddressOverride() {
+        provider = Self.makeProvider(for: settings)
+        Task { await fetchRoute() }
+    }
+
+    func disableAddressOverride(mockProvider: MockTrafficProvider) {
+        provider = mockProvider
+    }
+
     func updateFromMock(result: RouteResult?, direction: CommuteDirection, consecutiveFailures: Int, isLoading: Bool) {
         self.currentResult = result
         self.direction = direction
