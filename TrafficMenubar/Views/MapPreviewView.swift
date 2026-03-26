@@ -31,6 +31,19 @@ struct MapPreviewView: NSViewRepresentable {
         mapView.removeOverlays(mapView.overlays)
         mapView.removeAnnotations(mapView.annotations)
 
+        // Reset region when origin/destination change (e.g. dev address override)
+        let newOrigin = CLLocationCoordinate2D(latitude: originCoordinate.latitude, longitude: originCoordinate.longitude)
+        let newDest = CLLocationCoordinate2D(latitude: destinationCoordinate.latitude, longitude: destinationCoordinate.longitude)
+        if let lastOrigin = context.coordinator.lastOrigin, let lastDest = context.coordinator.lastDestination {
+            let originMoved = abs(lastOrigin.latitude - newOrigin.latitude) > 0.001 || abs(lastOrigin.longitude - newOrigin.longitude) > 0.001
+            let destMoved = abs(lastDest.latitude - newDest.latitude) > 0.001 || abs(lastDest.longitude - newDest.longitude) > 0.001
+            if originMoved || destMoved {
+                context.coordinator.hasSetInitialRegion = false
+            }
+        }
+        context.coordinator.lastOrigin = newOrigin
+        context.coordinator.lastDestination = newDest
+
         guard !routes.isEmpty else { return }
 
         // Add alternate routes first (drawn behind)
@@ -133,6 +146,8 @@ struct MapPreviewView: NSViewRepresentable {
         let isInteractive: Bool
         var hasSetInitialRegion = false
         var lastRecenterTrigger: UUID?
+        var lastOrigin: CLLocationCoordinate2D?
+        var lastDestination: CLLocationCoordinate2D?
 
         init(isInteractive: Bool) {
             self.isInteractive = isInteractive
