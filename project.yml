@@ -3,6 +3,12 @@ packages:
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
     from: "2.6.0"
+  Sentry:
+    url: https://github.com/getsentry/sentry-cocoa
+    from: "8.0.0"
+  TelemetryDeck:
+    url: https://github.com/TelemetryDeck/SwiftSDK
+    from: "2.0.0"
 options:
   bundleIdPrefix: com.trafficmenubar
   deploymentTarget:
@@ -27,6 +33,10 @@ targets:
     dependencies:
       - package: Sparkle
         product: Sparkle
+      - package: Sentry
+        product: Sentry
+      - package: TelemetryDeck
+        product: TelemetryDeck
     info:
       path: TrafficMenubar/Info.plist
       properties:

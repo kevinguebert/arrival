@@ -15,6 +15,12 @@ final class CommuteViewModel: ObservableObject {
     let settings: SettingsStore
     let locationManager: LocationManager
     private(set) var provider: TrafficProvider
+
+    var providerName: String {
+        if provider is MapboxDirectionsProvider { return "mapbox" }
+        if provider is MockTrafficProvider { return "mock" }
+        return "mapkit"
+    }
     private var settingsCancellable: AnyCancellable?
     private var scheduler: PollScheduler?
 
@@ -31,6 +37,7 @@ final class CommuteViewModel: ObservableObject {
             .sink { [weak self] _, _ in
                 guard let self else { return }
                 self.provider = Self.makeProvider(for: self.settings)
+                AnalyticsService.shared.trackProviderChange(self.providerName)
             }
     }
 
@@ -182,8 +189,12 @@ final class CommuteViewModel: ObservableObject {
             currentResult = result
             consecutiveFailures = 0
             lastUpdated = Date()
+            AnalyticsService.shared.trackRouteFetch(
+                provider: providerName, success: true, routeCount: result.routes.count
+            )
         } catch {
             consecutiveFailures += 1
+            AnalyticsService.shared.trackRouteFetch(provider: providerName, success: false)
         }
         isLoading = false
     }
