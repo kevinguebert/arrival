@@ -8,6 +8,7 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
     @Published var travelTimeMinutes: Double = 25
     @Published var normalTimeMinutes: Double = 25
     @Published var includeIncidents: Bool = false
+    @Published var includeCongestion: Bool = false
     @Published var incidentCount: Int = 2
     @Published var maxSeverity: IncidentSeverity = .major
     @Published var alternateRouteCount: Int = 2
@@ -57,7 +58,8 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
             distance: 20_000,
             polylineCoordinates: Self.samplePolyline,
             mkPolyline: nil,
-            advisoryNotices: includeIncidents ? ["Construction on main route"] : []
+            advisoryNotices: includeIncidents ? ["Construction on main route"] : [],
+            segmentCongestion: includeCongestion ? generateCongestion(count: Self.samplePolyline.count - 1) : nil
         )
 
         var routes = [primaryRoute]
@@ -72,7 +74,8 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
                 distance: 20_000 + Double((i + 1) * 2000),
                 polylineCoordinates: Self.samplePolyline,
                 mkPolyline: nil,
-                advisoryNotices: []
+                advisoryNotices: [],
+                segmentCongestion: includeCongestion ? generateCongestion(count: Self.samplePolyline.count - 1) : nil
             )
             routes.append(altRoute)
         }
@@ -82,6 +85,11 @@ final class MockTrafficProvider: ObservableObject, TrafficProvider {
             incidents: includeIncidents ? generateIncidents() : [],
             fetchedAt: Date()
         )
+    }
+
+    private func generateCongestion(count: Int) -> [CongestionLevel] {
+        let levels: [CongestionLevel] = [.low, .low, .low, .moderate, .moderate, .heavy, .severe]
+        return (0..<count).map { _ in levels.randomElement() ?? .low }
     }
 
     private func generateIncidents() -> [TrafficIncident] {

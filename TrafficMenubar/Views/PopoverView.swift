@@ -41,7 +41,7 @@ struct PopoverView: View {
                         if result.shouldCollapse {
                             singleRouteView(result: result)
                         } else {
-                            RouteListView(result: result) { route in
+                            RouteListView(result: result, originCoordinate: originCoordinate, destinationCoordinate: destinationCoordinate, selectedRoute: showMap ? expandedRoute : nil) { route in
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                                     if showMap && expandedRoute?.id == route.id {
                                         // Same route tapped while map open → close
@@ -51,15 +51,23 @@ struct PopoverView: View {
                                         // New route or map closed → open/swap
                                         expandedRoute = route
                                         showMap = true
+                                        if let idx = result.routes.firstIndex(where: { $0.id == route.id }) {
+                                            viewModel.selectedRouteIndex = idx
+                                        }
                                     }
                                 }
                             }
                         }
 
                         if showMap {
+                            let selectedIndex = expandedRoute.flatMap { exp in
+                                result.routes.firstIndex(where: { $0.id == exp.id })
+                            } ?? 0
+
                             ExpandableMapView(
                                 routes: result.routes,
                                 selectedRoute: expandedRoute,
+                                primaryRouteIndex: selectedIndex,
                                 originCoordinate: originCoordinate,
                                 destinationCoordinate: destinationCoordinate,
                                 isExpanded: $showMap
@@ -188,8 +196,8 @@ struct PopoverView: View {
                     .font(Design.moodFont(scale: fontScale))
                     .foregroundColor(colorScheme == .dark ? mood.darkAccentColor : mood.lightTextColor)
 
-                if let route = viewModel.fastestRoute, route.delayMinutes > 0 {
-                    Text("· +\(route.delayMinutes) min")
+                if let route = viewModel.fastestRoute, baselineDelayMinutes(for: route) > 0 {
+                    Text("· +\(baselineDelayMinutes(for: route)) min")
                         .font(Design.moodFont(scale: fontScale))
                         .foregroundColor(colorScheme == .dark ? mood.darkAccentColor : mood.lightTextColor)
                 }
@@ -203,6 +211,20 @@ struct PopoverView: View {
             )
             .clipShape(Capsule())
         }
+    }
+
+    private func baselineDelayMinutes(for route: Route) -> Int {
+        let baseline: TimeInterval
+        switch viewModel.settings.baselineCompareMode {
+        case .typical:
+            baseline = route.normalTravelTime
+        case .bestCase:
+            let persisted = viewModel.direction == .toWork
+                ? viewModel.settings.baselineToWorkTime
+                : viewModel.settings.baselineToHomeTime
+            baseline = persisted ?? route.normalTravelTime
+        }
+        return max(0, Int((route.travelTime - baseline) / 60))
     }
 
     // MARK: - Single Route (Smart Collapse)
@@ -222,33 +244,41 @@ struct PopoverView: View {
                 }
             }) {
                 VStack(spacing: 0) {
-                    VStack(spacing: 6) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack {
+                            Text(route.name)
+                                .font(Design.routeNameFont(scale: fontScale, isFastest: true))
+                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.9) : .black.opacity(0.7))
+
+                            Spacer()
+
+                            Text("\(route.travelTimeMinutes) min")
+                                .font(Design.routeTimeFont(scale: fontScale, isFastest: true))
+                                .foregroundColor(colorScheme == .dark ? TrafficMood.clear.darkAccentColor : TrafficMood.clear.lightTextColor)
+
+                            Button(action: {
+                                MapsURLBuilder.open(
+                                    route: route,
+                                    from: originCoordinate,
+                                    to: destinationCoordinate,
+                                    app: viewModel.settings.preferredMapsApp
+                                )
+                            }) {
+                                Image(systemName: "arrow.triangle.turn.up.right.circle")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.6))
+                            }
+                            .buttonStyle(.plain)
+                            .help("Open in \(viewModel.settings.preferredMapsApp.displayName)")
+                        }
+
                         StylizedRouteLineView(
                             route: route,
                             fastestTravelTime: route.travelTime,
                             isFastest: true
                         )
                         .frame(height: 20)
-
-                        HStack {
-                            Text(viewModel.direction == .toWork ? "Home" : "Work")
-                                .font(.system(size: 9, weight: .semibold, design: .rounded))
-                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .black.opacity(0.3))
-                                .textCase(.uppercase)
-
-                            Spacer()
-
-                            Text("\(route.name) · \(String(format: "%.1f", route.distance / 1609.34)) mi")
-                                .font(.system(size: 10, design: .rounded))
-                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.4) : .black.opacity(0.3))
-
-                            Spacer()
-
-                            Text(viewModel.direction == .toWork ? "Work" : "Home")
-                                .font(.system(size: 9, weight: .semibold, design: .rounded))
-                                .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .black.opacity(0.3))
-                                .textCase(.uppercase)
-                        }
+                        .padding(.top, 8)
                     }
                     .padding(14)
 
@@ -301,7 +331,7 @@ struct PopoverView: View {
                 .foregroundColor(.orange.opacity(0.8))
             }
 
-            if viewModel.isDevMode {
+            if viewModel.isDevMode && !viewModel.settings.devAddressOverrideEnabled {
                 HStack(spacing: 3) {
                     Image(systemName: "hammer")
                         .font(.system(size: 9))
@@ -313,17 +343,6 @@ struct PopoverView: View {
                 .padding(.vertical, 2)
                 .background(Color.orange.opacity(0.12))
                 .clipShape(Capsule())
-            }
-
-            if viewModel.currentResult != nil {
-                Button(action: openInAppleMaps) {
-                    Image(systemName: "arrow.triangle.turn.up.right.circle")
-                        .font(.system(size: 14))
-                        .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.6))
-                }
-                .buttonStyle(.plain)
-                .contentShape(Rectangle())
-                .help("Open in Apple Maps")
             }
 
             Spacer()
@@ -393,30 +412,26 @@ struct PopoverView: View {
 
     // MARK: - Helpers
 
-    private var originCoordinate: Coordinate {
-        let home = viewModel.settings.homeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
-        let work = viewModel.settings.workCoordinate ?? Coordinate(latitude: 0, longitude: 0)
-        return viewModel.direction == .toWork ? home : work
-    }
-
-    private var destinationCoordinate: Coordinate {
-        let home = viewModel.settings.homeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
-        let work = viewModel.settings.workCoordinate ?? Coordinate(latitude: 0, longitude: 0)
-        return viewModel.direction == .toWork ? work : home
-    }
+    private var originCoordinate: Coordinate { viewModel.originCoordinate }
+    private var destinationCoordinate: Coordinate { viewModel.destinationCoordinate }
 
     private func updatePhrase() {
         moodPhrase = mood.randomPhrase()
     }
 
-    private func openInAppleMaps() {
+    private func openInMaps() {
         let origin = originCoordinate
         let destination = destinationCoordinate
         guard origin.latitude != 0, destination.latitude != 0 else { return }
 
-        let urlString = "maps://?saddr=\(origin.latitude),\(origin.longitude)&daddr=\(destination.latitude),\(destination.longitude)&dirflg=d"
-        if let url = URL(string: urlString) {
-            NSWorkspace.shared.open(url)
+        if let route = expandedRoute ?? viewModel.fastestRoute {
+            MapsURLBuilder.open(route: route, from: origin, to: destination, app: viewModel.settings.preferredMapsApp)
+        } else {
+            // No route data — fall back to simple origin→destination
+            let urlString = "maps://?saddr=\(origin.latitude),\(origin.longitude)&daddr=\(destination.latitude),\(destination.longitude)&dirflg=d"
+            if let url = URL(string: urlString) {
+                NSWorkspace.shared.open(url)
+            }
         }
     }
 }

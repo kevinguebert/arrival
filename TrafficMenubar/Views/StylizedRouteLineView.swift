@@ -21,21 +21,27 @@ struct StylizedRouteLineView: View {
                 .zIndex(2)
 
             GeometryReader { geo in
-                ZStack(alignment: .leading) {
+                let hasCongestion = route.segmentCongestion != nil && !(route.segmentCongestion?.isEmpty ?? true)
+
+                ZStack {
                     if isFastest {
-                        gradientLine
-                            .frame(height: lineThickness + 6)
-                            .opacity(0.08)
-                            .blur(radius: 2)
+                        Group {
+                            if hasCongestion { congestionGradientLine } else { gradientLine }
+                        }
+                        .frame(height: lineThickness + 6)
+                        .opacity(0.08)
+                        .blur(radius: 2)
                     }
 
-                    gradientLine
-                        .frame(height: lineThickness)
-                        .mask(
-                            Rectangle()
-                                .frame(width: geo.size.width * drawProgress)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        )
+                    Group {
+                        if hasCongestion { congestionGradientLine } else { gradientLine }
+                    }
+                    .frame(height: lineThickness)
+                    .mask(
+                        Rectangle()
+                            .frame(width: geo.size.width * drawProgress)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    )
 
                     if route.hasIncidents {
                         incidentDiamond
@@ -43,6 +49,7 @@ struct StylizedRouteLineView: View {
                             .opacity(Double(drawProgress))
                     }
                 }
+                .frame(maxHeight: .infinity)
             }
             .frame(height: dotSize)
             .padding(.horizontal, -2)
@@ -103,6 +110,24 @@ struct StylizedRouteLineView: View {
         }
     }
 
+    @ViewBuilder
+    private var congestionGradientLine: some View {
+        if let congestion = route.segmentCongestion, !congestion.isEmpty {
+            let stops = congestion.enumerated().map { index, level in
+                Gradient.Stop(
+                    color: level.color,
+                    location: CGFloat(index) / CGFloat(max(congestion.count - 1, 1))
+                )
+            }
+            RoundedRectangle(cornerRadius: 2)
+                .fill(LinearGradient(
+                    stops: stops,
+                    startPoint: .leading,
+                    endPoint: .trailing
+                ))
+        }
+    }
+
     private var incidentDiamond: some View {
         Rectangle()
             .fill(Color(red: 0.96, green: 0.62, blue: 0.04))
@@ -112,14 +137,10 @@ struct StylizedRouteLineView: View {
     }
 
     private var originColor: Color {
-        isFastest
-            ? Color(red: 0.29, green: 0.68, blue: 0.50)
-            : (colorScheme == .dark ? Color.white.opacity(0.25) : Color.black.opacity(0.15))
+        Color(red: 0.29, green: 0.68, blue: 0.50).opacity(isFastest ? 1.0 : 0.5)
     }
 
     private var destinationColor: Color {
-        isFastest
-            ? Color(red: 0.97, green: 0.44, blue: 0.44)
-            : (colorScheme == .dark ? Color.white.opacity(0.25) : Color.black.opacity(0.15))
+        Color(red: 0.97, green: 0.44, blue: 0.44).opacity(isFastest ? 1.0 : 0.5)
     }
 }

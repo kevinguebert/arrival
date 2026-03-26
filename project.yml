@@ -1,4 +1,14 @@
 name: TrafficMenubar
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.6.0"
+  Sentry:
+    url: https://github.com/getsentry/sentry-cocoa
+    from: "8.0.0"
+  TelemetryDeck:
+    url: https://github.com/TelemetryDeck/SwiftSDK
+    from: "2.0.0"
 options:
   bundleIdPrefix: com.trafficmenubar
   deploymentTarget:
@@ -20,6 +30,18 @@ targets:
         CURRENT_PROJECT_VERSION: 1
         SWIFT_VERSION: "5.9"
         MACOSX_DEPLOYMENT_TARGET: "13.0"
+    dependencies:
+      - package: Sparkle
+        product: Sparkle
+      - package: Sentry
+        product: Sentry
+      - package: TelemetryDeck
+        product: TelemetryDeck
+    info:
+      path: TrafficMenubar/Info.plist
+      properties:
+        SUFeedURL: https://kevinguebert.github.io/traffic-menubar/appcast.xml
+        SUPublicEDKey: ""
     entitlements:
       path: TrafficMenubar/TrafficMenubar.entitlements
       properties:

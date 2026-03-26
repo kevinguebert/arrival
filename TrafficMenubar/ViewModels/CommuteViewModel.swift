@@ -10,18 +10,42 @@ final class CommuteViewModel: ObservableObject {
     @Published var lastUpdated: Date?
     @Published var directionOverride: CommuteDirection?
     @Published var isDevMode = false
+    @Published var selectedRouteIndex: Int = 0
 
     let settings: SettingsStore
     let locationManager: LocationManager
     private(set) var provider: TrafficProvider
+
+    var providerName: String {
+        if provider is MapboxDirectionsProvider { return "mapbox" }
+        if provider is MockTrafficProvider { return "mock" }
+        return "mapkit"
+    }
+    private var settingsCancellable: AnyCancellable?
     private var scheduler: PollScheduler?
 
     init(settings: SettingsStore = .shared,
          locationManager: LocationManager = LocationManager(),
-         provider: TrafficProvider = MapKitProvider()) {
+         provider: TrafficProvider? = nil) {
         self.settings = settings
         self.locationManager = locationManager
-        self.provider = provider
+        self.provider = provider ?? Self.makeProvider(for: settings)
+        settingsCancellable = settings.$mapboxKeySource
+            .combineLatest(settings.$mapboxAPIKey)
+            .debounce(for: .milliseconds(50), scheduler: RunLoop.main)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _, _ in
+                guard let self else { return }
+                self.provider = Self.makeProvider(for: self.settings)
+                AnalyticsService.shared.trackProviderChange(self.providerName)
+            }
+    }
+
+    private static func makeProvider(for settings: SettingsStore) -> TrafficProvider {
+        if let key = settings.effectiveMapboxKey {
+            return MapboxDirectionsProvider(apiKey: key)
+        }
+        return MapKitProvider()
     }
 
     func startPolling() {
@@ -55,9 +79,18 @@ final class CommuteViewModel: ObservableObject {
     }
 
     func disableDevMode() {
-        provider = MapKitProvider()
+        provider = Self.makeProvider(for: settings)
         isDevMode = false
         startPolling()
+    }
+
+    func enableAddressOverride() {
+        provider = Self.makeProvider(for: settings)
+        Task { await fetchRoute() }
+    }
+
+    func disableAddressOverride(mockProvider: MockTrafficProvider) {
+        provider = mockProvider
     }
 
     func updateFromMock(result: RouteResult?, direction: CommuteDirection, consecutiveFailures: Int, isLoading: Bool) {
@@ -72,7 +105,28 @@ final class CommuteViewModel: ObservableObject {
 
     var mood: TrafficMood {
         guard let route = fastestRoute else { return .unknown }
-        return TrafficMood(delayMinutes: route.delayMinutes, hasIncidents: route.hasIncidents)
+
+        let baseline: TimeInterval
+        switch settings.baselineCompareMode {
+        case .typical:
+            baseline = route.normalTravelTime
+        case .bestCase:
+            let persisted = direction == .toWork
+                ? settings.baselineToWorkTime
+                : settings.baselineToHomeTime
+            baseline = persisted ?? route.normalTravelTime
+        }
+
+        let hasMajorIncidents = currentResult?.incidents.contains {
+            $0.severity == .major || $0.severity == .severe
+        } ?? false
+
+        return TrafficMood(
+            currentTime: route.travelTime,
+            baselineTime: baseline,
+            segmentCongestion: route.segmentCongestion,
+            hasMajorIncidents: hasMajorIncidents
+        )
     }
 
     var menuBarText: String {
@@ -80,8 +134,19 @@ final class CommuteViewModel: ObservableObject {
             return "--"
         }
         let minutes = route.travelTimeMinutes
-        let mood = TrafficMood(delayMinutes: route.delayMinutes, hasIncidents: route.hasIncidents)
         return "\(minutes)m\(mood.menuBarSuffix)"
+    }
+
+    var originCoordinate: Coordinate {
+        let home = settings.effectiveHomeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        let work = settings.effectiveWorkCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        return direction == .toWork ? home : work
+    }
+
+    var destinationCoordinate: Coordinate {
+        let home = settings.effectiveHomeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        let work = settings.effectiveWorkCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        return direction == .toWork ? work : home
     }
 
     var hasError: Bool {
@@ -98,8 +163,8 @@ final class CommuteViewModel: ObservableObject {
 
     private func fetchRoute() async {
         guard settings.isConfigured,
-              let home = settings.homeCoordinate,
-              let work = settings.workCoordinate else {
+              let home = settings.effectiveHomeCoordinate,
+              let work = settings.effectiveWorkCoordinate else {
             return
         }
 
@@ -124,8 +189,12 @@ final class CommuteViewModel: ObservableObject {
             currentResult = result
             consecutiveFailures = 0
             lastUpdated = Date()
+            AnalyticsService.shared.trackRouteFetch(
+                provider: providerName, success: true, routeCount: result.routes.count
+            )
         } catch {
             consecutiveFailures += 1
+            AnalyticsService.shared.trackRouteFetch(provider: providerName, success: false)
         }
         isLoading = false
     }

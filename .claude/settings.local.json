@@ -21,7 +21,30 @@
       "Bash(ls:*)",
       "WebFetch(domain:paperclip.ing)",
       "Bash(/Users/kevinguebert/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/stop-server.sh /Users/kevinguebert/Documents/Development/traffic-menubar/.superpowers/brainstorm/42870-1774363330)",
-      "Bash(plutil:*)"
+      "Bash(plutil:*)",
+      "Bash(find ~/Library/Developer/Xcode/DerivedData -name TrafficMenubar.app -path */Debug/*)",
+      "Bash(/Users/kevinguebert/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/scripts/start-server.sh --project-dir /Users/kevinguebert/Documents/Development/traffic-menubar)",
+      "Bash(/Users/kevinguebert/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/stop-server.sh /Users/kevinguebert/Documents/Development/traffic-menubar/.superpowers/brainstorm/12834-1774382158)",
+      "Bash(find /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/MapKit.framework -name *.swiftinterface)",
+      "Bash(find /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -name *.swiftinterface -path *MapKit*)",
+      "WebSearch",
+      "WebFetch(domain:docs.mapbox.com)",
+      "WebFetch(domain:developers.google.com)",
+      "WebFetch(domain:developer.tomtom.com)",
+      "WebFetch(domain:developer.here.com)",
+      "WebFetch(domain:www.mapbox.com)",
+      "WebFetch(domain:www.oreateai.com)",
+      "WebFetch(domain:radar.com)",
+      "WebFetch(domain:www.streetmap.biz)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:darrylbayliss.net)",
+      "WebFetch(domain:talk.automators.fm)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(gh api:*)",
+      "Bash(python3 -c \"import json,sys; [print\\(f[''''name'''']\\) for f in json.loads\\(sys.stdin.read\\(\\)\\)]\")",
+      "WebFetch(domain:morioh.com)",
+      "Bash(grep:*)"
     ]
   }
 }

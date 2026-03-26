@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arrival — Your drive time, at a glance.</title>
+  <meta name="description" content="Arrival is a macOS menu bar app that shows your commute traffic in real time. Glance up, know instantly." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Arrival — Your drive time, at a glance." />
+  <meta property="og:description" content="A macOS menu bar app that shows your commute traffic in real time. Glance up, know instantly." />
+  <meta property="og:image" content="assets/screenshots/hero-clear.png" />
+  <meta property="og:url" content="https://kevinguebert.github.io/traffic-menubar/" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Arrival — Your drive time, at a glance." />
+  <meta name="twitter:description" content="A macOS menu bar app that shows your commute traffic in real time." />
+  <meta name="twitter:image" content="assets/screenshots/hero-clear.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icon/arrival-icon.svg" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-background text-foreground antialiased relative">
+
+  <!-- Full-page seamless mood gradient — one continuous SVG, no section edges -->
+  <div class="absolute top-0 left-0 w-full -z-10 pointer-events-none" aria-hidden="true" style="height: 100%;">
+    <svg width="100%" height="100%" viewBox="0 0 1440 6000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Green glow — hero area -->
+        <radialGradient id="g-green" cx="720" cy="400" r="1000" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#4DAD80" stop-opacity="0.22"/>
+          <stop offset="40%" stop-color="#4DAD80" stop-opacity="0.08"/>
+          <stop offset="100%" stop-color="#4DAD80" stop-opacity="0"/>
+        </radialGradient>
+        <!-- Secondary green glow offset right -->
+        <radialGradient id="g-green2" cx="1100" cy="600" r="600" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#21C45E" stop-opacity="0.1"/>
+          <stop offset="100%" stop-color="#21C45E" stop-opacity="0"/>
+        </radialGradient>
+        <!-- Amber glow — map section -->
+        <radialGradient id="g-amber" cx="400" cy="1800" r="1100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FDC021" stop-opacity="0.2"/>
+          <stop offset="40%" stop-color="#FDC021" stop-opacity="0.07"/>
+          <stop offset="100%" stop-color="#FDC021" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="g-amber2" cx="1100" cy="2000" r="600" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#F59F0A" stop-opacity="0.1"/>
+          <stop offset="100%" stop-color="#F59F0A" stop-opacity="0"/>
+        </radialGradient>
+        <!-- Red glow — incidents section -->
+        <radialGradient id="g-red" cx="1000" cy="3000" r="1100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#F77070" stop-opacity="0.22"/>
+          <stop offset="40%" stop-color="#F77070" stop-opacity="0.08"/>
+          <stop offset="100%" stop-color="#F77070" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="g-red2" cx="300" cy="3200" r="600" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#F04545" stop-opacity="0.1"/>
+          <stop offset="100%" stop-color="#F04545" stop-opacity="0"/>
+        </radialGradient>
+        <!-- All three blended — personality section -->
+        <radialGradient id="g-mix1" cx="250" cy="4000" r="800" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#4DAD80" stop-opacity="0.16"/>
+          <stop offset="100%" stop-color="#4DAD80" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="g-mix2" cx="720" cy="4100" r="700" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FDC021" stop-opacity="0.12"/>
+          <stop offset="100%" stop-color="#FDC021" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="g-mix3" cx="1200" cy="4000" r="800" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#F77070" stop-opacity="0.16"/>
+          <stop offset="100%" stop-color="#F77070" stop-opacity="0"/>
+        </radialGradient>
+        <!-- Green return — install section -->
+        <radialGradient id="g-green-end" cx="720" cy="5200" r="900" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#4DAD80" stop-opacity="0.15"/>
+          <stop offset="40%" stop-color="#4DAD80" stop-opacity="0.05"/>
+          <stop offset="100%" stop-color="#4DAD80" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- All mood blobs in one canvas — they overlap and blend naturally -->
+      <rect width="1440" height="6000" fill="url(#g-green)"/>
+      <rect width="1440" height="6000" fill="url(#g-green2)"/>
+      <rect width="1440" height="6000" fill="url(#g-amber)"/>
+      <rect width="1440" height="6000" fill="url(#g-amber2)"/>
+      <rect width="1440" height="6000" fill="url(#g-red)"/>
+      <rect width="1440" height="6000" fill="url(#g-red2)"/>
+      <rect width="1440" height="6000" fill="url(#g-mix1)"/>
+      <rect width="1440" height="6000" fill="url(#g-mix2)"/>
+      <rect width="1440" height="6000" fill="url(#g-mix3)"/>
+      <rect width="1440" height="6000" fill="url(#g-green-end)"/>
+    </svg>
+  </div>
+
+  <!-- ─── NAV ─────────────────────────────────────────────────────────────── -->
+  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+    <div class="max-w-site mx-auto px-6 h-14 flex items-center justify-between">
+
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2.5 group">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" class="w-7 h-7 rounded-lg" aria-hidden="true">
+          <defs>
+            <linearGradient id="nav-bg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0F1219"/>
+              <stop offset="100%" stop-color="#161B26"/>
+            </linearGradient>
+            <linearGradient id="nav-congestion" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4DAD80"/>
+              <stop offset="40%" stop-color="#4DAD80"/>
+              <stop offset="55%" stop-color="#FDC021"/>
+              <stop offset="70%" stop-color="#F77070"/>
+              <stop offset="85%" stop-color="#FDC021"/>
+              <stop offset="100%" stop-color="#4DAD80"/>
+            </linearGradient>
+            <linearGradient id="nav-stripe" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4DAD80"/>
+              <stop offset="100%" stop-color="#21C45E"/>
+            </linearGradient>
+            <radialGradient id="nav-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(77,173,128,0.12)"/>
+              <stop offset="100%" stop-color="transparent"/>
+            </radialGradient>
+            <clipPath id="nav-clip">
+              <rect width="1024" height="1024" rx="228" ry="228"/>
+            </clipPath>
+          </defs>
+          <g clip-path="url(#nav-clip)">
+            <rect width="1024" height="1024" fill="url(#nav-bg)"/>
+            <rect x="0" y="0" width="1024" height="32" fill="url(#nav-stripe)"/>
+            <circle cx="512" cy="512" r="400" fill="url(#nav-glow)"/>
+            <circle cx="213" cy="768" r="59" fill="#4DAD80"/>
+            <path d="M213 768 C213 427, 811 597, 811 256" fill="none" stroke="url(#nav-congestion)" stroke-width="37" stroke-linecap="round"/>
+            <circle cx="811" cy="256" r="59" fill="#4DAD80"/>
+            <circle cx="811" cy="256" r="107" fill="none" stroke="#4DAD80" stroke-width="13" opacity="0.35"/>
+            <circle cx="811" cy="256" r="160" fill="none" stroke="#4DAD80" stroke-width="9" opacity="0.15"/>
+          </g>
+        </svg>
+        <span class="text-foreground font-semibold text-sm tracking-tight group-hover:text-clear transition-colors">Arrival</span>
+      </a>
+
+      <!-- Nav links -->
+      <div class="flex items-center gap-6">
+        <a href="#features" class="text-foreground-muted hover:text-foreground text-sm transition-colors">Features</a>
+        <a href="docs/" class="text-foreground-muted hover:text-foreground text-sm transition-colors">Docs</a>
+        <a href="https://github.com/kevinguebert/traffic-menubar/releases/latest" class="inline-flex items-center gap-1.5 bg-clear text-white text-sm font-medium px-3.5 py-1.5 rounded-button hover:bg-clear-end transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download
+        </a>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────────────────────────────────── -->
+  <section class="pt-28 pb-24 px-6">
+    <div class="max-w-site mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+      <!-- Left: copy -->
+      <div>
+        <div class="inline-flex items-center gap-2 bg-clear/10 border border-clear/20 rounded-full px-3 py-1 mb-6">
+          <span class="w-2 h-2 rounded-full bg-clear animate-pulse"></span>
+          <span class="text-clear text-xs font-medium tracking-wide uppercase">macOS Menu Bar App</span>
+        </div>
+
+        <h1 class="text-5xl lg:text-6xl font-bold tracking-heading leading-none mb-5">
+          Your drive time,<br/>
+          <span class="text-clear">at a glance.</span>
+        </h1>
+
+        <p class="text-foreground-muted text-lg leading-relaxed mb-8 max-w-md">
+          Arrival lives in your menu bar and shows real-time traffic for your saved routes. Know before you go — without opening an app.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4">
+          <a href="https://github.com/kevinguebert/traffic-menubar/releases/latest" class="inline-flex items-center gap-2 bg-clear hover:bg-clear-end text-white font-semibold px-5 py-3 rounded-button transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download for Mac
+          </a>
+          <a href="https://github.com/kevinguebert/traffic-menubar" class="inline-flex items-center gap-2 text-foreground-muted hover:text-foreground text-sm font-medium transition-colors" target="_blank" rel="noopener noreferrer">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: screenshot -->
+      <div class="relative">
+        <div class="glow-green absolute inset-0 scale-125 -z-10"></div>
+        <div class="screenshot-frame">
+          <img
+            src="assets/screenshots/hero-clear.png"
+            alt="Arrival menu bar showing route with clear traffic — 18 min"
+            class="w-full h-auto block"
+            width="580"
+            height="380"
+          />
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── FEATURE 1: MAP ───────────────────────────────────────────────────── -->
+  <section id="features" class="py-24 px-6">
+    <div class="max-w-site mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+      <!-- Left: screenshot (reversed) -->
+      <div class="relative order-last lg:order-first">
+        <div class="screenshot-frame">
+          <img
+            src="assets/screenshots/map.png"
+            alt="Arrival interactive map window showing route with traffic overlay"
+            class="w-full h-auto block"
+            width="560"
+            height="420"
+          />
+        </div>
+      </div>
+
+      <!-- Right: copy -->
+      <div>
+        <span class="inline-block text-moderate text-xs font-bold tracking-widest uppercase mb-4">Map</span>
+        <h2 class="text-4xl lg:text-5xl font-bold tracking-heading leading-tight mb-5">
+          See the full<br/>picture, live.
+        </h2>
+        <p class="text-foreground-muted text-base leading-relaxed mb-6 max-w-md">
+          Pop open the interactive map window to see exactly where congestion is building. No need to switch apps — it floats above your workspace whenever you need it.
+        </p>
+        <ul class="space-y-3">
+          <li class="flex items-start gap-3">
+            <span class="mt-1 w-1.5 h-1.5 rounded-full bg-moderate flex-shrink-0"></span>
+            <span class="text-foreground-muted text-sm">Detachable floating map window</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1 w-1.5 h-1.5 rounded-full bg-moderate flex-shrink-0"></span>
+            <span class="text-foreground-muted text-sm">Real-time traffic layer powered by Mapbox</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1 w-1.5 h-1.5 rounded-full bg-moderate flex-shrink-0"></span>
+            <span class="text-foreground-muted text-sm">Route path highlighted directly on the map</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── DIVIDER ───────────────────────────────────────────────────────────── -->
+  <div class="max-w-site mx-auto px-6">
+    <hr class="border-border" />
+  </div>
+
+  <!-- ─── FEATURE 3: INCIDENTS ─────────────────────────────────────────────── -->
+  <section class="py-24 px-6">
+    <div class="max-w-site mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+      <!-- Left: copy -->
+      <div>
+        <span class="inline-block text-heavy text-xs font-bold tracking-widest uppercase mb-4">Incidents</span>
+        <h2 class="text-4xl lg:text-5xl font-bold tracking-heading leading-tight mb-5">
+          Know what's<br/>causing the hold-up.
+        </h2>
+        <p class="text-foreground-muted text-base leading-relaxed mb-6 max-w-md">
+          Arrival surfaces traffic incidents along your route so you know whether it's a fender-bender, a closure, or just a rough patch to wait out.
+        </p>
+        <ul class="space-y-3">
+          <li class="flex items-start gap-3">
+            <span class="mt-1 w-1.5 h-1.5 rounded-full bg-heavy flex-shrink-0"></span>
+            <span class="text-foreground-muted text-sm">Accidents, construction, and road closures</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1 w-1.5 h-1.5 rounded-full bg-heavy flex-shrink-0"></span>
+            <span class="text-foreground-muted text-sm">Severity indicators so you can prioritize</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1 w-1.5 h-1.5 rounded-full bg-heavy flex-shrink-0"></span>
+            <span class="text-foreground-muted text-sm">Updated automatically with each route refresh</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Right: screenshot -->
+      <div class="relative">
+        <div class="screenshot-frame">
+          <img
+            src="assets/screenshots/incidents.png"
+            alt="Arrival incidents panel listing two traffic incidents on route"
+            class="w-full h-auto block"
+            width="560"
+            height="360"
+          />
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── DIVIDER ───────────────────────────────────────────────────────────── -->
+  <div class="max-w-site mx-auto px-6">
+    <hr class="border-border" />
+  </div>
+
+  <!-- ─── PERSONALITY ───────────────────────────────────────────────────────── -->
+  <section class="py-24 px-6 text-center">
+    <div class="max-w-2xl mx-auto">
+      <p class="text-foreground-subtle text-sm font-medium tracking-widest uppercase mb-10">Traffic has personality. So does Arrival.</p>
+
+      <div class="space-y-4">
+        <div class="flex items-center justify-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-clear flex-shrink-0"></span>
+          <span class="text-4xl lg:text-5xl font-bold tracking-heading text-clear">"Smooth sailing."</span>
+        </div>
+        <div class="flex items-center justify-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-moderate flex-shrink-0"></span>
+          <span class="text-4xl lg:text-5xl font-bold tracking-heading text-moderate">"A bit sluggish."</span>
+        </div>
+        <div class="flex items-center justify-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-heavy flex-shrink-0"></span>
+          <span class="text-4xl lg:text-5xl font-bold tracking-heading text-heavy">"Buckle up."</span>
+        </div>
+      </div>
+
+      <p class="text-foreground-muted text-base mt-10 leading-relaxed">
+        Every route status uses human-readable language — not just a number — so you can make a real decision in half a second.
+      </p>
+    </div>
+  </section>
+
+  <!-- ─── DIVIDER ───────────────────────────────────────────────────────────── -->
+  <div class="max-w-site mx-auto px-6">
+    <hr class="border-border" />
+  </div>
+
+  <!-- ─── INSTALL ───────────────────────────────────────────────────────────── -->
+  <section id="install" class="py-24 px-6">
+    <div class="max-w-site mx-auto">
+
+      <div class="text-center mb-12">
+        <h2 class="text-4xl lg:text-5xl font-bold tracking-heading mb-4">Get Arrival.</h2>
+        <p class="text-foreground-muted text-base max-w-sm mx-auto">Free and open source. Works on macOS 13 Ventura and later.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-2xl mx-auto">
+
+        <!-- Direct Download Card -->
+        <div class="arrival-card p-6 flex flex-col gap-4">
+          <div class="accent-stripe -mx-6 -mt-6 mb-2 rounded-t-card"></div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <svg class="w-4 h-4 text-clear" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              <span class="text-foreground text-sm font-semibold">Direct Download</span>
+            </div>
+            <p class="text-foreground-subtle text-xs">Download the .dmg and drag to Applications.</p>
+          </div>
+          <a
+            href="https://github.com/kevinguebert/traffic-menubar/releases/latest"
+            class="inline-flex items-center justify-center gap-2 bg-clear hover:bg-clear-end text-white text-sm font-semibold px-4 py-2.5 rounded-button transition-colors mt-auto"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download .dmg
+          </a>
+        </div>
+
+        <!-- Homebrew Card -->
+        <div class="arrival-card p-6 flex flex-col gap-4">
+          <div class="accent-stripe -mx-6 -mt-6 mb-2 rounded-t-card"></div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <svg class="w-4 h-4 text-clear" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span class="text-foreground text-sm font-semibold">Homebrew</span>
+            </div>
+            <p class="text-foreground-subtle text-xs">Install via Homebrew Cask for easy updates.</p>
+          </div>
+          <div class="mt-auto">
+            <div class="code-block flex items-center justify-between gap-3" id="brew-command">
+              <span>brew install --cask arrival</span>
+              <button
+                onclick="copyBrewCommand()"
+                class="text-foreground-subtle hover:text-foreground transition-colors flex-shrink-0"
+                aria-label="Copy Homebrew command"
+                title="Copy to clipboard"
+              >
+                <svg id="copy-icon" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                <svg id="check-icon" class="w-3.5 h-3.5 hidden text-clear" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────────────────────────────────── -->
+  <footer class="border-t border-border py-10 px-6">
+    <div class="max-w-site mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" class="w-5 h-5 rounded-md opacity-80" aria-hidden="true">
+          <defs>
+            <linearGradient id="ft-bg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0F1219"/>
+              <stop offset="100%" stop-color="#161B26"/>
+            </linearGradient>
+            <linearGradient id="ft-congestion" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4DAD80"/>
+              <stop offset="40%" stop-color="#4DAD80"/>
+              <stop offset="55%" stop-color="#FDC021"/>
+              <stop offset="70%" stop-color="#F77070"/>
+              <stop offset="85%" stop-color="#FDC021"/>
+              <stop offset="100%" stop-color="#4DAD80"/>
+            </linearGradient>
+            <linearGradient id="ft-stripe" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4DAD80"/>
+              <stop offset="100%" stop-color="#21C45E"/>
+            </linearGradient>
+            <clipPath id="ft-clip">
+              <rect width="1024" height="1024" rx="228" ry="228"/>
+            </clipPath>
+          </defs>
+          <g clip-path="url(#ft-clip)">
+            <rect width="1024" height="1024" fill="url(#ft-bg)"/>
+            <rect x="0" y="0" width="1024" height="32" fill="url(#ft-stripe)"/>
+            <circle cx="213" cy="768" r="59" fill="#4DAD80"/>
+            <path d="M213 768 C213 427, 811 597, 811 256" fill="none" stroke="url(#ft-congestion)" stroke-width="37" stroke-linecap="round"/>
+            <circle cx="811" cy="256" r="59" fill="#4DAD80"/>
+          </g>
+        </svg>
+        <span class="text-foreground-muted text-sm">Arrival</span>
+      </div>
+
+      <p class="text-foreground-subtle text-xs text-center">
+        Free &amp; open source. macOS 13+.
+        <a href="https://github.com/kevinguebert/traffic-menubar" class="text-foreground-muted hover:text-foreground transition-colors ml-2" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </p>
+
+      <nav class="flex items-center gap-5" aria-label="Footer navigation">
+        <a href="#features" class="text-foreground-subtle hover:text-foreground-muted text-xs transition-colors">Features</a>
+        <a href="docs/" class="text-foreground-subtle hover:text-foreground-muted text-xs transition-colors">Docs</a>
+        <a href="https://github.com/kevinguebert/traffic-menubar/releases/latest" class="text-foreground-subtle hover:text-foreground-muted text-xs transition-colors">Releases</a>
+      </nav>
+
+    </div>
+  </footer>
+
+  <!-- ─── INLINE SCRIPT ─────────────────────────────────────────────────────── -->
+  <script>
+    function copyBrewCommand() {
+      const command = 'brew install --cask arrival';
+      navigator.clipboard.writeText(command).then(() => {
+        const copyIcon = document.getElementById('copy-icon');
+        const checkIcon = document.getElementById('check-icon');
+        copyIcon.classList.add('hidden');
+        checkIcon.classList.remove('hidden');
+        setTimeout(() => {
+          copyIcon.classList.remove('hidden');
+          checkIcon.classList.add('hidden');
+        }, 2000);
+      }).catch(() => {
+        // Fallback for older browsers
+        const el = document.createElement('textarea');
+        el.value = command;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      });
+    }
+  </script>
+
+  <script src="js/main.js"></script>
+
+
+</body>
+</html>

@@ -4,11 +4,17 @@ struct DeveloperSettingsView: View {
     @ObservedObject var viewModel: CommuteViewModel
     @ObservedObject var mockProvider: MockTrafficProvider
     @ObservedObject var designOverrides: DevDesignOverrides
+    @ObservedObject private var settings = SettingsStore.shared
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var forcedState: ForcedAppState = .normal
     @State private var forcedDirection: CommuteDirection = .toWork
     @State private var forcedFailures: Int = 0
+    @State private var isGeocodingDevHome = false
+    @State private var isGeocodingDevWork = false
+    @State private var devHomeGeocodingError: String?
+    @State private var devWorkGeocodingError: String?
+    private let geocoder = GeocodingService()
 
     private var isDark: Bool { colorScheme == .dark }
     private var primaryText: Color { isDark ? .white.opacity(0.7) : .primary }
@@ -29,8 +35,10 @@ struct DeveloperSettingsView: View {
             VStack(alignment: .leading, spacing: 12) {
                 masterToggle
                 if viewModel.isDevMode {
+                    addressOverridesSection
                     appStateSection
                     routeDataSection
+                    baselineSection
                     incidentsSection
                     designOverridesSection
                     quickPresetsSection
@@ -50,6 +58,7 @@ struct DeveloperSettingsView: View {
         .onChange(of: mockProvider.includeIncidents) { _ in applyState() }
         .onChange(of: mockProvider.incidentCount) { _ in applyState() }
         .onChange(of: mockProvider.maxSeverity) { _ in applyState() }
+        .onChange(of: mockProvider.includeCongestion) { _ in applyState() }
     }
 
     // MARK: - Master Toggle
@@ -66,7 +75,9 @@ struct DeveloperSettingsView: View {
                         .foregroundColor(isDark ? Color.white.opacity(0.9) : Color.primary)
                 }
                 if viewModel.isDevMode {
-                    Text("Polling paused · Mock data in use")
+                    Text(viewModel.settings.devAddressOverrideEnabled
+                        ? "Custom addresses · Real API calls"
+                        : "Polling paused · Mock data in use")
                         .font(.system(size: 11, design: .rounded))
                         .foregroundColor(secondaryText)
                 }
@@ -93,6 +104,102 @@ struct DeveloperSettingsView: View {
                 .stroke(viewModel.isDevMode ? Color.orange.opacity(0.2) : subtleBorder, lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+
+    // MARK: - Address Overrides
+
+    @ViewBuilder
+    private var addressOverridesSection: some View {
+        devSection("Address Overrides") {
+            VStack(alignment: .leading, spacing: 10) {
+                Toggle("Use custom addresses", isOn: Binding(
+                    get: { settings.devAddressOverrideEnabled },
+                    set: { enabled in
+                        settings.devAddressOverrideEnabled = enabled
+                        if enabled {
+                            viewModel.enableAddressOverride()
+                        } else {
+                            viewModel.disableAddressOverride(mockProvider: mockProvider)
+                            applyState()
+                        }
+                    }
+                ))
+                    .font(.system(size: 12))
+                    .foregroundColor(primaryText)
+                    .tint(.orange)
+
+                if viewModel.settings.devAddressOverrideEnabled {
+                    Text("Real API calls with override addresses. Polling resumes automatically.")
+                        .font(.system(size: 11))
+                        .foregroundColor(secondaryText)
+
+                    devAddressField(
+                        label: "Home",
+                        text: $settings.devHomeAddress,
+                        isGeocoding: isGeocodingDevHome,
+                        error: devHomeGeocodingError,
+                        isValid: viewModel.settings.devHomeCoordinate != nil,
+                        onSubmit: geocodeDevHome
+                    )
+
+                    devAddressField(
+                        label: "Work",
+                        text: $settings.devWorkAddress,
+                        isGeocoding: isGeocodingDevWork,
+                        error: devWorkGeocodingError,
+                        isValid: viewModel.settings.devWorkCoordinate != nil,
+                        onSubmit: geocodeDevWork
+                    )
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func devAddressField(
+        label: String,
+        text: Binding<String>,
+        isGeocoding: Bool,
+        error: String?,
+        isValid: Bool,
+        onSubmit: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(secondaryText)
+
+            HStack(spacing: 8) {
+                TextField("Enter address…", text: text)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 12, design: .rounded))
+                    .foregroundColor(primaryText)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(isDark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .strokeBorder(isDark ? Color.white.opacity(0.1) : Color.black.opacity(0.1), lineWidth: 1)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                    .onSubmit(onSubmit)
+
+                if isGeocoding {
+                    ProgressView()
+                        .controlSize(.small)
+                        .scaleEffect(0.7)
+                } else if let error = error {
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundColor(.orange)
+                        .font(.system(size: 12))
+                        .help(error)
+                } else if isValid {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                        .font(.system(size: 12))
+                }
+            }
+        }
     }
 
     // MARK: - App State
@@ -174,8 +281,15 @@ struct DeveloperSettingsView: View {
                         .tint(.orange)
                 }
 
+                let currentTime = mockProvider.travelTimeMinutes * 60
+                let baselineTime = mockProvider.normalTimeMinutes * 60
+                let computedMood = TrafficMood(
+                    currentTime: currentTime,
+                    baselineTime: baselineTime,
+                    segmentCongestion: nil,
+                    hasMajorIncidents: mockProvider.includeIncidents && mockProvider.maxSeverity != .minor
+                )
                 let delay = max(0, Int(mockProvider.travelTimeMinutes - mockProvider.normalTimeMinutes))
-                let computedMood = TrafficMood(delayMinutes: delay, hasIncidents: mockProvider.includeIncidents)
                 HStack {
                     Text("Delay: +\(delay) min")
                         .font(.system(size: 11))
@@ -187,6 +301,68 @@ struct DeveloperSettingsView: View {
                         .foregroundColor(secondaryText)
                 }
                 .padding(.top, 4)
+
+                Toggle("Include congestion data (Mapbox-style)", isOn: $mockProvider.includeCongestion)
+                    .font(.system(size: 12))
+                    .foregroundColor(primaryText)
+                    .tint(.orange)
+            }
+        }
+    }
+
+    // MARK: - Baseline
+
+    @ViewBuilder
+    private var baselineSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Divider().opacity(0.06)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Baseline (persisted)")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(primaryText)
+
+                let settings = SettingsStore.shared
+                HStack {
+                    Text("Compare mode:")
+                        .font(.system(size: 12))
+                        .foregroundColor(secondaryText)
+                    Text(settings.baselineCompareMode.displayName)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.orange)
+                }
+
+                if let toWork = settings.baselineToWorkTime {
+                    HStack {
+                        Text("To work baseline:")
+                            .font(.system(size: 12))
+                            .foregroundColor(secondaryText)
+                        Text("\(Int(toWork / 60)) min")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.orange)
+                    }
+                }
+
+                if let toHome = settings.baselineToHomeTime {
+                    HStack {
+                        Text("To home baseline:")
+                            .font(.system(size: 12))
+                            .foregroundColor(secondaryText)
+                        Text("\(Int(toHome / 60)) min")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.orange)
+                    }
+                }
+
+                if let fetchedAt = settings.baselineFetchedAt {
+                    Text("Fetched: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.system(size: 11))
+                        .foregroundColor(secondaryText)
+                } else {
+                    Text("No baseline set")
+                        .font(.system(size: 11))
+                        .foregroundColor(secondaryText.opacity(0.6))
+                }
             }
         }
     }
@@ -281,6 +457,7 @@ struct DeveloperSettingsView: View {
                     mockProvider.travelTimeMinutes = 25
                     mockProvider.normalTimeMinutes = 25
                     mockProvider.includeIncidents = false
+                    mockProvider.includeCongestion = false
                     forcedState = .normal
                     forcedFailures = 0
                 }),
@@ -297,6 +474,7 @@ struct DeveloperSettingsView: View {
                     mockProvider.includeIncidents = true
                     mockProvider.incidentCount = 2
                     mockProvider.maxSeverity = .severe
+                    mockProvider.includeCongestion = true
                     forcedState = .normal
                     forcedFailures = 0
                 }),
@@ -366,6 +544,48 @@ struct DeveloperSettingsView: View {
             startPoint: .top,
             endPoint: .bottom
         )
+    }
+
+    private func geocodeDevHome() {
+        let address = viewModel.settings.devHomeAddress
+        guard !address.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        isGeocodingDevHome = true
+        devHomeGeocodingError = nil
+        Task {
+            do {
+                let coord = try await geocoder.geocode(address: address)
+                viewModel.settings.devHomeCoordinate = coord
+                devHomeGeocodingError = nil
+                if viewModel.settings.isConfigured {
+                    viewModel.enableAddressOverride()
+                }
+            } catch {
+                devHomeGeocodingError = "Couldn't find this address"
+                viewModel.settings.devHomeCoordinate = nil
+            }
+            isGeocodingDevHome = false
+        }
+    }
+
+    private func geocodeDevWork() {
+        let address = viewModel.settings.devWorkAddress
+        guard !address.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        isGeocodingDevWork = true
+        devWorkGeocodingError = nil
+        Task {
+            do {
+                let coord = try await geocoder.geocode(address: address)
+                viewModel.settings.devWorkCoordinate = coord
+                devWorkGeocodingError = nil
+                if viewModel.settings.isConfigured {
+                    viewModel.enableAddressOverride()
+                }
+            } catch {
+                devWorkGeocodingError = "Couldn't find this address"
+                viewModel.settings.devWorkCoordinate = nil
+            }
+            isGeocodingDevWork = false
+        }
     }
 
     private func applyState() {

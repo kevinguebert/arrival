@@ -36,7 +36,8 @@ final class MapKitProvider: TrafficProvider {
                 distance: mkRoute.distance,
                 polylineCoordinates: extractPolyline(from: mkRoute.polyline),
                 mkPolyline: mkRoute.polyline,
-                advisoryNotices: mkRoute.advisoryNotices
+                advisoryNotices: mkRoute.advisoryNotices,
+                segmentCongestion: nil
             )
         }
 

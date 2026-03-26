@@ -2,7 +2,11 @@ import SwiftUI
 
 struct RouteListView: View {
     let result: RouteResult
+    let originCoordinate: Coordinate
+    let destinationCoordinate: Coordinate
+    var selectedRoute: Route? = nil
     let onRouteTap: (Route) -> Void
+    @ObservedObject private var settings = SettingsStore.shared
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.devDesignOverrides) private var designOverrides
 
@@ -12,8 +16,11 @@ struct RouteListView: View {
         VStack(spacing: 0) {
             ForEach(Array(result.routes.enumerated()), id: \.element.id) { index, route in
                 let isFastest = index == 0
+                let isActive = selectedRoute != nil
+                    ? selectedRoute?.id == route.id
+                    : isFastest
 
-                routeRow(route: route, isFastest: isFastest)
+                routeRow(route: route, isFastest: isFastest, isActive: isActive)
 
                 if index < result.routes.count - 1 {
                     Divider()
@@ -47,7 +54,7 @@ struct RouteListView: View {
     }
 
     @ViewBuilder
-    private func routeRow(route: Route, isFastest: Bool) -> some View {
+    private func routeRow(route: Route, isFastest: Bool, isActive: Bool) -> some View {
         let fastestTime = result.fastestRoute?.travelTime ?? route.travelTime
         let delta = route.travelTimeMinutes - (result.fastestRoute?.travelTimeMinutes ?? 0)
 
@@ -56,8 +63,8 @@ struct RouteListView: View {
                 HStack {
                     HStack(spacing: 5) {
                         Text(route.name)
-                            .font(Design.routeNameFont(scale: fontScale, isFastest: isFastest))
-                            .foregroundColor(isFastest
+                            .font(Design.routeNameFont(scale: fontScale, isFastest: isActive))
+                            .foregroundColor(isActive
                                 ? (colorScheme == .dark ? .white.opacity(0.9) : .black.opacity(0.7))
                                 : (colorScheme == .dark ? .white.opacity(0.5) : .black.opacity(0.4)))
 
@@ -70,8 +77,8 @@ struct RouteListView: View {
 
                     HStack(spacing: 4) {
                         Text("\(route.travelTimeMinutes) min")
-                            .font(Design.routeTimeFont(scale: fontScale, isFastest: isFastest))
-                            .foregroundColor(isFastest
+                            .font(Design.routeTimeFont(scale: fontScale, isFastest: isActive))
+                            .foregroundColor(isActive
                                 ? (colorScheme == .dark ? TrafficMood.clear.darkAccentColor : TrafficMood.clear.lightTextColor)
                                 : (colorScheme == .dark ? .white.opacity(0.4) : .black.opacity(0.3)))
 
@@ -80,6 +87,8 @@ struct RouteListView: View {
                                 .font(.system(size: 10, design: .rounded))
                                 .foregroundColor(colorScheme == .dark ? .white.opacity(0.2) : .black.opacity(0.2))
                         }
+
+                        mapsButton(for: route)
                     }
                 }
 
@@ -94,19 +103,37 @@ struct RouteListView: View {
                 StylizedRouteLineView(
                     route: route,
                     fastestTravelTime: fastestTime,
-                    isFastest: isFastest
+                    isFastest: isActive
                 )
-                .frame(height: isFastest ? 20 : 16)
+                .frame(height: isActive ? 20 : 16)
                 .padding(.top, 8)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
-            .background(isFastest
+            .background(isActive
                 ? TrafficMood.clear.darkAccentColor.opacity(0.04)
                 : Color.clear)
         }
         .buttonStyle(NoFeedbackButtonStyle())
         .contentShape(Rectangle())
+    }
+
+    @ViewBuilder
+    private func mapsButton(for route: Route) -> some View {
+        Button(action: {
+            MapsURLBuilder.open(
+                route: route,
+                from: originCoordinate,
+                to: destinationCoordinate,
+                app: settings.preferredMapsApp
+            )
+        }) {
+            Image(systemName: "arrow.triangle.turn.up.right.circle")
+                .font(.system(size: 12))
+                .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.6))
+        }
+        .buttonStyle(.plain)
+        .help("Open in \(settings.preferredMapsApp.displayName)")
     }
 
     private var incidentBadge: some View {

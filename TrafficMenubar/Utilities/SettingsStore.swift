@@ -1,6 +1,30 @@
 import Foundation
 import Combine
 
+enum MapsApp: String, CaseIterable {
+    case googleMaps = "googleMaps"
+    case appleMaps = "appleMaps"
+
+    var displayName: String {
+        switch self {
+        case .googleMaps: return "Google Maps"
+        case .appleMaps: return "Apple Maps"
+        }
+    }
+}
+
+enum BaselineCompareMode: String, CaseIterable {
+    case bestCase = "bestCase"
+    case typical = "typical"
+
+    var displayName: String {
+        switch self {
+        case .bestCase: return "Best case (no traffic)"
+        case .typical: return "Typical traffic"
+        }
+    }
+}
+
 final class SettingsStore: ObservableObject {
     static let shared = SettingsStore()
 
@@ -71,9 +95,122 @@ final class SettingsStore: ObservableObject {
     @Published var developerModeEnabled: Bool {
         didSet { UserDefaults.standard.set(developerModeEnabled, forKey: "developerModeEnabled") }
     }
+    @Published var devAddressOverrideEnabled: Bool {
+        didSet { UserDefaults.standard.set(devAddressOverrideEnabled, forKey: "devAddressOverrideEnabled") }
+    }
+    @Published var devHomeAddress: String {
+        didSet { UserDefaults.standard.set(devHomeAddress, forKey: "devHomeAddress") }
+    }
+    @Published var devWorkAddress: String {
+        didSet { UserDefaults.standard.set(devWorkAddress, forKey: "devWorkAddress") }
+    }
+    @Published var devHomeCoordinate: Coordinate? {
+        didSet {
+            if let coord = devHomeCoordinate {
+                UserDefaults.standard.set(coord.latitude, forKey: "devHomeLatitude")
+                UserDefaults.standard.set(coord.longitude, forKey: "devHomeLongitude")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "devHomeLatitude")
+                UserDefaults.standard.removeObject(forKey: "devHomeLongitude")
+            }
+        }
+    }
+    @Published var devWorkCoordinate: Coordinate? {
+        didSet {
+            if let coord = devWorkCoordinate {
+                UserDefaults.standard.set(coord.latitude, forKey: "devWorkLatitude")
+                UserDefaults.standard.set(coord.longitude, forKey: "devWorkLongitude")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "devWorkLatitude")
+                UserDefaults.standard.removeObject(forKey: "devWorkLongitude")
+            }
+        }
+    }
+    @Published var mapboxAPIKey: String {
+        didSet { UserDefaults.standard.set(mapboxAPIKey, forKey: "mapboxAPIKey") }
+    }
+    @Published var mapboxKeySource: String {
+        didSet { UserDefaults.standard.set(mapboxKeySource, forKey: "mapboxKeySource") }
+    }
+    @Published var preferredMapsApp: MapsApp {
+        didSet { UserDefaults.standard.set(preferredMapsApp.rawValue, forKey: "preferredMapsApp") }
+    }
+    @Published var baselineCompareMode: BaselineCompareMode {
+        didSet { UserDefaults.standard.set(baselineCompareMode.rawValue, forKey: "baselineCompareMode") }
+    }
+    @Published var useMapboxBaseline: Bool {
+        didSet { UserDefaults.standard.set(useMapboxBaseline, forKey: "useMapboxBaseline") }
+    }
+    @Published var baselineToWorkTime: TimeInterval? {
+        didSet {
+            if let time = baselineToWorkTime {
+                UserDefaults.standard.set(time, forKey: "baselineToWorkTime")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "baselineToWorkTime")
+            }
+        }
+    }
+    @Published var baselineToHomeTime: TimeInterval? {
+        didSet {
+            if let time = baselineToHomeTime {
+                UserDefaults.standard.set(time, forKey: "baselineToHomeTime")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "baselineToHomeTime")
+            }
+        }
+    }
+    @Published var baselineFetchedAt: Date? {
+        didSet {
+            if let date = baselineFetchedAt {
+                UserDefaults.standard.set(date.timeIntervalSince1970, forKey: "baselineFetchedAt")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "baselineFetchedAt")
+            }
+        }
+    }
+
+    var effectiveMapboxKey: String? {
+        mapboxKeySource != "none" && !mapboxAPIKey.isEmpty ? mapboxAPIKey : nil
+    }
+
+    private var devOverrideActive: Bool {
+        developerModeEnabled && devAddressOverrideEnabled
+    }
+
+    var effectiveHomeAddress: String {
+        devOverrideActive ? devHomeAddress : homeAddress
+    }
+
+    var effectiveWorkAddress: String {
+        devOverrideActive ? devWorkAddress : workAddress
+    }
+
+    var effectiveHomeCoordinate: Coordinate? {
+        devOverrideActive ? devHomeCoordinate : homeCoordinate
+    }
+
+    var effectiveWorkCoordinate: Coordinate? {
+        devOverrideActive ? devWorkCoordinate : workCoordinate
+    }
+
+    func setMapboxKey(_ key: String, source: String) {
+        mapboxAPIKey = key
+        mapboxKeySource = source
+    }
+
+    func clearMapboxKey() {
+        mapboxAPIKey = ""
+        mapboxKeySource = "none"
+    }
+
+    func clearBaselines() {
+        baselineToWorkTime = nil
+        baselineToHomeTime = nil
+        baselineFetchedAt = nil
+    }
 
     var isConfigured: Bool {
-        homeCoordinate != nil && workCoordinate != nil
+        effectiveHomeCoordinate != nil && effectiveWorkCoordinate != nil
     }
 
     private init() {
@@ -113,6 +250,48 @@ final class SettingsStore: ObservableObject {
 
         self.launchAtLogin = defaults.bool(forKey: "launchAtLogin")
         self.developerModeEnabled = defaults.bool(forKey: "developerModeEnabled")
+        self.devAddressOverrideEnabled = defaults.bool(forKey: "devAddressOverrideEnabled")
+        self.devHomeAddress = defaults.string(forKey: "devHomeAddress") ?? ""
+        self.devWorkAddress = defaults.string(forKey: "devWorkAddress") ?? ""
+
+        if defaults.object(forKey: "devHomeLatitude") != nil {
+            self.devHomeCoordinate = Coordinate(
+                latitude: defaults.double(forKey: "devHomeLatitude"),
+                longitude: defaults.double(forKey: "devHomeLongitude")
+            )
+        } else {
+            self.devHomeCoordinate = nil
+        }
+
+        if defaults.object(forKey: "devWorkLatitude") != nil {
+            self.devWorkCoordinate = Coordinate(
+                latitude: defaults.double(forKey: "devWorkLatitude"),
+                longitude: defaults.double(forKey: "devWorkLongitude")
+            )
+        } else {
+            self.devWorkCoordinate = nil
+        }
+
+        self.mapboxAPIKey = defaults.string(forKey: "mapboxAPIKey") ?? ""
+        self.mapboxKeySource = defaults.string(forKey: "mapboxKeySource") ?? "none"
+        self.preferredMapsApp = MapsApp(rawValue: defaults.string(forKey: "preferredMapsApp") ?? "") ?? .googleMaps
+        self.baselineCompareMode = BaselineCompareMode(rawValue: defaults.string(forKey: "baselineCompareMode") ?? "") ?? .bestCase
+        self.useMapboxBaseline = defaults.object(forKey: "useMapboxBaseline") as? Bool ?? true
+        if defaults.object(forKey: "baselineToWorkTime") != nil {
+            self.baselineToWorkTime = defaults.double(forKey: "baselineToWorkTime")
+        } else {
+            self.baselineToWorkTime = nil
+        }
+        if defaults.object(forKey: "baselineToHomeTime") != nil {
+            self.baselineToHomeTime = defaults.double(forKey: "baselineToHomeTime")
+        } else {
+            self.baselineToHomeTime = nil
+        }
+        if defaults.object(forKey: "baselineFetchedAt") != nil {
+            self.baselineFetchedAt = Date(timeIntervalSince1970: defaults.double(forKey: "baselineFetchedAt"))
+        } else {
+            self.baselineFetchedAt = nil
+        }
     }
 
     func isCommuteHour(at date: Date = Date()) -> Bool {

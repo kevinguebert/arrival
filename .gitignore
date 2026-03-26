@@ -27,3 +27,6 @@ build/
 
 # XcodeGen
 *.xcodeproj
+
+# Distribution builds
+dist/

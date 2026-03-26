@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 // MARK: - Traffic Mood
 
@@ -9,14 +10,48 @@ enum TrafficMood {
     case heavy       // Significant delay, incidents likely
     case unknown     // No data yet
 
-    init(delayMinutes: Int, hasIncidents: Bool) {
-        if hasIncidents || delayMinutes >= 15 {
+    init(currentTime: TimeInterval,
+         baselineTime: TimeInterval,
+         segmentCongestion: [CongestionLevel]?,
+         hasMajorIncidents: Bool) {
+
+        // Major incidents bypass all duration logic
+        if hasMajorIncidents {
             self = .heavy
-        } else if delayMinutes >= 5 {
-            self = .moderate
-        } else {
-            self = .clear
+            return
         }
+
+        let delay = currentTime - baselineTime
+        let delayMinutes = delay / 60.0
+        let percentOver = baselineTime > 0 ? delay / baselineTime : 0
+
+        // Primary mood from duration comparison (if/else-if, first match wins)
+        var result: TrafficMood
+        if delayMinutes < 3 {
+            result = .clear
+        } else if percentOver <= 0.15 && delayMinutes < 5 {
+            result = .clear
+        } else if percentOver > 0.30 && delayMinutes >= 10 {
+            result = .heavy
+        } else {
+            result = .moderate
+        }
+
+        // Congestion bump: if >25% of segments are heavy/severe, bump up one level
+        if let congestion = segmentCongestion, !congestion.isEmpty {
+            let total = congestion.count
+            let severeOrHeavy = congestion.filter { $0 == .severe || $0 == .heavy }.count
+            let ratio = Double(severeOrHeavy) / Double(total)
+            if ratio > 0.25 {
+                switch result {
+                case .clear: result = .moderate
+                case .moderate: result = .heavy
+                case .heavy, .unknown: break
+                }
+            }
+        }
+
+        self = result
     }
 
     var accentColor: Color {
@@ -152,7 +187,9 @@ enum TrafficMood {
 enum Design {
     static let popoverWidth: CGFloat = 320
     static let popoverPadding: CGFloat = 20
-    static let mapHeight: CGFloat = 150
+    static let mapHeight: CGFloat = 200
+    static let detachedMapWidth: CGFloat = 600
+    static let detachedMapHeight: CGFloat = 450
     static let cornerRadius: CGFloat = 8
     static let smallCornerRadius: CGFloat = 6
 
@@ -236,4 +273,28 @@ enum EmptyState {
         title: "Hmm, no routes found",
         subtitle: "MapKit shrugged. Try different addresses?"
     )
+}
+
+// MARK: - CongestionLevel Color Helpers
+
+extension CongestionLevel {
+    var color: Color {
+        switch self {
+        case .low:      return Color(red: 0.29, green: 0.68, blue: 0.50) // #4DAD80
+        case .moderate: return Color(red: 0.98, green: 0.75, blue: 0.14) // #FDC21C
+        case .heavy:    return Color(red: 0.97, green: 0.44, blue: 0.44) // #F76F6F
+        case .severe:   return Color(red: 0.83, green: 0.18, blue: 0.18) // #D32F2F
+        case .unknown:  return Color.gray.opacity(0.5)
+        }
+    }
+
+    var nsColor: NSColor {
+        switch self {
+        case .low:      return NSColor(red: 0.29, green: 0.68, blue: 0.50, alpha: 0.9)
+        case .moderate: return NSColor(red: 0.98, green: 0.75, blue: 0.14, alpha: 0.9)
+        case .heavy:    return NSColor(red: 0.97, green: 0.44, blue: 0.44, alpha: 0.9)
+        case .severe:   return NSColor(red: 0.83, green: 0.18, blue: 0.18, alpha: 0.9)
+        case .unknown:  return NSColor.gray.withAlphaComponent(0.5)
+        }
+    }
 }

@@ -4,6 +4,7 @@ enum TrafficProviderError: Error, LocalizedError {
     case noRouteFound
     case geocodingFailed(String)
     case networkError(Error)
+    case invalidAPIKey
 
     var errorDescription: String? {
         switch self {
@@ -13,6 +14,8 @@ enum TrafficProviderError: Error, LocalizedError {
             return "Could not find location for: \(address)"
         case .networkError(let error):
             return "Network error: \(error.localizedDescription)"
+        case .invalidAPIKey:
+            return "Invalid API key. Check your Mapbox key in Settings."
         }
     }
 }
