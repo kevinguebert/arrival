@@ -122,14 +122,14 @@ final class CommuteViewModel: ObservableObject {
     }
 
     var originCoordinate: Coordinate {
-        let home = settings.homeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
-        let work = settings.workCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        let home = settings.effectiveHomeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        let work = settings.effectiveWorkCoordinate ?? Coordinate(latitude: 0, longitude: 0)
         return direction == .toWork ? home : work
     }
 
     var destinationCoordinate: Coordinate {
-        let home = settings.homeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
-        let work = settings.workCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        let home = settings.effectiveHomeCoordinate ?? Coordinate(latitude: 0, longitude: 0)
+        let work = settings.effectiveWorkCoordinate ?? Coordinate(latitude: 0, longitude: 0)
         return direction == .toWork ? work : home
     }
 
@@ -147,8 +147,8 @@ final class CommuteViewModel: ObservableObject {
 
     private func fetchRoute() async {
         guard settings.isConfigured,
-              let home = settings.homeCoordinate,
-              let work = settings.workCoordinate else {
+              let home = settings.effectiveHomeCoordinate,
+              let work = settings.effectiveWorkCoordinate else {
             return
         }
 

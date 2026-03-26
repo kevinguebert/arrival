@@ -712,8 +712,8 @@ struct PreferencesView: View {
     }
 
     private func fetchBaseline() {
-        guard let home = settings.homeCoordinate,
-              let work = settings.workCoordinate else { return }
+        guard let home = settings.effectiveHomeCoordinate,
+              let work = settings.effectiveWorkCoordinate else { return }
 
         isFetchingBaseline = true
         baselineFetchError = nil
