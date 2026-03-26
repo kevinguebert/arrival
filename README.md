@@ -36,7 +36,7 @@ cp Secrets.xcconfig.example Secrets.xcconfig
 xcodegen generate
 
 # Open in Xcode
-open TrafficMenubar.xcodeproj
+open Arrival.xcodeproj
 ```
 
 Then build and run with **Cmd+R** in Xcode.

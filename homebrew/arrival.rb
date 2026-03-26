@@ -9,9 +9,9 @@ cask "arrival" do
 
   depends_on macos: ">= :ventura"
 
-  app "TrafficMenubar.app"
+  app "Arrival.app"
 
   zap trash: [
-    "~/Library/Preferences/com.trafficmenubar.app.plist",
+    "~/Library/Preferences/com.arrival.app.plist",
   ]
 end

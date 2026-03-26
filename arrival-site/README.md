@@ -38,7 +38,7 @@ Replace the placeholder files in `assets/screenshots/` with real app screenshots
 
 2. **Open in Xcode and resolve packages:**
    ```bash
-   open TrafficMenubar.xcodeproj
+   open Arrival.xcodeproj
    ```
    Wait for Swift Package Manager to fetch Sparkle. Build once to verify.
 
@@ -55,7 +55,7 @@ Replace the placeholder files in `assets/screenshots/` with real app screenshots
 
 2. **Build the app:**
    ```bash
-   xcodebuild -project TrafficMenubar.xcodeproj -scheme TrafficMenubar -configuration Release build
+   xcodebuild -project Arrival.xcodeproj -scheme Arrival -configuration Release build
    ```
 
 3. **Package the DMG:**

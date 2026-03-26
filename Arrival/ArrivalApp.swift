@@ -2,7 +2,7 @@ import SwiftUI
 import Sparkle
 
 @main
-struct TrafficMenubarApp: App {
+struct ArrivalApp: App {
     private let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
     @StateObject private var viewModel = CommuteViewModel()
     @Environment(\.openWindow) private var openWindow

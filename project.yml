@@ -1,4 +1,4 @@
-name: TrafficMenubar
+name: Arrival
 packages:
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
@@ -10,7 +10,7 @@ packages:
     url: https://github.com/TelemetryDeck/SwiftSDK
     from: "2.0.0"
 options:
-  bundleIdPrefix: com.trafficmenubar
+  bundleIdPrefix: com.arrival
   deploymentTarget:
     macOS: "13.0"
   xcodeVersion: "15.0"
@@ -18,17 +18,17 @@ configFiles:
   Debug: Secrets.xcconfig
   Release: Secrets.xcconfig
 targets:
-  TrafficMenubar:
+  Arrival:
     type: application
     platform: macOS
     sources:
-      - TrafficMenubar
+      - Arrival
     settings:
       base:
         GENERATE_INFOPLIST_FILE: true
         INFOPLIST_KEY_LSUIElement: true
         INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Traffic Menubar uses your location to detect whether you're near home or work to show the right commute direction."
-        PRODUCT_BUNDLE_IDENTIFIER: com.trafficmenubar.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.arrival.app
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: 1
         SWIFT_VERSION: "5.9"
@@ -41,14 +41,14 @@ targets:
       - package: TelemetryDeck
         product: TelemetryDeck
     info:
-      path: TrafficMenubar/Info.plist
+      path: Arrival/Info.plist
       properties:
         SUFeedURL: https://kevinguebert.github.io/traffic-menubar/appcast.xml
         SUPublicEDKey: ""
         SentryDSN: $(SENTRY_DSN)
         TelemetryDeckAppID: $(TELEMETRYDECK_APP_ID)
     entitlements:
-      path: TrafficMenubar/TrafficMenubar.entitlements
+      path: Arrival/Arrival.entitlements
       properties:
         com.apple.security.app-sandbox: true
         com.apple.security.network.client: true

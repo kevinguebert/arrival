@@ -71,6 +71,6 @@ extension Bundle {
     var appVersionString: String {
         let version = infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
         let build = infoDictionary?["CFBundleVersion"] as? String ?? "0"
-        return "com.trafficmenubar.app@\(version)+\(build)"
+        return "com.arrival.app@\(version)+\(build)"
     }
 }
