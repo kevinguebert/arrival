@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Docs — Arrival</title>
+  <meta name="description" content="Documentation and FAQ for Arrival, the macOS menu bar app that shows your commute traffic in real time." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Docs — Arrival" />
+  <meta property="og:description" content="Documentation and FAQ for Arrival, the macOS menu bar app that shows your commute traffic in real time." />
+  <meta property="og:url" content="https://kevinguebert.github.io/traffic-menubar/docs/" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../assets/icon/arrival-icon.svg" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="bg-background text-foreground antialiased">
+
+  <!-- ─── NAV ─────────────────────────────────────────────────────────────── -->
+  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+    <div class="max-w-site mx-auto px-6 h-14 flex items-center justify-between">
+
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2.5 group">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" class="w-7 h-7 rounded-lg" aria-hidden="true">
+          <defs>
+            <linearGradient id="nav-bg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0F1219"/>
+              <stop offset="100%" stop-color="#161B26"/>
+            </linearGradient>
+            <linearGradient id="nav-congestion" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4DAD80"/>
+              <stop offset="40%" stop-color="#4DAD80"/>
+              <stop offset="55%" stop-color="#FDC021"/>
+              <stop offset="70%" stop-color="#F77070"/>
+              <stop offset="85%" stop-color="#FDC021"/>
+              <stop offset="100%" stop-color="#4DAD80"/>
+            </linearGradient>
+            <linearGradient id="nav-stripe" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4DAD80"/>
+              <stop offset="100%" stop-color="#21C45E"/>
+            </linearGradient>
+            <radialGradient id="nav-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(77,173,128,0.12)"/>
+              <stop offset="100%" stop-color="transparent"/>
+            </radialGradient>
+            <clipPath id="nav-clip">
+              <rect width="1024" height="1024" rx="228" ry="228"/>
+            </clipPath>
+          </defs>
+          <g clip-path="url(#nav-clip)">
+            <rect width="1024" height="1024" fill="url(#nav-bg)"/>
+            <rect x="0" y="0" width="1024" height="32" fill="url(#nav-stripe)"/>
+            <circle cx="512" cy="512" r="400" fill="url(#nav-glow)"/>
+            <circle cx="213" cy="768" r="59" fill="#4DAD80"/>
+            <path d="M213 768 C213 427, 811 597, 811 256" fill="none" stroke="url(#nav-congestion)" stroke-width="37" stroke-linecap="round"/>
+            <circle cx="811" cy="256" r="59" fill="#4DAD80"/>
+            <circle cx="811" cy="256" r="107" fill="none" stroke="#4DAD80" stroke-width="13" opacity="0.35"/>
+            <circle cx="811" cy="256" r="160" fill="none" stroke="#4DAD80" stroke-width="9" opacity="0.15"/>
+          </g>
+        </svg>
+        <span class="text-foreground font-semibold text-sm tracking-tight group-hover:text-clear transition-colors">Arrival</span>
+      </a>
+
+      <!-- Nav links -->
+      <div class="flex items-center gap-6">
+        <a href="/#features" class="text-foreground-muted hover:text-foreground text-sm transition-colors">Features</a>
+        <a href="/docs/" class="text-foreground text-sm transition-colors">Docs</a>
+        <a href="https://github.com/kevinguebert/traffic-menubar/releases/latest" class="inline-flex items-center gap-1.5 bg-clear text-white text-sm font-medium px-3.5 py-1.5 rounded-button hover:bg-clear-end transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download
+        </a>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- ─── DOCS LAYOUT ──────────────────────────────────────────────────────── -->
+  <div class="max-w-site mx-auto px-6 pt-24 pb-24">
+    <div class="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-12">
+
+      <!-- ─── SIDEBAR ────────────────────────────────────────────────────── -->
+      <aside class="hidden lg:block">
+        <nav class="sticky top-24 flex flex-col gap-1" aria-label="Docs navigation">
+          <p class="text-foreground-subtle text-xs font-semibold tracking-widest uppercase mb-3">On this page</p>
+          <a href="#getting-started" class="text-sm text-foreground-muted hover:text-foreground py-1 transition-colors">Getting Started</a>
+          <a href="#setting-up" class="text-sm text-foreground-muted hover:text-foreground py-1 transition-colors">Setting Up</a>
+          <a href="#using-arrival" class="text-sm text-foreground-muted hover:text-foreground py-1 transition-colors">Using Arrival</a>
+          <a href="#map-window" class="text-sm text-foreground-muted hover:text-foreground py-1 transition-colors">Map Window</a>
+          <a href="#preferences" class="text-sm text-foreground-muted hover:text-foreground py-1 transition-colors">Preferences</a>
+          <a href="#troubleshooting" class="text-sm text-foreground-muted hover:text-foreground py-1 transition-colors">Troubleshooting</a>
+          <a href="#updates" class="text-sm text-foreground-muted hover:text-foreground py-1 transition-colors">Updates</a>
+        </nav>
+      </aside>
+
+      <!-- ─── CONTENT ────────────────────────────────────────────────────── -->
+      <main class="min-w-0">
+
+        <!-- Page header -->
+        <div class="mb-12">
+          <h1 class="text-4xl font-bold tracking-heading mb-3">Docs</h1>
+          <p class="text-foreground-muted leading-relaxed max-w-xl">Everything you need to get Arrival up and running, and answers to common questions.</p>
+        </div>
+
+        <!-- ─── GETTING STARTED ──────────────────────────────────────────── -->
+        <section id="getting-started" class="mb-12">
+          <h2 class="text-xl font-bold tracking-heading mb-4">Getting Started</h2>
+
+          <p class="text-foreground-muted leading-relaxed mb-4">
+            Download the latest <code class="code-block inline py-0.5 px-1.5 text-xs">.dmg</code> from
+            <a href="https://github.com/kevinguebert/traffic-menubar/releases" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">GitHub Releases</a>.
+            Open the disk image, drag Arrival into your Applications folder, and launch it.
+          </p>
+
+          <div class="arrival-card p-5 mb-4">
+            <p class="text-foreground text-sm font-semibold mb-2">First launch: opening an unsigned app</p>
+            <p class="text-foreground-muted text-sm leading-relaxed mb-3">
+              Because Arrival is distributed outside the Mac App Store, macOS may show a warning that it "cannot be opened because the developer cannot be verified."
+            </p>
+            <ol class="space-y-2 text-sm text-foreground-muted">
+              <li class="flex gap-2.5">
+                <span class="text-clear font-semibold flex-shrink-0">1.</span>
+                <span>Locate <strong class="text-foreground font-medium">Arrival.app</strong> in your Applications folder (do not double-click).</span>
+              </li>
+              <li class="flex gap-2.5">
+                <span class="text-clear font-semibold flex-shrink-0">2.</span>
+                <span>Right-click (or Control-click) the app icon and choose <strong class="text-foreground font-medium">Open</strong> from the menu.</span>
+              </li>
+              <li class="flex gap-2.5">
+                <span class="text-clear font-semibold flex-shrink-0">3.</span>
+                <span>Click <strong class="text-foreground font-medium">Open</strong> again in the dialog that appears. macOS will remember your choice.</span>
+              </li>
+            </ol>
+          </div>
+
+          <p class="text-foreground-muted leading-relaxed">
+            Once launched, look for the Arrival icon in your menu bar — a small route icon near the clock. If you don't see it, check System Settings → Control Center and make sure menu bar apps are visible.
+          </p>
+        </section>
+
+        <!-- ─── DIVIDER ──────────────────────────────────────────────────── -->
+        <div class="h-px mb-12" style="background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);"></div>
+
+        <!-- ─── SETTING UP ───────────────────────────────────────────────── -->
+        <section id="setting-up" class="mb-12">
+          <h2 class="text-xl font-bold tracking-heading mb-4">Setting Up</h2>
+
+          <p class="text-foreground-muted leading-relaxed mb-4">
+            Before Arrival can show you traffic data, you need to configure at least one route. Click the Arrival menu bar icon and open <strong class="text-foreground font-medium">Preferences</strong>.
+          </p>
+
+          <div class="space-y-4">
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-1">Enter your addresses</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                In the Routes tab, add a name for the route (e.g. "Home to Office") then type your origin and destination addresses. Arrival uses Apple Maps or Mapbox to resolve addresses — full street addresses work best.
+              </p>
+            </div>
+
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-1">Configure your commute schedule</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                Set the days and times you commute. Arrival uses your schedule to intelligently show the right direction — outbound in the morning, inbound in the evening — so the menu bar always displays the journey that matters right now.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── DIVIDER ──────────────────────────────────────────────────── -->
+        <div class="h-px mb-12" style="background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);"></div>
+
+        <!-- ─── USING ARRIVAL ────────────────────────────────────────────── -->
+        <section id="using-arrival" class="mb-12">
+          <h2 class="text-xl font-bold tracking-heading mb-4">Using Arrival</h2>
+
+          <p class="text-foreground-muted leading-relaxed mb-6">
+            Arrival refreshes traffic data in the background and surfaces everything you need in the menu bar and dropdown panel.
+          </p>
+
+          <div class="space-y-6">
+
+            <div>
+              <p class="text-foreground text-sm font-semibold mb-2">Menu bar icon</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                The menu bar shows your current travel time (e.g. <span class="text-foreground font-medium">22 min</span>) alongside a color-coded traffic mood. Glance up — if it's green, you're good to go.
+              </p>
+            </div>
+
+            <div>
+              <p class="text-foreground text-sm font-semibold mb-2">Traffic moods</p>
+              <div class="space-y-2 mt-2">
+                <div class="flex items-center gap-3">
+                  <span class="w-3 h-3 rounded-full bg-clear inline-block flex-shrink-0"></span>
+                  <span class="text-foreground-muted text-sm"><strong class="text-foreground font-medium">Green — Clear.</strong> Traffic is flowing freely. Your commute is on schedule.</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="w-3 h-3 rounded-full bg-moderate inline-block flex-shrink-0"></span>
+                  <span class="text-foreground-muted text-sm"><strong class="text-foreground font-medium">Amber — Moderate.</strong> Some slowdowns ahead. Leave a few minutes early if you can.</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="w-3 h-3 rounded-full bg-heavy inline-block flex-shrink-0"></span>
+                  <span class="text-foreground-muted text-sm"><strong class="text-foreground font-medium">Red — Heavy.</strong> Significant congestion on your route. Consider waiting it out or taking an alternate path.</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p class="text-foreground text-sm font-semibold mb-2">Routes &amp; direction detection</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                If you have multiple routes saved, Arrival cycles through them in the menu bar. The dropdown panel lists all routes with their current travel times. Based on your commute schedule, Arrival automatically shows the right direction — no need to manually flip between "to work" and "back home."
+              </p>
+            </div>
+
+            <div>
+              <p class="text-foreground text-sm font-semibold mb-2">Incidents</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                When there are accidents, construction zones, or road closures on your route, they appear in the dropdown panel below your travel time. Severity is indicated so you can decide whether it's worth rerouting.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ─── DIVIDER ──────────────────────────────────────────────────── -->
+        <div class="h-px mb-12" style="background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);"></div>
+
+        <!-- ─── MAP WINDOW ───────────────────────────────────────────────── -->
+        <section id="map-window" class="mb-12">
+          <h2 class="text-xl font-bold tracking-heading mb-4">Map Window</h2>
+
+          <p class="text-foreground-muted leading-relaxed mb-4">
+            Click the map preview thumbnail inside the Arrival dropdown to open the detachable map window. It floats above your other windows so you can keep an eye on your route without switching apps.
+          </p>
+
+          <div class="space-y-4">
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-1">Route with congestion overlay</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                The map draws your full route path and overlays real-time traffic congestion using color bands — green where traffic is moving, amber where it's slowing, red where it's backed up. You can see exactly which stretch of road is causing the delay.
+              </p>
+            </div>
+
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-1">Route selection sync</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                The map window stays in sync with whichever route is selected in the dropdown. Switch routes in the panel and the map updates automatically.
+              </p>
+            </div>
+          </div>
+
+          <p class="text-foreground-muted text-sm leading-relaxed mt-4">
+            The map window requires a Mapbox API key to display traffic overlays. See <a href="#preferences" class="text-clear hover:underline">Preferences</a> for setup instructions.
+          </p>
+        </section>
+
+        <!-- ─── DIVIDER ──────────────────────────────────────────────────── -->
+        <div class="h-px mb-12" style="background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);"></div>
+
+        <!-- ─── PREFERENCES ──────────────────────────────────────────────── -->
+        <section id="preferences" class="mb-12">
+          <h2 class="text-xl font-bold tracking-heading mb-4">Preferences</h2>
+
+          <p class="text-foreground-muted leading-relaxed mb-6">
+            Open Preferences from the Arrival menu bar icon. All settings are stored locally on your Mac.
+          </p>
+
+          <div class="space-y-4">
+
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-1">Polling interval</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                Controls how often Arrival fetches fresh traffic data. Shorter intervals mean more up-to-date information but higher network usage. The default is every 5 minutes.
+              </p>
+            </div>
+
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-1">Maps provider: MapKit vs Mapbox</p>
+              <p class="text-foreground-muted text-sm leading-relaxed mb-2">
+                Arrival supports two traffic data providers:
+              </p>
+              <ul class="space-y-1.5 text-sm text-foreground-muted">
+                <li class="flex gap-2.5">
+                  <span class="text-clear flex-shrink-0 font-medium">MapKit</span>
+                  <span>Apple's built-in maps framework. No API key required. Works out of the box.</span>
+                </li>
+                <li class="flex gap-2.5">
+                  <span class="text-moderate flex-shrink-0 font-medium">Mapbox</span>
+                  <span>Provides richer traffic overlays and the interactive map window. Requires a free Mapbox API key — paste it into the Preferences → Mapbox field.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-1">Launch at login</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                Toggle this on to have Arrival start automatically when you log in to your Mac. No need to remember to open it before your commute.
+              </p>
+            </div>
+
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-1">Preferred maps app</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                When you tap "Get Directions" from the dropdown, Arrival opens your preferred navigation app — choose from Apple Maps, Google Maps, or Waze.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ─── DIVIDER ──────────────────────────────────────────────────── -->
+        <div class="h-px mb-12" style="background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);"></div>
+
+        <!-- ─── TROUBLESHOOTING ──────────────────────────────────────────── -->
+        <section id="troubleshooting" class="mb-12">
+          <h2 class="text-xl font-bold tracking-heading mb-4">Troubleshooting</h2>
+
+          <p class="text-foreground-muted leading-relaxed mb-6">Common questions and fixes.</p>
+
+          <div class="space-y-4">
+
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-2">"macOS says the app is from an unidentified developer"</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                This is expected for apps distributed outside the App Store. Right-click (or Control-click) the app icon in Finder and choose <strong class="text-foreground font-medium">Open</strong>. Then click <strong class="text-foreground font-medium">Open</strong> again in the dialog. macOS will remember your decision from then on.
+              </p>
+            </div>
+
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-2">"The app shows '--' instead of a time"</p>
+              <p class="text-foreground-muted text-sm leading-relaxed mb-2">
+                This usually means Arrival couldn't fetch traffic data. Try the following:
+              </p>
+              <ul class="space-y-1.5 text-sm text-foreground-muted">
+                <li class="flex gap-2">
+                  <span class="text-clear flex-shrink-0">•</span>
+                  <span>Check that your origin and destination addresses are valid and resolve correctly in Preferences.</span>
+                </li>
+                <li class="flex gap-2">
+                  <span class="text-clear flex-shrink-0">•</span>
+                  <span>Verify your Mac has an active internet connection.</span>
+                </li>
+                <li class="flex gap-2">
+                  <span class="text-clear flex-shrink-0">•</span>
+                  <span>If using Mapbox, confirm your API key is entered correctly and has not expired.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-2">"How do I use Mapbox instead of Apple Maps?"</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                Sign up for a free account at <a href="https://mapbox.com" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">mapbox.com</a> and create a public access token. Then open Arrival Preferences, go to the Mapbox section, and paste your token. Arrival will switch to the Mapbox provider automatically.
+              </p>
+            </div>
+
+            <div class="arrival-card p-5">
+              <p class="text-foreground text-sm font-semibold mb-2">"How do I make it launch at startup?"</p>
+              <p class="text-foreground-muted text-sm leading-relaxed">
+                Open Preferences and toggle on <strong class="text-foreground font-medium">Launch at Login</strong>. Arrival uses macOS Login Items, so it will start silently in the background whenever you log in.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ─── DIVIDER ──────────────────────────────────────────────────── -->
+        <div class="h-px mb-12" style="background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);"></div>
+
+        <!-- ─── UPDATES ──────────────────────────────────────────────────── -->
+        <section id="updates" class="mb-12">
+          <h2 class="text-xl font-bold tracking-heading mb-4">Updates</h2>
+
+          <p class="text-foreground-muted leading-relaxed mb-4">
+            Arrival uses <a href="https://sparkle-project.org" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">Sparkle</a> for automatic updates. When a new version is available, you'll see a prompt inside the app to install it — no need to visit GitHub manually.
+          </p>
+
+          <p class="text-foreground-muted leading-relaxed mb-4">
+            If you prefer to update manually, every release is also published on
+            <a href="https://github.com/kevinguebert/traffic-menubar/releases" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">GitHub Releases</a>.
+            Download the latest <code class="code-block inline py-0.5 px-1.5 text-xs">.dmg</code>, drag the new version to Applications, and replace the old one.
+          </p>
+
+          <div class="arrival-card p-5">
+            <p class="text-foreground text-sm font-semibold mb-1">Staying on the latest version is recommended</p>
+            <p class="text-foreground-muted text-sm leading-relaxed">
+              Updates often include improvements to traffic accuracy, new features, and compatibility fixes for the latest versions of macOS. Sparkle will notify you — just keep an eye out for the update prompt.
+            </p>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ─── FOOTER ────────────────────────────────────────────────────────────── -->
+  <footer class="border-t border-border py-10 px-6">
+    <div class="max-w-site mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" class="w-5 h-5 rounded-md opacity-80" aria-hidden="true">
+          <defs>
+            <linearGradient id="ft-bg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0F1219"/>
+              <stop offset="100%" stop-color="#161B26"/>
+            </linearGradient>
+            <linearGradient id="ft-congestion" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4DAD80"/>
+              <stop offset="40%" stop-color="#4DAD80"/>
+              <stop offset="55%" stop-color="#FDC021"/>
+              <stop offset="70%" stop-color="#F77070"/>
+              <stop offset="85%" stop-color="#FDC021"/>
+              <stop offset="100%" stop-color="#4DAD80"/>
+            </linearGradient>
+            <linearGradient id="ft-stripe" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4DAD80"/>
+              <stop offset="100%" stop-color="#21C45E"/>
+            </linearGradient>
+            <clipPath id="ft-clip">
+              <rect width="1024" height="1024" rx="228" ry="228"/>
+            </clipPath>
+          </defs>
+          <g clip-path="url(#ft-clip)">
+            <rect width="1024" height="1024" fill="url(#ft-bg)"/>
+            <rect x="0" y="0" width="1024" height="32" fill="url(#ft-stripe)"/>
+            <circle cx="213" cy="768" r="59" fill="#4DAD80"/>
+            <path d="M213 768 C213 427, 811 597, 811 256" fill="none" stroke="url(#ft-congestion)" stroke-width="37" stroke-linecap="round"/>
+            <circle cx="811" cy="256" r="59" fill="#4DAD80"/>
+          </g>
+        </svg>
+        <span class="text-foreground-muted text-sm">Arrival</span>
+      </div>
+
+      <p class="text-foreground-subtle text-xs text-center">
+        Free &amp; open source. macOS 13+.
+        <a href="https://github.com/kevinguebert/traffic-menubar" class="text-foreground-muted hover:text-foreground transition-colors ml-2" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </p>
+
+      <nav class="flex items-center gap-5" aria-label="Footer navigation">
+        <a href="/#features" class="text-foreground-subtle hover:text-foreground-muted text-xs transition-colors">Features</a>
+        <a href="/docs/" class="text-foreground-subtle hover:text-foreground-muted text-xs transition-colors">Docs</a>
+        <a href="https://github.com/kevinguebert/traffic-menubar/releases/latest" class="text-foreground-subtle hover:text-foreground-muted text-xs transition-colors">Releases</a>
+      </nav>
+
+    </div>
+  </footer>
+
+</body>
+</html>
