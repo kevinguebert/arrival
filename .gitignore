@@ -37,8 +37,8 @@ Secrets.xcconfig
 # Claude Code
 .claude/
 
-# Internal implementation plans
-docs/superpowers/
+# Internal docs and implementation plans
+docs/
 
 # Distribution builds
 dist/
