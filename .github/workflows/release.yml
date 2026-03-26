@@ -15,6 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: master
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract version from tag
@@ -86,7 +87,7 @@ jobs:
           SHA256="${{ steps.sha.outputs.SHA256 }}"
           SIZE="${{ steps.sha.outputs.SIZE }}"
           PUB_DATE=$(date -u "+%a, %d %b %Y %H:%M:%S %z")
-          DMG_URL="https://github.com/kevinguebert/traffic-menubar/releases/download/v${VERSION}/Arrival-${VERSION}.dmg"
+          DMG_URL="https://github.com/kevinguebert/arrival/releases/download/v${VERSION}/Arrival-${VERSION}.dmg"
 
           ITEM="    <item>\n      <title>Version ${VERSION}</title>\n      <pubDate>${PUB_DATE}</pubDate>\n      <sparkle:version>${VERSION}</sparkle:version>\n      <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>\n      <description><![CDATA[<ul><li>Release ${VERSION}</li></ul>]]></description>\n      <enclosure\n        url=\"${DMG_URL}\"\n        length=\"${SIZE}\"\n        type=\"application/octet-stream\" />\n    </item>"
 
@@ -104,7 +105,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout master
           git add arrival-site/appcast.xml homebrew/arrival.rb
           git commit -m "chore: update appcast and cask for v${{ steps.version.outputs.VERSION }} [skip ci]"
           git push origin master
