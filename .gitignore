@@ -28,5 +28,17 @@ build/
 # XcodeGen
 *.xcodeproj
 
+# Vercel
+.vercel/
+
+# Secrets
+Secrets.xcconfig
+
+# Claude Code
+.claude/
+
+# Internal implementation plans
+docs/superpowers/
+
 # Distribution builds
 dist/

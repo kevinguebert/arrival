@@ -3,11 +3,8 @@ import Sentry
 import TelemetryDeck
 
 enum AnalyticsConfig {
-    // Sign up at https://dashboard.telemetrydeck.com — free tier: 100k signals/month
-    static let telemetryDeckAppID = "REDACTED_TELEMETRYDECK_APP_ID"
-
-    // Sign up at https://sentry.io — free tier: 5k errors/month
-    static let sentryDSN = "REDACTED_SENTRY_DSN"
+    static let telemetryDeckAppID: String = Bundle.main.object(forInfoDictionaryKey: "TelemetryDeckAppID") as? String ?? ""
+    static let sentryDSN: String = Bundle.main.object(forInfoDictionaryKey: "SentryDSN") as? String ?? ""
 }
 
 final class AnalyticsService {
