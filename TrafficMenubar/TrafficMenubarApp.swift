@@ -10,6 +10,10 @@ struct TrafficMenubarApp: App {
     @StateObject private var mockProvider = MockTrafficProvider()
     @StateObject private var designOverrides = DevDesignOverrides()
 
+    init() {
+        AnalyticsService.shared.configure()
+    }
+
     var body: some Scene {
         MenuBarExtra {
             PopoverView(viewModel: viewModel)
@@ -18,6 +22,7 @@ struct TrafficMenubarApp: App {
                     NSApp.activate(ignoringOtherApps: true)
                 })
                 .environment(\.openMapWindow, OpenMapWindowAction { [self] in
+                    AnalyticsService.shared.trackFeatureUsed("detached_map")
                     openWindow(id: "traffic-map")
                     NSApp.activate(ignoringOtherApps: true)
                 })
@@ -42,6 +47,7 @@ struct TrafficMenubarApp: App {
         Window("Preferences", id: "preferences") {
             PreferencesView(settings: viewModel.settings)
                 .environment(\.openDevWindow, OpenDevWindowAction { [self] in
+                    AnalyticsService.shared.trackFeatureUsed("developer_mode")
                     openWindow(id: "developer")
                     NSApp.activate(ignoringOtherApps: true)
                 })
