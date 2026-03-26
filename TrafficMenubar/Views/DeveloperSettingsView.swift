@@ -9,6 +9,11 @@ struct DeveloperSettingsView: View {
     @State private var forcedState: ForcedAppState = .normal
     @State private var forcedDirection: CommuteDirection = .toWork
     @State private var forcedFailures: Int = 0
+    @State private var isGeocodingDevHome = false
+    @State private var isGeocodingDevWork = false
+    @State private var devHomeGeocodingError: String?
+    @State private var devWorkGeocodingError: String?
+    private let geocoder = GeocodingService()
 
     private var isDark: Bool { colorScheme == .dark }
     private var primaryText: Color { isDark ? .white.opacity(0.7) : .primary }
@@ -29,6 +34,7 @@ struct DeveloperSettingsView: View {
             VStack(alignment: .leading, spacing: 12) {
                 masterToggle
                 if viewModel.isDevMode {
+                    addressOverridesSection
                     appStateSection
                     routeDataSection
                     baselineSection
@@ -95,6 +101,91 @@ struct DeveloperSettingsView: View {
                 .stroke(viewModel.isDevMode ? Color.orange.opacity(0.2) : subtleBorder, lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+
+    // MARK: - Address Overrides
+
+    @ViewBuilder
+    private var addressOverridesSection: some View {
+        devSection("Address Overrides") {
+            VStack(alignment: .leading, spacing: 10) {
+                Toggle("Use custom addresses", isOn: $viewModel.settings.devAddressOverrideEnabled)
+                    .font(.system(size: 12))
+                    .foregroundColor(primaryText)
+                    .tint(.orange)
+
+                if viewModel.settings.devAddressOverrideEnabled {
+                    Text("Real API calls with override addresses. Polling resumes automatically.")
+                        .font(.system(size: 11))
+                        .foregroundColor(secondaryText)
+
+                    devAddressField(
+                        label: "Home",
+                        text: $viewModel.settings.devHomeAddress,
+                        isGeocoding: isGeocodingDevHome,
+                        error: devHomeGeocodingError,
+                        isValid: viewModel.settings.devHomeCoordinate != nil,
+                        onSubmit: geocodeDevHome
+                    )
+
+                    devAddressField(
+                        label: "Work",
+                        text: $viewModel.settings.devWorkAddress,
+                        isGeocoding: isGeocodingDevWork,
+                        error: devWorkGeocodingError,
+                        isValid: viewModel.settings.devWorkCoordinate != nil,
+                        onSubmit: geocodeDevWork
+                    )
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func devAddressField(
+        label: String,
+        text: Binding<String>,
+        isGeocoding: Bool,
+        error: String?,
+        isValid: Bool,
+        onSubmit: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(secondaryText)
+
+            HStack(spacing: 8) {
+                TextField("Enter address…", text: text)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 12, design: .rounded))
+                    .foregroundColor(primaryText)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(isDark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .strokeBorder(isDark ? Color.white.opacity(0.1) : Color.black.opacity(0.1), lineWidth: 1)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                    .onSubmit(onSubmit)
+
+                if isGeocoding {
+                    ProgressView()
+                        .controlSize(.small)
+                        .scaleEffect(0.7)
+                } else if let error = error {
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundColor(.orange)
+                        .font(.system(size: 12))
+                        .help(error)
+                } else if isValid {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                        .font(.system(size: 12))
+                }
+            }
+        }
     }
 
     // MARK: - App State
@@ -439,6 +530,42 @@ struct DeveloperSettingsView: View {
             startPoint: .top,
             endPoint: .bottom
         )
+    }
+
+    private func geocodeDevHome() {
+        let address = viewModel.settings.devHomeAddress
+        guard !address.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        isGeocodingDevHome = true
+        devHomeGeocodingError = nil
+        Task {
+            do {
+                let coord = try await geocoder.geocode(address: address)
+                viewModel.settings.devHomeCoordinate = coord
+                devHomeGeocodingError = nil
+            } catch {
+                devHomeGeocodingError = "Couldn't find this address"
+                viewModel.settings.devHomeCoordinate = nil
+            }
+            isGeocodingDevHome = false
+        }
+    }
+
+    private func geocodeDevWork() {
+        let address = viewModel.settings.devWorkAddress
+        guard !address.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        isGeocodingDevWork = true
+        devWorkGeocodingError = nil
+        Task {
+            do {
+                let coord = try await geocoder.geocode(address: address)
+                viewModel.settings.devWorkCoordinate = coord
+                devWorkGeocodingError = nil
+            } catch {
+                devWorkGeocodingError = "Couldn't find this address"
+                viewModel.settings.devWorkCoordinate = nil
+            }
+            isGeocodingDevWork = false
+        }
     }
 
     private func applyState() {
