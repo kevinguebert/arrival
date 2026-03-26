@@ -331,7 +331,7 @@ struct PopoverView: View {
                 .foregroundColor(.orange.opacity(0.8))
             }
 
-            if viewModel.isDevMode {
+            if viewModel.isDevMode && !viewModel.settings.devAddressOverrideEnabled {
                 HStack(spacing: 3) {
                     Image(systemName: "hammer")
                         .font(.system(size: 9))
@@ -343,17 +343,6 @@ struct PopoverView: View {
                 .padding(.vertical, 2)
                 .background(Color.orange.opacity(0.12))
                 .clipShape(Capsule())
-            }
-
-            if viewModel.currentResult != nil {
-                Button(action: openInMaps) {
-                    Image(systemName: "arrow.triangle.turn.up.right.circle")
-                        .font(.system(size: 14))
-                        .foregroundColor(colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.6))
-                }
-                .buttonStyle(.plain)
-                .contentShape(Rectangle())
-                .help("Open in \(viewModel.settings.preferredMapsApp.displayName)")
             }
 
             Spacer()
