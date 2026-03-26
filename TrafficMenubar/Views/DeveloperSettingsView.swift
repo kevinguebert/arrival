@@ -4,6 +4,7 @@ struct DeveloperSettingsView: View {
     @ObservedObject var viewModel: CommuteViewModel
     @ObservedObject var mockProvider: MockTrafficProvider
     @ObservedObject var designOverrides: DevDesignOverrides
+    @ObservedObject private var settings = SettingsStore.shared
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var forcedState: ForcedAppState = .normal
@@ -111,7 +112,7 @@ struct DeveloperSettingsView: View {
     private var addressOverridesSection: some View {
         devSection("Address Overrides") {
             VStack(alignment: .leading, spacing: 10) {
-                Toggle("Use custom addresses", isOn: $viewModel.settings.devAddressOverrideEnabled)
+                Toggle("Use custom addresses", isOn: $settings.devAddressOverrideEnabled)
                     .font(.system(size: 12))
                     .foregroundColor(primaryText)
                     .tint(.orange)
@@ -123,7 +124,7 @@ struct DeveloperSettingsView: View {
 
                     devAddressField(
                         label: "Home",
-                        text: $viewModel.settings.devHomeAddress,
+                        text: $settings.devHomeAddress,
                         isGeocoding: isGeocodingDevHome,
                         error: devHomeGeocodingError,
                         isValid: viewModel.settings.devHomeCoordinate != nil,
@@ -132,7 +133,7 @@ struct DeveloperSettingsView: View {
 
                     devAddressField(
                         label: "Work",
-                        text: $viewModel.settings.devWorkAddress,
+                        text: $settings.devWorkAddress,
                         isGeocoding: isGeocodingDevWork,
                         error: devWorkGeocodingError,
                         isValid: viewModel.settings.devWorkCoordinate != nil,
