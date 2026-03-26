@@ -74,7 +74,9 @@ struct DeveloperSettingsView: View {
                         .foregroundColor(isDark ? Color.white.opacity(0.9) : Color.primary)
                 }
                 if viewModel.isDevMode {
-                    Text("Polling paused · Mock data in use")
+                    Text(viewModel.settings.devAddressOverrideEnabled
+                        ? "Custom addresses · Real API calls"
+                        : "Polling paused · Mock data in use")
                         .font(.system(size: 11, design: .rounded))
                         .foregroundColor(secondaryText)
                 }
