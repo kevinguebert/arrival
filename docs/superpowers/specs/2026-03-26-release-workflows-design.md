@@ -6,12 +6,12 @@ Releasing a new version of Arrival requires multiple manual steps: build the app
 
 ## Solution
 
-Two GitHub Actions workflows:
+One GitHub Actions workflow + Vercel auto-deploy:
 
 1. **Release workflow** (`release.yml`) — automates the full release pipeline on tag push
-2. **Site deploy workflow** (`deploy-site.yml`) — deploys the marketing site on push to master
+2. **Vercel** — auto-deploys the marketing site from `arrival-site/` on every push to `master`
 
-## Workflow 1: Release
+## Workflow: Release
 
 **Trigger:** Tag push matching `v*`
 
@@ -29,29 +29,20 @@ Two GitHub Actions workflows:
 8. Update `arrival-site/appcast.xml` — insert new `<item>` with version, date, download URL, file size
 9. Update `homebrew/arrival.rb` — replace version and sha256
 10. Commit appcast + cask changes to `master` (bot commit, skip CI to avoid loops)
-11. Setup Node, install deps, build Tailwind CSS in `arrival-site/`
-12. Deploy `arrival-site/` to GitHub Pages via `actions/deploy-pages`
+11. Vercel auto-deploys the site from that commit (appcast.xml is now live for Sparkle updates)
 
 **Secrets:** Uses default `GITHUB_TOKEN` only. No code signing.
 
 **Xcodegen:** Must run `xcodegen generate` before building since `.xcodeproj` is gitignored.
 
-## Workflow 2: Deploy Site
+## Site Deployment (Vercel)
 
-**Trigger:** Push to `master` with changes in `arrival-site/**`
+Vercel is connected to the repo and auto-deploys on push to `master`. Configuration:
+- Root directory: `arrival-site/`
+- Build command: `npm run build`
+- Output directory: `.` (static site, served as-is after Tailwind build)
 
-**Runner:** `ubuntu-latest`
-
-**Steps:**
-
-1. Checkout repo
-2. Setup Node, install deps in `arrival-site/`
-3. Build Tailwind CSS: `npm run build`
-4. Deploy `arrival-site/` to GitHub Pages via `actions/deploy-pages`
-
-## GitHub Pages Configuration
-
-Both workflows deploy to GitHub Pages using the `actions/upload-pages-artifact` + `actions/deploy-pages` pattern. The repo needs Pages enabled with source set to "GitHub Actions" (not branch-based).
+The release workflow's commit to `master` (appcast + cask updates) triggers Vercel to redeploy, keeping the appcast in sync with new releases. Marketing site changes also deploy independently on any push to `master`.
 
 ## Release Process (User Experience)
 
@@ -72,7 +63,6 @@ To update the marketing site without a release: just push changes to `arrival-si
 | File | Purpose |
 |------|---------|
 | `.github/workflows/release.yml` | Full release automation |
-| `.github/workflows/deploy-site.yml` | Independent site deployment |
 
 ## Files Modified by Release Workflow (at runtime)
 
