@@ -58,6 +58,12 @@ On first launch, Arrival opens Preferences automatically. Set up your commute:
 
 All settings are stored locally on your Mac.
 
+## Privacy & Analytics
+
+Arrival collects anonymous usage analytics through [TelemetryDeck](https://telemetrydeck.com/) to help us understand which features people use and where to focus improvements. No personal data, addresses, or location information is ever collected — just aggregate signals like "app launched" and "route fetched." TelemetryDeck is privacy-first and GDPR-compliant by design.
+
+We use [Sentry](https://sentry.io/) for crash reporting so we can catch and fix bugs quickly. Crash reports include stack traces and device info but never your addresses or personal data.
+
 ## Building from Source
 
 Arrival uses [XcodeGen](https://github.com/yonaskolb/XcodeGen) to generate its Xcode project.
