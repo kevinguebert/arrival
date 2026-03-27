@@ -35,6 +35,9 @@ jobs:
           TELEMETRYDECK_APP_ID = ${TELEMETRYDECK_APP_ID}
           EOF
 
+      - name: Set version from tag
+        run: sed -i '' "s/MARKETING_VERSION: .*/MARKETING_VERSION: \"${{ steps.version.outputs.VERSION }}\"/" project.yml
+
       - name: Generate Xcode project
         run: xcodegen generate
 
