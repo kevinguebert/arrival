@@ -79,7 +79,7 @@ struct QuickSettingsView: View {
             // Quit
             settingsButton(
                 icon: "xmark.circle",
-                label: "Quit Traffic Menubar",
+                label: "Quit Arrival",
                 tint: .secondary,
                 subtle: true
             ) {
