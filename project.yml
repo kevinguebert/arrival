@@ -43,7 +43,7 @@ targets:
     info:
       path: Arrival/Info.plist
       properties:
-        SUFeedURL: https://kevinguebert.github.io/traffic-menubar/appcast.xml
+        SUFeedURL: https://arrival-app.vercel.app/appcast.xml
         SUPublicEDKey: ""
         SentryDSN: $(SENTRY_DSN)
         TelemetryDeckAppID: $(TELEMETRYDECK_APP_ID)

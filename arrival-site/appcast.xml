@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>Arrival Updates</title>
-    <link>https://kevinguebert.github.io/traffic-menubar/appcast.xml</link>
+    <link>https://arrival-app.vercel.app/appcast.xml</link>
     <description>Updates for Arrival</description>
     <language>en</language>
     <!--
@@ -15,7 +15,7 @@
         <sparkle:shortVersionString>X.Y.Z</sparkle:shortVersionString>
         <description><![CDATA[<ul><li>Release notes here</li></ul>]]></description>
         <enclosure
-          url="https://github.com/kevinguebert/traffic-menubar/releases/download/vX.Y.Z/Arrival-X.Y.Z.dmg"
+          url="https://github.com/kevinguebert/arrival/releases/download/vX.Y.Z/Arrival-X.Y.Z.dmg"
           length="FILE_SIZE_BYTES"
           type="application/octet-stream"
           sparkle:edSignature="SIGNATURE" />

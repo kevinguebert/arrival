@@ -77,7 +77,7 @@ jobs:
 
           Download \`Arrival-${{ steps.version.outputs.VERSION }}.dmg\`, open it, and drag Arrival to your Applications folder.
 
-          **First launch:** Right-click → Open (required once for unsigned apps).
+          **First launch:** macOS may block the app. Go to **System Settings → Privacy & Security**, scroll down, and click **Open Anyway**. You only need to do this once.
 
           **SHA256:** \`${{ steps.sha.outputs.SHA256 }}\`"
 

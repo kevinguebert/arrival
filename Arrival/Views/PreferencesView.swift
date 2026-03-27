@@ -3,6 +3,7 @@ import ServiceManagement
 
 struct PreferencesView: View {
     @ObservedObject var settings: SettingsStore
+    var onAddressesConfigured: (() -> Void)?
     @Environment(\.openDevWindow) private var openDevWindow
     @Environment(\.colorScheme) private var colorScheme
     @State private var homeGeocodingError: String?
@@ -761,6 +762,7 @@ struct PreferencesView: View {
                 homeGeocodingError = nil
                 if settings.isConfigured {
                     fetchBaseline()
+                    onAddressesConfigured?()
                 }
             } catch {
                 homeGeocodingError = "Couldn't find this address"
@@ -781,6 +783,7 @@ struct PreferencesView: View {
                 workGeocodingError = nil
                 if settings.isConfigured {
                     fetchBaseline()
+                    onAddressesConfigured?()
                 }
             } catch {
                 workGeocodingError = "Couldn't find this address"

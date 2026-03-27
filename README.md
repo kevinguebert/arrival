@@ -38,9 +38,9 @@ Mapbox offers a generous free tier (100,000 directions requests/month), which is
 
 ## Installing via DMG
 
-Download the latest `.dmg` from [Releases](https://github.com/kevinguebert/traffic-menubar/releases), open it, and drag Arrival to your Applications folder.
+Download the latest `.dmg` from [Releases](https://github.com/kevinguebert/arrival/releases), open it, and drag Arrival to your Applications folder.
 
-**First launch:** Right-click the app and select Open (required once for unsigned apps).
+**First launch:** macOS may block the app. Go to **System Settings > Privacy & Security**, scroll down, and click **Open Anyway**. You only need to do this once.
 
 ## Installing via Homebrew
 

@@ -19,8 +19,12 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>SUFeedURL</key>
-	<string>https://kevinguebert.github.io/traffic-menubar/appcast.xml</string>
+	<string>https://arrival-app.vercel.app/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string></string>
+	<key>SentryDSN</key>
+	<string>$(SENTRY_DSN)</string>
+	<key>TelemetryDeckAppID</key>
+	<string>$(TELEMETRYDECK_APP_ID)</string>
 </dict>
 </plist>

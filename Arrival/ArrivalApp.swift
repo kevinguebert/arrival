@@ -45,7 +45,9 @@ struct ArrivalApp: App {
         .menuBarExtraStyle(.window)
 
         Window("Preferences", id: "preferences") {
-            PreferencesView(settings: viewModel.settings)
+            PreferencesView(settings: viewModel.settings, onAddressesConfigured: { [self] in
+                    viewModel.refreshNow()
+                })
                 .environment(\.openDevWindow, OpenDevWindowAction { [self] in
                     AnalyticsService.shared.trackFeatureUsed("developer_mode")
                     openWindow(id: "developer")
