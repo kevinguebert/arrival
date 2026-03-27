@@ -40,7 +40,7 @@
       <description><![CDATA[<ul><li>Auto-fetch on address entry</li><li>Fixed all repository URLs</li><li>Updated Gatekeeper instructions</li></ul>]]></description>
       <enclosure
         url="https://github.com/kevinguebert/arrival/releases/download/v1.1.0/Arrival-1.1.0.dmg"
-        length="3292519"
+        length="3292306"
         type="application/octet-stream" />
     </item>
   </channel>
