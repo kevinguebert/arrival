@@ -1,0 +1,115 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Create Secrets.xcconfig
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          TELEMETRYDECK_APP_ID: ${{ secrets.TELEMETRYDECK_APP_ID }}
+        run: |
+          DSN_ESCAPED=$(echo "$SENTRY_DSN" | sed 's|://|:/$()/|')
+          cat > Secrets.xcconfig <<EOF
+          SENTRY_DSN = ${DSN_ESCAPED}
+          TELEMETRYDECK_APP_ID = ${TELEMETRYDECK_APP_ID}
+          EOF
+
+      - name: Set version from tag
+        run: sed -i '' "s/MARKETING_VERSION: .*/MARKETING_VERSION: \"${{ steps.version.outputs.VERSION }}\"/" project.yml
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Resolve SPM dependencies
+        run: xcodebuild -resolvePackageDependencies -project Arrival.xcodeproj -scheme Arrival
+
+      - name: Build Release
+        run: |
+          xcodebuild \
+            -project Arrival.xcodeproj \
+            -scheme Arrival \
+            -configuration Release \
+            -derivedDataPath build \
+            build
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Create DMG
+        run: ./scripts/build-dmg.sh build/Build/Products/Release/Arrival.app
+
+      - name: Compute SHA256
+        id: sha
+        run: |
+          DMG_PATH="dist/Arrival-${{ steps.version.outputs.VERSION }}.dmg"
+          SHA256=$(shasum -a 256 "$DMG_PATH" | awk '{print $1}')
+          SIZE=$(stat -f%z "$DMG_PATH")
+          echo "SHA256=$SHA256" >> "$GITHUB_OUTPUT"
+          echo "SIZE=$SIZE" >> "$GITHUB_OUTPUT"
+          echo "DMG_PATH=$DMG_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            "${{ steps.sha.outputs.DMG_PATH }}" \
+            --title "Arrival ${{ github.ref_name }}" \
+            --notes "## Arrival ${{ github.ref_name }}
+
+          Download \`Arrival-${{ steps.version.outputs.VERSION }}.dmg\`, open it, and drag Arrival to your Applications folder.
+
+          **First launch:** macOS may block the app. Go to **System Settings → Privacy & Security**, scroll down, and click **Open Anyway**. You only need to do this once.
+
+          **SHA256:** \`${{ steps.sha.outputs.SHA256 }}\`"
+
+      - name: Update appcast.xml
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          SHA256="${{ steps.sha.outputs.SHA256 }}"
+          SIZE="${{ steps.sha.outputs.SIZE }}"
+          PUB_DATE=$(date -u "+%a, %d %b %Y %H:%M:%S %z")
+          DMG_URL="https://github.com/kevinguebert/arrival/releases/download/v${VERSION}/Arrival-${VERSION}.dmg"
+
+          ITEM="    <item>\n      <title>Version ${VERSION}</title>\n      <pubDate>${PUB_DATE}</pubDate>\n      <sparkle:version>${VERSION}</sparkle:version>\n      <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>\n      <description><![CDATA[<ul><li>Release ${VERSION}</li></ul>]]></description>\n      <enclosure\n        url=\"${DMG_URL}\"\n        length=\"${SIZE}\"\n        type=\"application/octet-stream\" />\n    </item>"
+
+          # Insert before closing </channel> tag
+          sed -i '' "s|</channel>|${ITEM}\n  </channel>|" arrival-site/appcast.xml
+
+      - name: Update Homebrew cask
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          SHA256="${{ steps.sha.outputs.SHA256 }}"
+          sed -i '' "s|version \".*\"|version \"${VERSION}\"|" homebrew/arrival.rb
+          sed -i '' "s|sha256 \".*\"|sha256 \"${SHA256}\"|" homebrew/arrival.rb
+
+      - name: Commit appcast + cask updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add arrival-site/appcast.xml homebrew/arrival.rb
+          git commit -m "chore: update appcast and cask for v${{ steps.version.outputs.VERSION }} [skip ci]"
+          git push origin master
