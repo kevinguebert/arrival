@@ -31,8 +31,9 @@ jobs:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           TELEMETRYDECK_APP_ID: ${{ secrets.TELEMETRYDECK_APP_ID }}
         run: |
+          DSN_ESCAPED=$(echo "$SENTRY_DSN" | sed 's|://|:/$()/|')
           cat > Secrets.xcconfig <<EOF
-          SENTRY_DSN = ${SENTRY_DSN}
+          SENTRY_DSN = ${DSN_ESCAPED}
           TELEMETRYDECK_APP_ID = ${TELEMETRYDECK_APP_ID}
           EOF
 
