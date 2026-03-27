@@ -1,6 +1,6 @@
 cask "arrival" do
-  version "1.1.0"
-  sha256 "690b6fbc20bd0227f2181137fb575c12d2c01a4aa35d2ab722054070e44fe8c6"
+  version "1.1.1"
+  sha256 "4db26d58a6e7795449ad2166342596978f699ffcf5e0ec21a5a8aba916c850aa"
 
   url "https://github.com/kevinguebert/arrival/releases/download/v#{version}/Arrival-#{version}.dmg"
   name "Arrival"
