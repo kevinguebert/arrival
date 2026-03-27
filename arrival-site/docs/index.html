@@ -166,7 +166,7 @@
             <div class="arrival-card p-5">
               <p class="text-foreground text-sm font-semibold mb-1">Configure your commute schedule</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
-                Set the days and times you commute. Arrival uses your schedule to intelligently show the right direction — outbound in the morning, inbound in the evening — so the menu bar always displays the journey that matters right now.
+                Set the days and times you commute. Arrival uses your schedule to show the right direction — heading out in the morning, heading home in the evening — so the menu bar always shows the trip that matters right now.
               </p>
             </div>
           </div>
@@ -180,7 +180,7 @@
           <h2 class="text-xl font-bold tracking-heading mb-4">Using Arrival</h2>
 
           <p class="text-foreground-muted leading-relaxed mb-6">
-            Arrival refreshes traffic data in the background and surfaces everything you need in the menu bar and dropdown panel.
+            Arrival checks traffic in the background and puts everything you need in the menu bar and dropdown panel.
           </p>
 
           <div class="space-y-6">
@@ -188,7 +188,7 @@
             <div>
               <p class="text-foreground text-sm font-semibold mb-2">Menu bar icon</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
-                The menu bar shows your current travel time (e.g. <span class="text-foreground font-medium">22 min</span>) alongside a color-coded traffic mood. Glance up — if it's green, you're good to go.
+                The menu bar shows your current travel time (e.g. <span class="text-foreground font-medium">22 min</span>) with a color that matches traffic conditions. Green means you're good to go.
               </p>
             </div>
 
@@ -213,14 +213,14 @@
             <div>
               <p class="text-foreground text-sm font-semibold mb-2">Routes &amp; direction detection</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
-                If you have multiple routes saved, Arrival cycles through them in the menu bar. The dropdown panel lists all routes with their current travel times. Based on your commute schedule, Arrival automatically shows the right direction — no need to manually flip between "to work" and "back home."
+                If you have multiple routes, Arrival cycles through them in the menu bar. The dropdown lists all your routes with current travel times. It picks the right direction based on your commute schedule — no need to flip between "to work" and "back home" yourself.
               </p>
             </div>
 
             <div>
               <p class="text-foreground text-sm font-semibold mb-2">Incidents</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
-                When there are accidents, construction zones, or road closures on your route, they appear in the dropdown panel below your travel time. Severity is indicated so you can decide whether it's worth rerouting.
+                Accidents, construction, and road closures on your route show up in the dropdown below your travel time. You'll see how bad each one is so you can decide whether to reroute.
               </p>
             </div>
 
@@ -235,14 +235,14 @@
           <h2 class="text-xl font-bold tracking-heading mb-4">Map Window</h2>
 
           <p class="text-foreground-muted leading-relaxed mb-4">
-            Click the map preview thumbnail inside the Arrival dropdown to open the detachable map window. It floats above your other windows so you can keep an eye on your route without switching apps.
+            Click the map preview in the Arrival dropdown to open a floating map window. It stays on top of your other windows so you can keep an eye on your route without switching away from what you're doing.
           </p>
 
           <div class="space-y-4">
             <div class="arrival-card p-5">
               <p class="text-foreground text-sm font-semibold mb-1">Route with congestion overlay</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
-                The map draws your full route path and overlays real-time traffic congestion using color bands — green where traffic is moving, amber where it's slowing, red where it's backed up. You can see exactly which stretch of road is causing the delay.
+                Your route is drawn on the map with color-coded traffic — green where things are moving, amber where it's slowing down, red where it's backed up. You can see exactly which stretch of road is the problem.
               </p>
             </div>
 
@@ -275,14 +275,14 @@
             <div class="arrival-card p-5">
               <p class="text-foreground text-sm font-semibold mb-1">Polling interval</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
-                Controls how often Arrival fetches fresh traffic data. Shorter intervals mean more up-to-date information but higher network usage. The default is every 5 minutes.
+                How often Arrival checks for new traffic data. Shorter intervals keep things more current but use more network. Default is every 5 minutes.
               </p>
             </div>
 
             <div class="arrival-card p-5">
               <p class="text-foreground text-sm font-semibold mb-1">Maps provider: Apple Maps vs Mapbox</p>
               <p class="text-foreground-muted text-sm leading-relaxed mb-2">
-                Arrival defaults to Apple Maps and works out of the box with no setup. You can optionally upgrade to Mapbox for richer traffic data:
+                Arrival uses Apple Maps by default — works right away with no setup. You can switch to Mapbox if you want more detailed traffic data:
               </p>
               <ul class="space-y-1.5 text-sm text-foreground-muted">
                 <li class="flex gap-2.5">
@@ -291,7 +291,7 @@
                 </li>
                 <li class="flex gap-2.5">
                   <span class="text-moderate flex-shrink-0 font-medium">Mapbox</span>
-                  <span>Optional upgrade. Adds per-segment congestion coloring, traffic incident alerts, and accurate free-flow baselines. Free tier includes 100k requests/month — sign up at <a href="https://mapbox.com" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">mapbox.com</a> and paste your key in Preferences → General → Traffic Provider.</span>
+                  <span>Optional. Adds color-coded congestion on each road segment, traffic incident alerts, and better baseline estimates. Free tier covers 100k requests/month — sign up at <a href="https://mapbox.com" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">mapbox.com</a> and paste your key in Preferences → General → Traffic Provider.</span>
                 </li>
               </ul>
             </div>
@@ -299,14 +299,14 @@
             <div class="arrival-card p-5">
               <p class="text-foreground text-sm font-semibold mb-1">Launch at login</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
-                Toggle this on to have Arrival start automatically when you log in to your Mac. No need to remember to open it before your commute.
+                Turn this on and Arrival starts up when you log in to your Mac. One less thing to remember before your commute.
               </p>
             </div>
 
             <div class="arrival-card p-5">
               <p class="text-foreground text-sm font-semibold mb-1">Preferred maps app</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
-                When you tap "Get Directions" from the dropdown, Arrival opens your preferred navigation app — choose from Apple Maps, Google Maps, or Waze.
+                When you hit "Get Directions" from the dropdown, Arrival opens your go-to navigation app. Pick from Apple Maps, Google Maps, or Waze.
               </p>
             </div>
 
@@ -377,7 +377,7 @@
           <h2 class="text-xl font-bold tracking-heading mb-4">Updates</h2>
 
           <p class="text-foreground-muted leading-relaxed mb-4">
-            Arrival uses <a href="https://sparkle-project.org" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">Sparkle</a> for automatic updates. When a new version is available, you'll see a prompt inside the app to install it — no need to visit GitHub manually.
+            Arrival uses <a href="https://sparkle-project.org" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">Sparkle</a> to handle updates. When a new version drops, you'll get a prompt inside the app — no need to check GitHub yourself.
           </p>
 
           <p class="text-foreground-muted leading-relaxed mb-4">
@@ -387,9 +387,9 @@
           </p>
 
           <div class="arrival-card p-5">
-            <p class="text-foreground text-sm font-semibold mb-1">Staying on the latest version is recommended</p>
+            <p class="text-foreground text-sm font-semibold mb-1">Keep it up to date</p>
             <p class="text-foreground-muted text-sm leading-relaxed">
-              Updates often include improvements to traffic accuracy, new features, and compatibility fixes for the latest versions of macOS. Sparkle will notify you — just keep an eye out for the update prompt.
+              Updates bring better traffic accuracy, new features, and fixes for the latest macOS versions. Sparkle will let you know when one's ready.
             </p>
           </div>
         </section>
