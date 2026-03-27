@@ -42,7 +42,9 @@ jobs:
           sed -i '' "s/MARKETING_VERSION: .*/MARKETING_VERSION: \"${{ steps.version.outputs.VERSION }}\"/" project.yml
 
       - name: Generate Xcode project
-        run: xcodegen generate
+        run: |
+          xcodegen generate
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ steps.version.outputs.VERSION }}" Arrival/Info.plist
 
       - name: Resolve SPM dependencies
         run: xcodebuild -resolvePackageDependencies -project Arrival.xcodeproj -scheme Arrival
