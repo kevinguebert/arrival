@@ -4,6 +4,8 @@
 
 Arrival is a free, open-source macOS menu bar app that shows your commute time in real time. It lives next to your clock, color-coded so you can make a decision in half a second — no app to open, no map to load.
 
+**[Website](https://arrival-app.vercel.app/)** · **[Documentation](https://arrival-app.vercel.app/docs/)** · **[Download](https://github.com/kevinguebert/traffic-menubar/releases/latest)**
+
 ![Arrival screenshot](arrival-site/assets/screenshots/hero-clear.png)
 
 ## Features
