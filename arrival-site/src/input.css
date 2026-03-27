@@ -3,6 +3,10 @@
 
 /* Custom base styles that go beyond Tailwind's defaults */
 @layer base {
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     background: linear-gradient(180deg, #0F1219 0%, #161B26 100%);
     background-attachment: fixed;
