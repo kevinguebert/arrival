@@ -20,9 +20,7 @@
 	<string>1</string>
 	<key>SUFeedURL</key>
 	<string>https://arrival-app.vercel.app/appcast.xml</string>
-	<key>SUPublicEDKey</key>
-	<string></string>
-	<key>SentryDSN</key>
+<key>SentryDSN</key>
 	<string>$(SENTRY_DSN)</string>
 	<key>TelemetryDeckAppID</key>
 	<string>$(TELEMETRYDECK_APP_ID)</string>

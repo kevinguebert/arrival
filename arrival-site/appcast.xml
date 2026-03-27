@@ -32,5 +32,16 @@
         length="3308038"
         type="application/octet-stream" />
     </item>
+    <item>
+      <title>Version 1.1.0</title>
+      <pubDate>Thu, 27 Mar 2026 01:40:00 +0000</pubDate>
+      <sparkle:version>1.1.0</sparkle:version>
+      <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+      <description><![CDATA[<ul><li>Auto-fetch on address entry</li><li>Fixed all repository URLs</li><li>Updated Gatekeeper instructions</li></ul>]]></description>
+      <enclosure
+        url="https://github.com/kevinguebert/arrival/releases/download/v1.1.0/Arrival-1.1.0.dmg"
+        length="3292519"
+        type="application/octet-stream" />
+    </item>
   </channel>
 </rss>
