@@ -98,7 +98,7 @@
   </nav>
 
   <!-- ─── DOCS LAYOUT ──────────────────────────────────────────────────────── -->
-  <div class="max-w-site mx-auto px-6 pt-24 pb-24">
+  <div class="max-w-site mx-auto px-6 pt-28 pb-24">
     <div class="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-12">
 
       <!-- ─── SIDEBAR ────────────────────────────────────────────────────── -->
@@ -134,7 +134,8 @@
             Open the disk image, drag Arrival into your Applications folder, and launch it.
           </p>
 
-          <div class="arrival-card p-5 mb-4">
+          <div class="arrival-card callout callout-amber p-5 mb-4">
+            <p class="callout-label text-moderate">Heads up</p>
             <p class="text-foreground text-sm font-semibold mb-2">First launch: opening an unsigned app</p>
             <p class="text-foreground-muted text-sm leading-relaxed mb-3">
               Because Arrival is distributed outside the Mac App Store, macOS may show a warning that it "cannot be opened because the developer cannot be verified."
@@ -172,14 +173,16 @@
           </p>
 
           <div class="space-y-4">
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-green p-5">
+              <p class="callout-label text-clear">Step 1</p>
               <p class="text-foreground text-sm font-semibold mb-1">Enter your addresses</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
                 In the Routes tab, add a name for the route (e.g. "Home to Office") then type your origin and destination addresses. Arrival uses Apple Maps or Mapbox to resolve addresses — full street addresses work best.
               </p>
             </div>
 
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-green p-5">
+              <p class="callout-label text-clear">Step 2</p>
               <p class="text-foreground text-sm font-semibold mb-1">Configure your commute schedule</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
                 Set the days and times you commute. Arrival uses your schedule to show the right direction — heading out in the morning, heading home in the evening — so the menu bar always shows the trip that matters right now.
@@ -255,14 +258,16 @@
           </p>
 
           <div class="space-y-4">
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-green p-5">
+              <p class="callout-label text-clear">Feature</p>
               <p class="text-foreground text-sm font-semibold mb-1">Route with congestion overlay</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
                 Your route is drawn on the map with color-coded traffic — green where things are moving, amber where it's slowing down, red where it's backed up. You can see exactly which stretch of road is the problem.
               </p>
             </div>
 
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-green p-5">
+              <p class="callout-label text-clear">Feature</p>
               <p class="text-foreground text-sm font-semibold mb-1">Route selection sync</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
                 The map window stays in sync with whichever route is selected in the dropdown. Switch routes in the panel and the map updates automatically.
@@ -288,14 +293,16 @@
 
           <div class="space-y-4">
 
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-green p-5">
+              <p class="callout-label text-clear">Setting</p>
               <p class="text-foreground text-sm font-semibold mb-1">Polling interval</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
                 How often Arrival checks for new traffic data. Shorter intervals keep things more current but use more network. Default is every 5 minutes.
               </p>
             </div>
 
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-amber p-5">
+              <p class="callout-label text-moderate">Provider</p>
               <p class="text-foreground text-sm font-semibold mb-1">Maps provider: Apple Maps vs Mapbox</p>
               <p class="text-foreground-muted text-sm leading-relaxed mb-2">
                 Arrival uses Apple Maps by default — works right away with no setup. You can switch to Mapbox if you want more detailed traffic data:
@@ -312,14 +319,16 @@
               </ul>
             </div>
 
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-green p-5">
+              <p class="callout-label text-clear">Setting</p>
               <p class="text-foreground text-sm font-semibold mb-1">Launch at login</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
                 Turn this on and Arrival starts up when you log in to your Mac. One less thing to remember before your commute.
               </p>
             </div>
 
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-green p-5">
+              <p class="callout-label text-clear">Setting</p>
               <p class="text-foreground text-sm font-semibold mb-1">Preferred maps app</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
                 When you hit "Get Directions" from the dropdown, Arrival opens your go-to navigation app. Pick from Apple Maps, Google Maps, or Waze.
@@ -340,42 +349,46 @@
 
           <div class="space-y-4">
 
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-red p-5">
+              <p class="callout-label text-heavy">Fix</p>
               <p class="text-foreground text-sm font-semibold mb-2">"macOS says the app is from an unidentified developer"</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
                 This is expected for apps distributed outside the App Store. Right-click (or Control-click) the app icon in Finder and choose <strong class="text-foreground font-medium">Open</strong>. Then click <strong class="text-foreground font-medium">Open</strong> again in the dialog. macOS will remember your decision from then on.
               </p>
             </div>
 
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-red p-5">
+              <p class="callout-label text-heavy">Fix</p>
               <p class="text-foreground text-sm font-semibold mb-2">"The app shows '--' instead of a time"</p>
               <p class="text-foreground-muted text-sm leading-relaxed mb-2">
                 This usually means Arrival couldn't fetch traffic data. Try the following:
               </p>
               <ul class="space-y-1.5 text-sm text-foreground-muted">
                 <li class="flex gap-2">
-                  <span class="text-clear flex-shrink-0">•</span>
+                  <span class="text-heavy flex-shrink-0">•</span>
                   <span>Check that your origin and destination addresses are valid and resolve correctly in Preferences.</span>
                 </li>
                 <li class="flex gap-2">
-                  <span class="text-clear flex-shrink-0">•</span>
+                  <span class="text-heavy flex-shrink-0">•</span>
                   <span>Verify your Mac has an active internet connection.</span>
                 </li>
                 <li class="flex gap-2">
-                  <span class="text-clear flex-shrink-0">•</span>
+                  <span class="text-heavy flex-shrink-0">•</span>
                   <span>If using Mapbox, confirm your API key is entered correctly and has not expired.</span>
                 </li>
               </ul>
             </div>
 
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-green p-5">
+              <p class="callout-label text-clear">How-to</p>
               <p class="text-foreground text-sm font-semibold mb-2">"How do I use Mapbox instead of Apple Maps?"</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
                 Sign up for a free account at <a href="https://mapbox.com" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">mapbox.com</a> and create a public access token. Then open Arrival Preferences, go to the Mapbox section, and paste your token. Arrival will switch to the Mapbox provider automatically.
               </p>
             </div>
 
-            <div class="arrival-card p-5">
+            <div class="arrival-card callout callout-green p-5">
+              <p class="callout-label text-clear">How-to</p>
               <p class="text-foreground text-sm font-semibold mb-2">"How do I make it launch at startup?"</p>
               <p class="text-foreground-muted text-sm leading-relaxed">
                 Open Preferences and toggle on <strong class="text-foreground font-medium">Launch at Login</strong>. Arrival uses macOS Login Items, so it will start silently in the background whenever you log in.
@@ -402,7 +415,8 @@
             Download the latest <code class="code-block inline py-0.5 px-1.5 text-xs">.dmg</code>, drag the new version to Applications, and replace the old one.
           </p>
 
-          <div class="arrival-card p-5">
+          <div class="arrival-card callout callout-green p-5">
+            <p class="callout-label text-clear">Tip</p>
             <p class="text-foreground text-sm font-semibold mb-1">Keep it up to date</p>
             <p class="text-foreground-muted text-sm leading-relaxed">
               Updates bring better traffic accuracy, new features, and fixes for the latest macOS versions. Sparkle will let you know when one's ready.
