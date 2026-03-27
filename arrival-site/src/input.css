@@ -77,6 +77,76 @@
     background: linear-gradient(to right, #4DAD80, #21C45E);
   }
 
+  /* Docs callout cards with colored left border and corner pattern */
+  .callout {
+    position: relative;
+    border-left: 3px solid;
+    overflow: hidden;
+  }
+
+  .callout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .callout-green {
+    border-left-color: #4DAD80;
+    background: linear-gradient(135deg, rgba(77, 173, 128, 0.06) 0%, transparent 60%);
+  }
+
+  .callout-green::before {
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 5px,
+      rgba(77, 173, 128, 0.04) 5px,
+      rgba(77, 173, 128, 0.04) 6px
+    );
+  }
+
+  .callout-amber {
+    border-left-color: #FDC021;
+    background: linear-gradient(135deg, rgba(253, 192, 33, 0.06) 0%, transparent 60%);
+  }
+
+  .callout-amber::before {
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 5px,
+      rgba(253, 192, 33, 0.04) 5px,
+      rgba(253, 192, 33, 0.04) 6px
+    );
+  }
+
+  .callout-red {
+    border-left-color: #F77070;
+    background: linear-gradient(135deg, rgba(247, 112, 112, 0.06) 0%, transparent 60%);
+  }
+
+  .callout-red::before {
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 5px,
+      rgba(247, 112, 112, 0.04) 5px,
+      rgba(247, 112, 112, 0.04) 6px
+    );
+  }
+
+  .callout-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
   /* Code block for terminal commands */
   .code-block {
     background: rgba(0, 0, 0, 0.3);
