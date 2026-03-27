@@ -255,7 +255,7 @@
           </div>
 
           <p class="text-foreground-muted text-sm leading-relaxed mt-4">
-            The map window requires a Mapbox API key to display traffic overlays. See <a href="#preferences" class="text-clear hover:underline">Preferences</a> for setup instructions.
+            The map window works with Apple Maps out of the box. To see per-segment congestion coloring on the route (green/amber/red bands showing exactly where traffic is backed up), add a free <a href="https://mapbox.com" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">Mapbox</a> API key in <a href="#preferences" class="text-clear hover:underline">Preferences</a>.
           </p>
         </section>
 
@@ -280,18 +280,18 @@
             </div>
 
             <div class="arrival-card p-5">
-              <p class="text-foreground text-sm font-semibold mb-1">Maps provider: MapKit vs Mapbox</p>
+              <p class="text-foreground text-sm font-semibold mb-1">Maps provider: Apple Maps vs Mapbox</p>
               <p class="text-foreground-muted text-sm leading-relaxed mb-2">
-                Arrival supports two traffic data providers:
+                Arrival defaults to Apple Maps and works out of the box with no setup. You can optionally upgrade to Mapbox for richer traffic data:
               </p>
               <ul class="space-y-1.5 text-sm text-foreground-muted">
                 <li class="flex gap-2.5">
-                  <span class="text-clear flex-shrink-0 font-medium">MapKit</span>
-                  <span>Apple's built-in maps framework. No API key required. Works out of the box.</span>
+                  <span class="text-clear flex-shrink-0 font-medium">Apple Maps</span>
+                  <span>The default. No API key needed. Provides live travel times, route paths, and traffic moods.</span>
                 </li>
                 <li class="flex gap-2.5">
                   <span class="text-moderate flex-shrink-0 font-medium">Mapbox</span>
-                  <span>Provides richer traffic overlays and the interactive map window. Requires a free Mapbox API key — paste it into the Preferences → Mapbox field.</span>
+                  <span>Optional upgrade. Adds per-segment congestion coloring, traffic incident alerts, and accurate free-flow baselines. Free tier includes 100k requests/month — sign up at <a href="https://mapbox.com" class="text-clear hover:underline" target="_blank" rel="noopener noreferrer">mapbox.com</a> and paste your key in Preferences → General → Traffic Provider.</span>
                 </li>
               </ul>
             </div>
